@@ -76,10 +76,10 @@
 					</slot>
 				</div>
 			</el-header>
-			<el-main>
+			<el-main class="content-box">
 				<slot></slot>
 			</el-main>
-			<el-footer>Footer</el-footer>
+			<!-- <el-footer><slot name="footer">Footer</slot></el-footer> -->
 		</el-container>
 	</el-container>
 </template>
@@ -98,7 +98,7 @@ export default {
 		let menus = menu.getMenus({
 			demo: ['list']
 		}).then(menus => {
-			console.log(menus);
+			// console.log(menus);
 			this.menus = menus;
 		});
 
@@ -286,5 +286,10 @@ export default {
 	.container-header .expand .breadcrumb{
 		padding: 12px 16px;
 		padding-left: 0;
+	}
+
+	.content-box{
+		margin-top: 20px;
+    	padding-top: 0 !important;
 	}
 </style>
