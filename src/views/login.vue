@@ -1,13 +1,31 @@
 <template>
 	<div class="container">
-		<el-card class="login-box">
-			<div slot="header">	
-				<h3>登录</h3>
-			</div>
+		<div class="login-box">
+			<el-card class="login-card">
+				<div slot="header" class="header">	
+					<h3>登录</h3>
+				</div>
 
-			
+				<div>
+					<div class="input-group">
+						<i class="icon el-icon-user-solid"></i>
 
-		</el-card>
+						<input type="text" class="login-name" placeholder="登录账户">
+
+					</div>
+
+					<div class="input-group">
+						<i class="icon el-icon-lollipop"></i>
+						<input type="password" class="password" placeholder="登录密码">
+					</div>
+
+					<div>
+						<el-button plain class="login-btn">登录</el-button>
+					</div>
+				</div>
+			</el-card>
+		</div>
+
 	</div>
 </template>
 
@@ -21,26 +39,137 @@ export default {
 </script>
 
 <style lang="scss">
+*, :after, :before {
+    box-sizing: border-box;
+}
+
 	.container{
 		background-image: url(../assets/img/login.jpg);
-		height: 100vh;
+		height: 100%;
 		width: 100%;
 		background-size: cover;
 		background-position: top center;
 		display: flex;
 		justify-content: center;
 		align-items: center;
-	}
+		padding: 15vh 0!important;
+		// box-sizing: border-box;
 
-	.login-box{
-		width: 360px;
-		height: 200px;
-		margin-bottom: 40px;
+		&::before{
+			background: rgba(0,0,0,.5);
+			position: absolute;
+			z-index: 1;
+			width: 100%;
+			height: 100%;
+			display: block;
+			left: 0;
+			top: 0;
+			content: "";
+		}
 
-		h3{
-			padding: 0;
-			margin: 0;
-			text-align: center;
+		.login-box{
+			z-index: 2;
+			width: 100%;
+			max-width: 1140px;
+			padding-right: 15px;
+			padding-left: 15px;
+			margin-right: auto;
+			margin-left: auto;
+		}
+
+		.login-card{
+			width: 340px;
+			height: 260px;
+			margin: 0 auto;
+			// margin-bottom: 40px;
+
+			.el-card__header{
+				border-bottom: none;
+				padding-bottom: 6px;
+			}
+
+			h3{
+				padding: 0;
+				margin: 0;
+				text-align: center;
+				font-size: 25px;
+			}
+
+			.input-group{
+				display: flex;
+				align-items: center;
+				margin-bottom: 16px;
+
+				.icon{
+					flex-basis: 36px;
+					// text-align: center;
+				}
+
+				input{
+					flex-grow: 1;
+					outline: none;
+					background: no-repeat bottom,50% calc(100% - 1px);
+					background-image: linear-gradient(0deg,#9c27b0 2px,rgba(156,39,176,0) 0),linear-gradient(0deg,#d2d2d2 1px,hsla(0,0%,82%,0) 0);
+
+					background-size: 0 100%,100% 100%;
+					border: 0;
+					height: 36px;
+					transition: background 0s ease-out;
+					padding-left: 0;
+					padding-right: 0;
+					border-radius: 0;
+					font-size: 14px;
+					height: 36px;
+					transition: background 0s ease-out;
+					font-size: 14px;
+
+					&:focus {
+						background-size: 100% 100%,100% 100%;
+						transition-duration: .3s;
+						box-shadow: none;
+					}
+
+
+
+					&::-moz-placeholder, &:-ms-input-placeholder, &::-webkit-input-placeholder{
+						color: #aaa;
+						font-weight: 400;
+						font-size: 14px
+					}
+
+					&:-ms-input-placeholder {
+						color: #aaa;
+						font-weight: 400;
+						font-size: 14px
+					}
+
+					&::-webkit-input-placeholder {
+						color: #aaa;
+						font-weight: 400;
+						font-size: 14px
+					}
+
+				}
+			}
+
+
+
+			.login-btn{
+				width: 100%;
+				margin-top: 20px;
+				color: #fff;
+				background-color: #ff9800;
+				border-color: #ff9800;
+				margin-top: 10px;
+
+				&:hover{
+					color: #fff;
+					background-color: #f08f00;
+					border-color: #c27400;
+					box-shadow: 0 14px 26px -12px rgba(255,152,0,.42), 0 4px 23px 0 rgba(0,0,0,.12), 0 8px 10px -5px rgba(255,152,0,.2);
+				}
+			}
 		}
 	}
+
 </style>
