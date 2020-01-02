@@ -10,17 +10,17 @@
 					<div class="input-group">
 						<i class="icon el-icon-user-solid"></i>
 
-						<input type="text" class="login-name" placeholder="登录账户">
+						<input type="text" class="login-name" placeholder="登录账户" v-model="args.login">
 
 					</div>
 
 					<div class="input-group">
 						<i class="icon el-icon-lollipop"></i>
-						<input type="password" class="password" placeholder="登录密码">
+						<input type="password" class="password" placeholder="登录密码" v-model="args.password">
 					</div>
 
 					<div>
-						<el-button plain class="login-btn">登录</el-button>
+						<el-button plain class="login-btn" @click="login" :loading="is_loading">登录</el-button>
 					</div>
 				</div>
 			</el-card>
@@ -30,18 +30,100 @@
 </template>
 
 <script>
+import util from '@/libs/util.js';
+
 export default {
 	name: 'login',
-	mounted(){
+	data(){
+		return {
+			is_loading: false,
 
+			args: {
+				login: 'test',
+				password: 'asd123'
+			}
+		}
+	},
+	mounted(){
+	},
+	methods: {
+		login(){
+			console.log(util);
+			let args = {...this.args};
+
+			if(args.login == ''){
+				return this.$message({
+					showClose: true,
+					message: '请先输入登录账户',
+					type: 'warning'
+				}); 
+			}
+
+			if(args.password == ''){
+				return this.$message({
+					showClose: true,
+					message: '请先输入登录密码',
+					type: 'warning'
+				}); 
+			}
+
+
+			this.is_loading = true;
+
+			util.post('/login').then(res => {
+				this.is_loading = false;
+
+				console.log(res);
+			}).catch(err => {
+				this.is_loading = false;
+
+				console.log(err);
+			});
+		
+
+
+
+			return;
+
+			// 此处为模拟服务器请求返回
+			setTimeout(()=>{
+				
+				// 此处假设返回数据为res
+				let res = {
+					user: {
+						id: 1,
+						name: 'admin'
+					},
+					// 此处假设被禁止访问的数据是直接从数据中读取返回的
+					forbidden: [
+						{
+							name: '',
+							controller: '',
+							action: '',
+						}
+					]
+					// data: 
+				};
+
+				/*
+					this.$message({
+						showClose: true,
+						message: '错了哦，这是一条错误消息',
+						type: 'error'
+					});
+				 */
+
+				this.is_loading = false;
+			}, 2000);
+		}
 	}
 }
 </script>
 
 <style lang="scss">
-*, :after, :before {
-    box-sizing: border-box;
-}
+	*, :after, :before {
+		box-sizing: border-box;
+	}
 
 	.container{
 		background-image: url(../assets/img/login.jpg);
