@@ -107,7 +107,7 @@ let util = {
 					// store.commit('updateHash',response.headers.hash);
 				}
 
-				resolve(response);
+				resolve(response.data);
 			}).catch(function(error){
 				axioxBefore && axios.interceptors.request.eject(axioxBefore);
 

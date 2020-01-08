@@ -74,11 +74,32 @@ export default {
 			util.post('/login', args).then(res => {
 				this.is_loading = false;
 
-				console.log(res);
+				if(res && typeof(res.status) != 'undefined' && res.status > 0){
+					// 此处添加相关登录代码
+					
+				}
+				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
+					this.$message({
+						showClose: true,
+						message: res.msg,
+						type: 'warning'
+					}); 
+				}
+				else{
+					this.$message({
+						showClose: true,
+						message: '服务器未响应，请稍后重试',
+						type: 'warning'
+					}); 
+				}
 			}).catch(err => {
 				this.is_loading = false;
 
-				console.log(err);
+				this.$message({
+					showClose: true,
+					message: '网络异常, 请稍后重试',
+					type: 'warning'
+				}); 
 			});
 		
 
