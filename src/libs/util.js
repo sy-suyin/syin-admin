@@ -10,7 +10,7 @@ import axios from 'axios'
 	Config = Config.debug_config;
 } */
 
-console.log(Config);
+axios.defaults.withCredentials=false;
 
 let util = {
 
@@ -43,27 +43,25 @@ let util = {
 				}
 			}
 
-			if(url != '' && url[0] == '/'){
-				url = util.url(url);
-			}
-
 			let config = {
-				withCredentials:true,
 				url
 			};
+
+			if(url != '' && url[0] == '/'){
+				url = util.url(url);
+				// config.baseURL = Config.api_url;
+			}
 		
 			let axioxBefore = {};
 		
-			// config.baseURL = api_url;
 			config.method = (typeof(method) === 'undefined' || method === '') ? 'get' : method;
 			params = (typeof(params) === 'undefined' || params === '') ? {} : params;
 			config.responseType = (typeof(responseType) === 'undefined' || responseType === '') ? 'json' : responseType;
 			config.headers = {
-				'X-Requested-With':'XMLHttpRequest',
 				// 'hash': store.getters.hash
 				'key': Config.key
 			};
-		
+
 			if(config.method == 'post'){
 				config['data'] = Qs.stringify(params);
 				config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
@@ -86,7 +84,6 @@ let util = {
 				 * 20180605 注释
 				 *
 				 * 因微信安卓版本app调用接口后返回正常，response.statusText 为空导致程序异常问题
-				 *
 				 * 注释掉 response.statusText 字段验证，以便程序正常运行
 				 */
 				if(response.status !== 200){
@@ -113,7 +110,7 @@ let util = {
 				resolve(response);
 			}).catch(function(error){
 				axioxBefore && axios.interceptors.request.eject(axioxBefore);
-		
+
 				reject(error);
 			});
 

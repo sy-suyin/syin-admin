@@ -48,7 +48,6 @@ export default {
 	},
 	methods: {
 		login(){
-			console.log(util);
 			let args = {...this.args};
 
 			if(args.login == ''){
@@ -68,9 +67,11 @@ export default {
 			}
 
 
+
+
 			this.is_loading = true;
 
-			util.post('/login').then(res => {
+			util.post('/login', args).then(res => {
 				this.is_loading = false;
 
 				console.log(res);
