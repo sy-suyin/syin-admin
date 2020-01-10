@@ -18,7 +18,6 @@ class Auth{
 
 		// 对跨域来源做判断
 
-
         return $next($request);
 	}
 }

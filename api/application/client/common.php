@@ -12,14 +12,10 @@ load_func('format');
  *
  */
 function show_error($msg, $code = 200){
-	if(request()->isAjax()){
-		return json(array(
-			'status' => 0,
-			'msg'	 => $msg
-		), $code);
-	}else{
-		throw new \app\common\library\RuntimeError($msg, $code);
-	}
+	return json(array(
+		'status' => 0,
+		'msg'	 => $msg
+	), $code);
 }
 
 /**
