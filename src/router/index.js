@@ -5,33 +5,56 @@ import Home from '../views/Home.vue'
 Vue.use(VueRouter)
 
 const routes = [
-  {
-    path: '/',
-    name: 'home',
-    component: Home
-  },
-  {
-    path: '/login',
-    name: '登录页面',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/login.vue')
-  },
-  {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
+	{
+		path: '/',
+		name: 'root',
+		redirect: '/index',
+	},
+	{
+		path: '/index',
+		name: 'home',
+		component: Home
+	},
+	{
+		path: '/login',
+		name: 'login',
+		component: () => import(/* webpackChunkName: "about" */ '../views/login.vue')
+	},
 ]
 
 const router = new VueRouter({
-  mode: 'history',
-  base: process.env.BASE_URL,
-  routes
+	mode: 'history',
+	base: process.env.BASE_URL,
+	routes
 })
+
+router.beforeEach((to, from, next) => {
+	let is_logged = !!localStorage.getItem('user');
+	let path = to.path;
+
+	path = path ? path.substr(1) : '';
+
+	if(is_logged){
+		if(['login','register'].findIndex((value)=>{return value==path}) !== -1){
+			next({
+				replace: true,
+				name: 'index'
+			});
+		}else{
+			next();			
+		}		
+	}else if(['login','register'].findIndex((value)=>{return value==path}) == -1){
+		next({
+			replace: true,
+			name: 'login'
+		});
+	}
+
+	next();
+});
+
+router.afterEach((to) => {
+    window.scrollTo(0, 0);
+});
 
 export default router

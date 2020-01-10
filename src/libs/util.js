@@ -43,14 +43,16 @@ let util = {
 				}
 			}
 
-			let config = {
-				url
-			};
-
 			if(url != '' && url[0] == '/'){
 				url = util.url(url);
 				// config.baseURL = Config.api_url;
 			}
+
+			let config = {
+				url
+			};
+
+			console.log(url);
 		
 			let axioxBefore = {};
 		
