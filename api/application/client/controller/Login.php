@@ -46,8 +46,6 @@ class Login extends Client{
 			return show_error('登录账号已被禁用, 请联系管理');
 		}
 
-		// set_login_cookie($result, 'admin');
-
 		$request->admin = $result;
 
 		unset($result['password']);
