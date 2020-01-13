@@ -3,6 +3,7 @@ import Config from '@/config/common';
 import { Message } from 'element-ui';
 import Qs from 'qs';
 import axios from 'axios'
+import store from '@/vuex/store'
 
 // todo: 具体名称待调整
 /* if(Config.debug && Config.hasOwnProperty('debug_config')){
@@ -45,14 +46,12 @@ let util = {
 
 			if(url != '' && url[0] == '/'){
 				url = util.url(url);
-				// config.baseURL = Config.api_url;
 			}
 
 			let config = {
 				url
 			};
 
-			console.log(url);
 		
 			let axioxBefore = {};
 		
@@ -60,7 +59,7 @@ let util = {
 			params = (typeof(params) === 'undefined' || params === '') ? {} : params;
 			config.responseType = (typeof(responseType) === 'undefined' || responseType === '') ? 'json' : responseType;
 			config.headers = {
-				// 'hash': store.getters.hash
+				'token': store.getters.token,
 				'key': Config.key
 			};
 

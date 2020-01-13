@@ -1,12 +1,12 @@
 import Vue from 'vue'
 
 const state = {
-	hash:'',
+	token:'',
 	currentUser:'',
 }
 
 const getters = {
-	hash:state=>state.hash,
+	token:state=>state.token,
 	user:state=>state.currentUser,
 }
 

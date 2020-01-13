@@ -68,6 +68,7 @@
 <script>
 // @ is an alias to /src
 import Lyaout from "@/components/layout/base-layout.vue";
+import util from '@/libs/util.js';
 
 export default {
 	name: "home",
@@ -75,6 +76,11 @@ export default {
 		Lyaout
 	},
 	mounted(){
+
+		util.get('/login').then(res => {
+			
+		});
+
 	},
   	data() {
       	return {
