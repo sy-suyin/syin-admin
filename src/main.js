@@ -8,6 +8,15 @@ import store from './vuex/store'
 Vue.config.productionTip = false
 Vue.use(ElementUI);
 
+let token = localStorage.getItem('authToken');
+let user = localStorage.getItem('currentUser');
+if(token && user){
+	user = JSON.parse(user);
+	user && store.commit('set_login',user);
+
+	store.commit('updateToken',token);
+}
+
 new Vue({
   router,
   store,

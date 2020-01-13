@@ -12,7 +12,7 @@ class Auth{
 		
 		// 允许跨域
 		header('Access-Control-Allow-Origin: *');
-		header('Access-Control-Allow-Headers:x-requested-with,content-type,key,hash');  
+		header('Access-Control-Allow-Headers:x-requested-with,content-type,key,token');  
 		header('Access-Control-Request-Method:GET,POST'); 
 		if(strtoupper($_SERVER['REQUEST_METHOD'])== 'OPTIONS') exit; 
 

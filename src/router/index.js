@@ -12,7 +12,7 @@ const routes = [
 	},
 	{
 		path: '/index',
-		name: 'home',
+		name: 'index',
 		component: Home
 	},
 	{
@@ -29,7 +29,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-	let is_logged = !!localStorage.getItem('user');
+	let is_logged = !!localStorage.getItem('currentUser');
 	let path = to.path;
 
 	path = path ? path.substr(1) : '';

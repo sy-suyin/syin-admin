@@ -67,8 +67,6 @@ export default {
 			}
 
 
-
-
 			this.is_loading = true;
 
 			util.post('/login', args).then(res => {
@@ -76,7 +74,11 @@ export default {
 
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
 					// 此处添加相关登录代码
+					this.$store.commit('set_login',res.result.user);
 
+					let redirect = localStorage.getItem('user_redirect');
+					localStorage.removeItem('user_redirect');
+					that.$router.push({name:redirect ? redirect : 'index'})
 				}
 				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
 					this.$message({
@@ -94,6 +96,7 @@ export default {
 				}
 			}).catch(err => {
 				this.is_loading = false;
+				console.log(err);
 
 				this.$message({
 					showClose: true,

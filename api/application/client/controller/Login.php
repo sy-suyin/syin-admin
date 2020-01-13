@@ -49,6 +49,11 @@ class Login extends Client{
 		$request->admin = $result;
 
 		unset($result['password']);
-		return show_success('登录成功', $result);
+
+		// TODO: 除用户信息外还应返回权限和路由黑名单
+
+		return show_success('登录成功', array(
+			'user' => $result
+		));
 	}
 }

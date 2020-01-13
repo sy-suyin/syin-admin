@@ -105,8 +105,8 @@ let util = {
 					return false;
 				}
 
-				if(response.headers && typeof(response.headers.hash) != 'undefined'){
-					// store.commit('updateHash',response.headers.hash);
+				if(response.headers && typeof(response.headers.token) != 'undefined'){
+					store.commit('updateToken',response.headers.token);
 				}
 
 				resolve(response.data);

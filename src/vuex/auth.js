@@ -28,17 +28,17 @@ const mutations = {
 		state.hash = '';
 		state.currentUser = null;
 		localStorage.removeItem('currentUser');
-		localStorage.removeItem('authHash');
+		localStorage.removeItem('authToken');
 		router.push({name:'login'});
 	},
 
 	/*
 	 * 更新hash
 	 */
-	updateHash(state,hash){
-		state.hash = hash;
+	updateToken(state,token){
+		state.token = token;
 
-		localStorage.setItem('authHash',hash);
+		localStorage.setItem('authToken',token);
 	}
 }
 
