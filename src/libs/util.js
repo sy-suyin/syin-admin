@@ -2,8 +2,11 @@ import VueRouter from 'vue-router';
 import Config from '@/config/common';
 import { Message } from 'element-ui';
 import Qs from 'qs';
-import axios from 'axios'
-import store from '@/vuex/store'
+import axios from 'axios';
+import store from '@/vuex/store';
+import {menus} from '@/config/menu';
+
+console.log(menus);
 
 // todo: 具体名称待调整
 /* if(Config.debug && Config.hasOwnProperty('debug_config')){
@@ -124,6 +127,91 @@ let util = {
 
 	get(url=''){
 		return util.request(url, 'get');
+	},
+
+	menu(blacklist = []){
+		let max_level = 1;
+		let cur_level = 1;
+		let next = {};
+		let routers = [];
+		let menu = {
+			0: []
+		};
+
+		// 最后应该由vuex存储
+		// 应该返回两种数据格式, 1: 用于菜单的多维数组, 2. 用于路由的一维数组
+
+		menus.forEach((val, key) => {
+			if(val.hasOwnProperty('children') && val.children.length){
+				// 有子节点
+
+				max_level = 2;
+
+				next[val.controller + '_' + val.action] = val.children
+
+				// 
+				menu[0].push(val);
+
+			}else{
+				// 没有子节点
+
+				// 判断权限, 并将自身加入路由数组
+
+				if(!val.is_hidden){
+					menu[0].push(val);
+				}
+			}
+
+			console.log(val);
+		});
+		
+		while(max_level > cur_level ){
+			let keys = Object.keys(next);
+			let data = next;
+			menu[cur_level] = {};
+			next = [];
+			console.log(data);
+			console.log(next);
+			console.log(keys);
+
+			keys.forEach(key => {
+				let val = data[key];
+				menu[cur_level][key] = [];
+
+				val.forEach(item => {
+					if(item.hasOwnProperty('children') && item.children.length){
+						// 有子节点
+
+						if(max_level > cur_level){
+							max_level += 1;
+						}
+
+						next[item.controller + '_' + item.action] = item.children;
+
+						menu[cur_level][key].push(item);
+					}else{
+						// 没有子节点
+		
+						// 判断权限, 并将自身加入路由数组
+		
+						if(!item.is_hidden){
+							menu[cur_level][key].push(item);		
+						}
+					}
+				});
+
+				console.log(val);
+
+			})
+			cur_level += 1;
+		};
+
+		for(let i = menu.length - 1;len >= 0;i--){
+			
+		}
+
+		console.log(next);
+		console.log(menu);
 	}
 }
 

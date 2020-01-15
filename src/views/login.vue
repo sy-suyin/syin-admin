@@ -45,6 +45,7 @@ export default {
 		}
 	},
 	mounted(){
+		util.menu();
 	},
 	methods: {
 		login(){
@@ -78,7 +79,7 @@ export default {
 
 					let redirect = localStorage.getItem('user_redirect');
 					localStorage.removeItem('user_redirect');
-					that.$router.push({name:redirect ? redirect : 'index'})
+					this.$router.push({name:redirect ? redirect : 'index'})
 				}
 				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
 					this.$message({
