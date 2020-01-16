@@ -6,8 +6,6 @@ import axios from 'axios';
 import store from '@/vuex/store';
 import {menus} from '@/config/menu';
 
-console.log(menus);
-
 // todo: 具体名称待调整
 /* if(Config.debug && Config.hasOwnProperty('debug_config')){
 	console.log(Config.debug_config);
@@ -130,87 +128,82 @@ let util = {
 	},
 
 	menu(blacklist = []){
-		let max_level = 1;
-		let cur_level = 1;
+		// let max_level = 1;
+		let cur_level = 0;
 		let next = {};
 		let routers = [];
-		let menu = {
-			0: []
-		};
+		let menu = [];
 
-		// 最后应该由vuex存储
-		// 应该返回两种数据格式, 1: 用于菜单的多维数组, 2. 用于路由的一维数组
+		next['/'] = menus;
 
-		menus.forEach((val, key) => {
-			if(val.hasOwnProperty('children') && val.children.length){
-				// 有子节点
-
-				max_level = 2;
-
-				next[val.controller + '_' + val.action] = val.children
-
-				// 
-				menu[0].push(val);
-
-			}else{
-				// 没有子节点
-
-				// 判断权限, 并将自身加入路由数组
-
-				if(!val.is_hidden){
-					menu[0].push(val);
-				}
-			}
-
-			console.log(val);
-		});
-		
-		while(max_level > cur_level ){
+		do{
 			let keys = Object.keys(next);
-			let data = next;
+			let data = {...next};
 			menu[cur_level] = {};
-			next = [];
-			console.log(data);
-			console.log(next);
-			console.log(keys);
+			next = {};
 
 			keys.forEach(key => {
 				let val = data[key];
 				menu[cur_level][key] = [];
 
 				val.forEach(item => {
+					console.log(item);
 					if(item.hasOwnProperty('children') && item.children.length){
-						// 有子节点
 
-						if(max_level > cur_level){
-							max_level += 1;
-						}
+						// 有子节点
+						item.has_children = true;
 
 						next[item.controller + '_' + item.action] = item.children;
-
 						menu[cur_level][key].push(item);
 					}else{
 						// 没有子节点
-		
+						item.has_children = false;
+
 						// 判断权限, 并将自身加入路由数组
-		
+						if(blacklist.hasOwnProperty(item.controller) && blacklist[item.controller].indexOf(item.action) != -1){
+							return;
+						}
+
 						if(!item.is_hidden){
 							menu[cur_level][key].push(item);		
 						}
+
+						routers.push(item);
 					}
 				});
 
-				console.log(val);
+				// if(key == '')
 
+				// 当子菜单全部不符合要求时, 清除该项
+				menu[cur_level][key].length < 1 && delete menu[cur_level][key];
 			})
 			cur_level += 1;
-		};
+		}while( Object.keys(next).length);
 
-		for(let i = menu.length - 1;len >= 0;i--){
-			
+		// 清除无下级的路由
+		for(let max_index = menu.length - 1, index = max_index;index >= 0;index--){
+			let level_menu = menu[index];
+			let keys = Object.keys(level_menu);
+
+			keys.forEach(key => {
+				level_menu[key].forEach( (item, item_key) => {
+					let children_key = item.controller + '_' + item.action;
+
+					if(item.has_children && ( index == max_index || !(menu[index + 1].hasOwnProperty(children_key)) ) ){
+						menu[index][key].splice(item_key, 1);
+						menu[index][key].length < 1 && delete menu[index][key];
+					}
+				})
+			});
+
+			if(Object.keys(menu[index]).length < 1){
+				max_index -= 1;
+				menu.splice(index , 1);
+			}
 		}
 
-		console.log(next);
+		menu[0] = menu[0]['/'];
+		console.log(routers);
 		console.log(menu);
 	}
 }

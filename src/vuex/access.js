@@ -16,6 +16,10 @@ const getters = {
 
 const mutations = {
 
+	// 激活菜单
+	active(state, payload){
+
+	}
 }
 
 export default {

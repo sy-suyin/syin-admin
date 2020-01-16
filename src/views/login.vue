@@ -2,7 +2,7 @@
 	<div class="container">
 		<div class="login-box">
 			<el-card class="login-card">
-				<div slot="header" class="header">	
+				<div slot="header" class="header">
 					<h3>登录</h3>
 				</div>
 
@@ -45,7 +45,7 @@ export default {
 		}
 	},
 	mounted(){
-		util.menu();
+		util.menu({});
 	},
 	methods: {
 		login(){
@@ -56,7 +56,7 @@ export default {
 					showClose: true,
 					message: '请先输入登录账户',
 					type: 'warning'
-				}); 
+				});
 			}
 
 			if(args.password == ''){
@@ -64,9 +64,8 @@ export default {
 					showClose: true,
 					message: '请先输入登录密码',
 					type: 'warning'
-				}); 
+				});
 			}
-
 
 			this.is_loading = true;
 
@@ -86,14 +85,14 @@ export default {
 						showClose: true,
 						message: res.msg,
 						type: 'warning'
-					}); 
+					});
 				}
 				else{
 					this.$message({
 						showClose: true,
 						message: '服务器未响应，请稍后重试',
 						type: 'warning'
-					}); 
+					});
 				}
 			}).catch(err => {
 				this.is_loading = false;
@@ -103,44 +102,8 @@ export default {
 					showClose: true,
 					message: '网络异常, 请稍后重试',
 					type: 'warning'
-				}); 
+				});
 			});
-		
-
-
-
-			return;
-
-			// 此处为模拟服务器请求返回
-			setTimeout(()=>{
-				
-				// 此处假设返回数据为res
-				let res = {
-					user: {
-						id: 1,
-						name: 'admin'
-					},
-					// 此处假设被禁止访问的数据是直接从数据中读取返回的
-					forbidden: [
-						{
-							name: '',
-							controller: '',
-							action: '',
-						}
-					]
-					// data: 
-				};
-
-				/*
-					this.$message({
-						showClose: true,
-						message: '错了哦，这是一条错误消息',
-						type: 'error'
-					});
-				 */
-
-				this.is_loading = false;
-			}, 2000);
 		}
 	}
 }
