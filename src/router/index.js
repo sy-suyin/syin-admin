@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import menu from '@/libs/menu.js';
+import store from '../vuex/store'
 
 Vue.use(VueRouter)
 
@@ -39,6 +40,16 @@ router.beforeEach((to, from, next) => {
 
 	if(is_logged ){
 		// 在此处动态添加路由
+		let is_calc = false;
+
+		if(! store.state.access.is_calc){
+			store.commit('access/calc');
+			let router_configs = store.state.access.routers;
+
+			is_calc = true;
+			router.addRoutes(router_configs);
+		}
+
 
 		if(['login','register'].findIndex((value)=>{return value==path}) !== -1){
 			next({
@@ -46,7 +57,11 @@ router.beforeEach((to, from, next) => {
 				name: 'index'
 			});
 		}else{
-			next();			
+			if(is_calc){
+				next({ path: to.path });
+			}else{
+				next();
+			}
 		}		
 	}else if(['login','register'].findIndex((value)=>{return value==path}) == -1){
 		next({

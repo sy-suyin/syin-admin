@@ -76,10 +76,13 @@ export default {
 		Lyaout
 	},
 	mounted(){
+		this.$store.commit('access/calc');
 
-		util.get('/login').then(res => {
+		// console.log(this.$store.state.access.routers);
+
+		/* util.get('/login').then(res => {
 			
-		});
+		}); */
 
 	},
   	data() {
