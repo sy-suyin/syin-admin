@@ -131,11 +131,18 @@ const mutations = {
 				routers_temp.push({
 					path: `/${router.controller}/${router.action}`,
 					name: `${router.controller}_${router.action}`,
-					component: () => import( `../views/${router.controller}_${router.action}.vue`),
+					component: () => import( `../views/${router.controller}/${router.action}.vue`),
 					a: () => {
-						console.log(`../views/${router.controller}_${router.action}.vue`);
+						console.log(`../views/${router.controller}/${router.action}.vue`);
 					}
 				});
+
+				if(routers_temp.length < 1){
+					routers_temp.push({
+						path: `/`,
+						redirect: `/${router.controller}/${router.action}`,
+					});
+				}
 
 				// 添加一级路由导航判断
 				if( !mapping.hasOwnProperty(router.controller) 

@@ -10,18 +10,18 @@ const routes = [
 	{
 		path: '/',
 		name: 'root',
-		redirect: '/index',
-	},
-	{
-		path: '/index',
-		name: 'index',
-		component: Home
+		redirect: '/login',
 	},
 	{
 		path: '/login',
 		name: 'login',
-		component: () => import(/* webpackChunkName: "about" */ '../views/login.vue')
+		component: () => import('../views/login.vue')
 	},
+	// {
+	// 	path: '/test/form',
+	// 	name: 'test_form',
+	// 	component: () => import('../views/test/form.vue')
+	// },
 ]
 
 const router = new VueRouter({
@@ -49,7 +49,6 @@ router.beforeEach((to, from, next) => {
 			is_calc = true;
 			router.addRoutes(router_configs);
 		}
-
 
 		if(['login','register'].findIndex((value)=>{return value==path}) !== -1){
 			next({
