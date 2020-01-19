@@ -11,41 +11,7 @@
 
 			<!-- 侧边导航栏 -->
 			<div class="nav">
-				<ul class="menu-item-group">
-					<li class="menu-item" v-for="(item, index) in menus" :key=" 'item' + index" :data-index="index"  @click.stop="menuClick(index)">
-						<div class="menu-link">
-							<span>
-								<i class="el-icon-setting"></i>
-								{{item.name}}
-							</span>
-
-							<i class="switch el-icon-arrow-up" v-if="item.children.length > 0"></i>
-						</div>
-
-						<ul class="menu-item-group" v-if="item.children.length > 0" v-show="item.is_open">
-							<li class="menu-item" v-for="(menu, menu_index) in item.children" :key="'menu' + menu_index" :data-index="index+'-'+menu_index" @click.stop="menuClick(index, menu_index)">
-								<div class="menu-link">
-									<span>
-										<i class="el-icon-setting"></i>
-										{{menu.is_open ? 'a' : 'b'}}
-										{{menu.name}} 
-									</span>
-								</div>
-
-								<ul class="menu-item-group" v-if="menu.children.length > 0" v-show="menu.is_open">
-									<li class="menu-item" v-for="(submenu, submenu_index) in menu.children" :key="'submenu' + submenu_index" :data-index="index+'-'+menu_index+'-'+submenu_index" @click.stop="menuClick(index, menu_index, submenu_index)">
-										<div class="menu-link">
-											<span>
-												<i class="el-icon-setting"></i>
-												{{submenu.name}}
-											</span>
-										</div>
-									</li>
-								</ul>
-							</li>
-						</ul>
-					</li>
-				</ul>
+				<sy-menu></sy-menu>
 			</div>
 
 			<div class="background"></div>
@@ -85,7 +51,7 @@
 </template>
 
 <script>
-import menu from '@/libs/menu.js';
+import syMenu from "@/components/layout/sy-menu.vue";
 
 export default {
 	name: "app",
@@ -95,73 +61,10 @@ export default {
 		}
 	},
 	created(){
-		let menus = menu.getMenus({
-			demo: ['list']
-		}).then(menus => {
-			// console.log(menus);
-			this.menus = menus;
-		});
-
-		console.log('init');
+		// this.menus = this.$store.state.access.menus;
 	},
 
 	methods:{
-		menuClick(){
-			let indexes = [].slice.call(arguments);
-			let menu = {...this.menus[indexes[0]]};
-			indexes.splice(0, 1);
-			let indexes_len = indexes.length;
-
-			if(indexes_len > 0){
-				indexes.forEach(index => {
-					menu = menu.children[index];
-				});
-			}
-
-			if(menu.children.length < 1){
-				// 没有子节点, 则直接跳转
-			}else{
-				// 否则开关该菜单节点
-
-				let is_open = menu.is_open || 0;
-				menu.is_open = + !is_open;
-
-				if(indexes_len <= 2){
-					if(indexes_len == 2){
-						this.menus[arguments[0]].children[indexes[0]].children[indexes[1]] = menu;
-					}else if(indexes_len == 1){
-						this.menus[arguments[0]].children[indexes[0]] = menu;
-					}else{
-						this.menus[arguments[0]] = menu;
-					}
-				}else{
-					// TODO: 待优化
-					let t_arr = [];
-					let t_menu = this.menus[0].children[indexes[0]].children[indexes[1]];
-
-					for(let i = 0, len = indexes_len - 3;$i < indexes_len;i++){
-						t_menu = t_menu.children[indexes[2 + i]];
-						t_arr.push(t_menu);
-					}
-
-					t_arr[t_arr.length - 1].children[indexes[indexes_len - 1]] = menu; 
-
-					for(let i = t_arr.length - 2; i >= 0;i--){
-						t_arr[i][indexes]
-
-						t_arr[i].children[ indexes[i + 2]] = t_arr[i + 1];
-					}
-				}
-
-
-				
-			}
-
-			this.$set(this.menus, arguments[0], this.menus[arguments[0]]);
-
-			console.log(menu);
-			console.log(menu.is_open);
-		}
 	}
 };
 </script>

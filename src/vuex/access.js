@@ -52,6 +52,7 @@ const mutations = {
 		this.commit('access/calc');
 	},
 
+	// 设置页面黑名单和数据黑名单
 	set(state, payload){
 		state.data_forbid = payload.data_forbid;
 		state.page_forbid = payload.page_forbid;
@@ -62,6 +63,7 @@ const mutations = {
 		this.commit('access/calc');
 	},
 
+	// 根据菜单配置进行计算
 	calc(state){
 		let cur_level = 0;
 		let next = {};
@@ -152,8 +154,10 @@ const mutations = {
 					path: `/${router.controller}/${router.action}`,
 					name: `${router.controller}_${router.action}`,
 					component: () => import( `../views/${router.controller}/${router.action}.vue`),
-					a: () => {
-						console.log(`../views/${router.controller}/${router.action}.vue`);
+					meta: {
+						controller: router.controller,
+						action: router.action,
+						title: router.name
 					}
 				});
 
