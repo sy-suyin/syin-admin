@@ -45,7 +45,6 @@ export default {
 		}
 	},
 	mounted(){
-		util.menu({});
 	},
 	methods: {
 		login(){
@@ -96,7 +95,6 @@ export default {
 				}
 			}).catch(err => {
 				this.is_loading = false;
-				console.log(err);
 
 				this.$message({
 					showClose: true,

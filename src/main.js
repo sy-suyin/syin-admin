@@ -8,14 +8,11 @@ import store from './vuex/store'
 Vue.config.productionTip = false
 Vue.use(ElementUI);
 
-let token = localStorage.getItem('authToken');
-let user = localStorage.getItem('currentUser');
-if(token && user){
-	user = JSON.parse(user);
-	user && store.commit('set_login',user);
+// 重载路由数据
+store.commit('access/reload');
 
-	store.commit('updateToken',token);
-}
+// 重载用户数据
+store.commit('auth/reload');
 
 new Vue({
   router,

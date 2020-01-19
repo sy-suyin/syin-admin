@@ -23,6 +23,9 @@ const data = {
 
 const getters = {
 	data_forbid: state=>state.data_forbid,
+	page_forbid: state=>state.page_forbid,
+	is_calc: state=>state.is_calc,
+	routers: state=>state.routers,
 	menus: state=>state.menus
 }
 
@@ -35,11 +38,28 @@ const mutations = {
 
 	// 重新加载, 从缓存中读取数据
 	reload(){
+		let data_forbid = localStorage.getItem('data_forbid');
+		let page_forbid = localStorage.getItem('page_forbid');
 
+		if(data_forbid && page_forbid){
+			data_forbid = JSON.parse(data_forbid);
+			page_forbid = JSON.parse(page_forbid);
+
+			state.data_forbid = data_forbid;
+			state.page_forbid = page_forbid;
+		}
+
+		this.commit('access/calc');
 	},
 
-	set(){
+	set(state, payload){
+		state.data_forbid = payload.data_forbid;
+		state.page_forbid = payload.page_forbid;
 
+		localStorage.setItem('data_forbid',JSON.stringify(payload.data_forbid));
+		localStorage.setItem('page_forbid',JSON.stringify(payload.page_forbid));
+
+		this.commit('access/calc');
 	},
 
 	calc(state){

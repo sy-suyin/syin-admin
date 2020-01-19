@@ -41,22 +41,25 @@ router.beforeEach((to, from, next) => {
 	if(is_logged ){
 		// 在此处动态添加路由
 		let is_calc = false;
+		let router_configs = store.state.access.routers;	
 
-		if(! store.state.access.is_calc){
-			store.commit('access/calc');
-			let router_configs = store.state.access.routers;
-
-			is_calc = true;
+		if(!is_router_add){
+			if(! store.state.access.is_calc){
+				store.commit('access/reload');
+			}
+			
 			router.addRoutes(router_configs);
+			is_router_add = is_calc = true;
 		}
 
 		if(['login','register'].findIndex((value)=>{return value==path}) !== -1){
 			next({
 				replace: true,
-				name: 'index'
+				path: router_configs[0].path
 			});
 		}else{
 			if(is_calc){
+				// 在初次添加路由时, 此写法能直接跳转到正确页面
 				next({ path: to.path });
 			}else{
 				next();

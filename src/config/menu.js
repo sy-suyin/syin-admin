@@ -5,24 +5,6 @@ const menus = [
 		controller: 'index',
 		action: 'index',
 		is_hidden: 0,
-		children: [
-			{
-				name: '列表',
-				icon: '',
-				controller: 'test',
-				action: 'list',
-				is_hidden: 0,
-				children: []
-			},
-			{
-				name: '表单',
-				icon: '',
-				controller: 'test',
-				action: 'form',
-				is_hidden: 1,
-				children: []
-			},
-		]
 	},
 	{
 		name: '个人中心',

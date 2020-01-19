@@ -12,6 +12,7 @@ const getters = {
 
 const mutations = {
 
+
 	/**
 	 * 设置登录
 	 */
@@ -39,10 +40,22 @@ const mutations = {
 		state.token = token;
 
 		localStorage.setItem('authToken',token);
+	},
+
+	// 重新加载, 从缓存中读取数据
+	reload(){
+		let token = localStorage.getItem('authToken');
+		let user = localStorage.getItem('currentUser');
+		if(token && user){
+			user = JSON.parse(user);
+			user && this.commit('auth/set_login',user);
+			this.commit('auth/updateToken',token);
+		}
 	}
 }
 
 export default {
+	namespaced: true,
     state,
     getters,
     mutations
