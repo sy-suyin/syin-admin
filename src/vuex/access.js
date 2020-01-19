@@ -157,6 +157,15 @@ const mutations = {
 				}
 			});
 
+			// 添加404页面
+			// 404页面
+
+			routers_temp.push({
+				path: `/*`,
+				name: 'error_404',
+				component: () => import( `../views/error/404.vue`),
+			});
+
 			routers = routers_temp;
 		}
 
