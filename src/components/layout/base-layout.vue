@@ -55,6 +55,9 @@ import syMenu from "@/components/layout/sy-menu.vue";
 
 export default {
 	name: "app",
+	components: {
+		syMenu
+	},
 	data(){
 		return {
 			menus: [],

@@ -9,7 +9,12 @@ import syMenuItem from "@/components/layout/sy-menu-item.vue";
 
 export default {
 	name: 'sy-menu',
+	components: {
+		syMenuItem
+	},
 	data(){
+		return {
+		}
 	},
 	created(){
 		let meta = this.$route.meta;
@@ -19,6 +24,6 @@ export default {
 		
 		// 激活路由
 		this.$store.commit('access/active',meta);
-	},
+	}
 }
 </script>

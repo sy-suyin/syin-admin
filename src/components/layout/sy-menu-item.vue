@@ -11,8 +11,7 @@
 					<i class="switch el-icon-arrow-up" v-if="item.has_children"></i>
 				</div>
 
-
-				<sy-menu-item v-if="item.has_children" :level="level+1" :parent="item"></sy-menu-item>
+				<sy-menu-item v-if="item.has_children" :lv="level+1" :root="item"></sy-menu-item>
 			</li>
 		</ul>
 	</div>
@@ -21,23 +20,25 @@
 <script>
 export default {
 	name: 'sy-menu-item',
-	props: ['level', 'parent'],
+	props: ['lv', 'root'],
 	data(){
 		return {
+			level: 0,
 			menus: [],
 		}
 	},
 	created(){
 		let menus = this.$store.state.access.menus;
-		this.level = +level || 0;
+		let level = +this.lv || 0;
 		let current_menus = null;
 		
 		if(level < 1){
 			this.menus = menus[level];
 		}else{
-			this.menus = menus[level][parent.controller+'_'+parent.action];
+			this.menus = menus[level][this.root.controller+'_'+this.root.action];
 		}
 
+		this.level = level;
 	},
 }
 </script>
