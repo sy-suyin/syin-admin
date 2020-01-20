@@ -33,7 +33,43 @@ const mutations = {
 
 	// 激活菜单
 	active(state, payload){
+		let menus = state.menus;
+		let active_controller = payload.controller;
+		let active_action = payload.action;
 
+		for(let len = menus.length,i = len - 1;i >= 0;i--){
+			let level_menus = menus[i];
+
+			if(i == 0){
+				level_menus.forEach((item, index) =>{
+					if(item.controller == active_controller && item.action == active_action){
+						if(item.has_children){
+							menus[i][index].is_open = true;
+						}
+					}else if(item.has_children){
+						menus[i][index].is_open = false;
+					}
+				});
+			}else{
+				for(let key in level_menus){
+					level_menus[key].forEach((item, index) =>{
+						if(item.controller == active_controller && item.action == active_action){
+							let key_arr = key.split('_');
+							active_controller = key_arr[0];
+							active_action = key_arr[1];
+
+							if(item.has_children){
+								menus[i][key][index].is_open = true;
+							}
+						}else if(item.has_children){
+							menus[i][key][index].is_open = false;
+						}
+					});
+				}
+			}
+		}
+
+		state.menus_active = menus;
 	},
 
 	// 重新加载, 从缓存中读取数据
@@ -144,12 +180,13 @@ const mutations = {
 			}
 		}
 
-		// 整理路由格式, 疑似还需菜单的一维数组
+		// 整理路由格式
 		{
 			let routers_temp = [];
 			let mapping = {};
 
 			routers.forEach(router => {
+				// 添加二级路由导航
 				routers_temp.push({
 					path: `/${router.controller}/${router.action}`,
 					name: `${router.controller}_${router.action}`,
@@ -161,6 +198,7 @@ const mutations = {
 					}
 				});
 
+				// 添加零级路由导航
 				if(routers_temp.length < 1){
 					routers_temp.push({
 						path: `/`,
@@ -168,7 +206,7 @@ const mutations = {
 					});
 				}
 
-				// 添加一级路由导航判断
+				// 添加一级路由导航
 				if( !mapping.hasOwnProperty(router.controller) 
 					&& menu_router.hasOwnProperty(router.controller) 
 					&& menu_router[router.controller].hasOwnProperty(router.action) ){
@@ -182,8 +220,6 @@ const mutations = {
 			});
 
 			// 添加404页面
-			// 404页面
-
 			routers_temp.push({
 				path: `/*`,
 				name: 'error_404',

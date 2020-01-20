@@ -52,7 +52,6 @@ let util = {
 			let config = {
 				url
 			};
-
 		
 			let axioxBefore = {};
 		

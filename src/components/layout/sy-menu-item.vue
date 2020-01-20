@@ -11,7 +11,7 @@
 					<i class="switch el-icon-arrow-up" v-if="item.has_children"></i>
 				</div>
 
-				<sy-menu-item v-if="item.has_children" :lv="level+1" :root="item"></sy-menu-item>
+				<sy-menu-item v-if="item.has_children" :lv="level+1" :root="item" v-show="item.is_open"></sy-menu-item>
 			</li>
 		</ul>
 	</div>
@@ -28,7 +28,7 @@ export default {
 		}
 	},
 	created(){
-		let menus = this.$store.state.access.menus;
+		let menus = this.$store.state.access.menus_active;
 		let level = +this.lv || 0;
 		let current_menus = null;
 		
@@ -40,5 +40,19 @@ export default {
 
 		this.level = level;
 	},
+
+	methods:{
+		menuClick(index){
+			let menu = this.menus[index];
+
+			if(menu.has_children){
+				menu.is_open = !menu.is_open;
+
+				this.$set(this.menus, index, menu);
+			}else{
+				this.$router.push(`/${menu.controller}/${menu.action}`);
+			}
+		}
+	}
 }
 </script>
