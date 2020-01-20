@@ -21,7 +21,7 @@ export default {
 
 		// 设置浏览器标题
 		window.document.title = meta.title;
-		
+
 		// 激活路由
 		this.$store.commit('access/active',meta);
 	}

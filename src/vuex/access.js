@@ -19,6 +19,9 @@ const data = {
 
 	// 已激活的菜单
 	menus_active: [],
+
+	// 导航栏面包屑数据
+	breadcrumb: []
 }
 
 const getters = {
@@ -26,7 +29,8 @@ const getters = {
 	page_forbid: state=>state.page_forbid,
 	is_calc: state=>state.is_calc,
 	routers: state=>state.routers,
-	menus: state=>state.menus
+	menus: state=>state.menus,
+	breadcrumb: state=>state.breadcrumb,
 }
 
 const mutations = {
@@ -36,6 +40,7 @@ const mutations = {
 		let menus = state.menus;
 		let active_controller = payload.controller;
 		let active_action = payload.action;
+		let breadcrumb = [];
 
 		for(let len = menus.length,i = len - 1;i >= 0;i--){
 			let level_menus = menus[i];
@@ -46,6 +51,9 @@ const mutations = {
 						if(item.has_children){
 							menus[i][index].is_open = true;
 						}
+
+						menus[i][index].is_active = true;
+						breadcrumb.unshift(item);
 					}else if(item.has_children){
 						menus[i][index].is_open = false;
 					}
@@ -61,6 +69,9 @@ const mutations = {
 							if(item.has_children){
 								menus[i][key][index].is_open = true;
 							}
+
+							menus[i][index].is_active = true;
+							breadcrumb.unshift(item);
 						}else if(item.has_children){
 							menus[i][key][index].is_open = false;
 						}
@@ -70,6 +81,7 @@ const mutations = {
 		}
 
 		state.menus_active = menus;
+		state.breadcrumb = breadcrumb;
 	},
 
 	// 重新加载, 从缓存中读取数据
