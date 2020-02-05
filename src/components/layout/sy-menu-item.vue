@@ -69,10 +69,17 @@ export default {
 		margin: 10px 15px 0;
 		// height: 46px;
 
-		&.active .menu-link{
-			background-color: #e91e63;
-			box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(233,30,99,.4);
+		&.active{
+			&>.menu-link{
+				background-color: #e91e63;
+				box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(233,30,99,.4);
+			}
+
+			.active>.menu-link{
+				margin-top: 10px;
+			}
 		}
+		
 
 		.menu-link{
 			display: flex;

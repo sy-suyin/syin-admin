@@ -70,7 +70,7 @@ const mutations = {
 								menus[i][key][index].is_open = true;
 							}
 
-							menus[i][index].is_active = true;
+							menus[i][key][index].is_active = true;
 							breadcrumb.unshift(item);
 						}else if(item.has_children){
 							menus[i][key][index].is_open = false;
