@@ -43,7 +43,6 @@ export default {
 			this.menus = menus[level][this.root.controller+'_'+this.root.action];
 		}
 
-		console.log(this.menus);
 		this.level = level;
 	},
 
