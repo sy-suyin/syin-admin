@@ -123,7 +123,7 @@ const menus = [
 		name: '异常页',
 		icon: '',
 		controller: 'abnormal',
-		action: 'indeman',
+		action: 'indexman',
 		is_hidden: 0,
 		children: [
 			{
@@ -147,6 +147,45 @@ const menus = [
 				action: '500',
 				is_hidden: 0,
 			}
+		]
+	},
+	{
+		name: '数据仓库',
+		icon: '',
+		controller: 'databank',
+		action: 'indexman',
+		is_hidden: 0,
+		children: [
+			{
+				name: '数据类型',
+				icon: '',
+				controller: 'databank',
+				action: 'typeman',
+				is_hidden: 0,
+				children: [
+					{
+						name: '列表',
+						icon: '',
+						controller: 'databank',
+						action: 'typelist',
+						is_hidden: 0
+					},
+					{
+						name: '添加',
+						icon: '',
+						controller: 'databank',
+						action: 'typeadd',
+						is_hidden: 0
+					},
+					{
+						name: '修改',
+						icon: '',
+						controller: 'databank',
+						action: 'typeedit',
+						is_hidden: 1
+					},
+				]
+			},
 		]
 	},
 ];

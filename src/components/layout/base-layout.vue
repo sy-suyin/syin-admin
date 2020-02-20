@@ -75,8 +75,10 @@ export default {
 	},
 	created(){
 		let user = this.$store.getters['auth/user'];
-		user.avatar = 'http://127.0.0.1:8000//static/common/img/avatar/20.png';
+		console.log(user);
+		user.avatar = 'http://127.0.0.1:8000//static/api/avatar/20.png';
 		this.user = user;
+		console.log(user.avatar);
 	},
 
 	methods:{
