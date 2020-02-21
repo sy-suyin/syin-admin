@@ -17,7 +17,7 @@
 
 			<!-- 侧边导航栏 -->
 			<div class="nav">
-				<sy-menu></sy-menu>
+				<sy-menu-item></sy-menu-item>
 			</div>
 
 			<div class="background"></div>
@@ -41,10 +41,12 @@
 					<slot name="breadcrumb">
 						<el-breadcrumb class="breadcrumb" separator-class="el-icon-arrow-right">
 							<el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-							<el-breadcrumb-item>活动管理</el-breadcrumb-item>
-							<el-breadcrumb-item>活动列表</el-breadcrumb-item>
-							<el-breadcrumb-item>活动详情</el-breadcrumb-item>
+
+							<el-breadcrumb-item v-for="(breadcrumb, index) in breadcrumbs" :key="'breadcrumb-'+index">{{breadcrumb.name}}</el-breadcrumb-item>
 						</el-breadcrumb>
+					</slot>
+
+					<slot name="breadcrumb-after">
 					</slot>
 				</div>
 			</el-header>
@@ -57,16 +59,17 @@
 </template>
 
 <script>
-import syMenu from "@/components/layout/sy-menu.vue";
+import syMenuItem from "@/components/layout/sy-menu-item.vue";
 
 export default {
 	name: "app",
 	components: {
-		syMenu
+		syMenuItem
 	},
 	data(){
 		return {
 			menus: [],
+			breadcrumbs: [],
 			user: {
 				name: '',
 				avatar: ''
@@ -74,11 +77,21 @@ export default {
 		}
 	},
 	created(){
+		let meta = this.$route.meta;
+
+		// 设置浏览器标题
+		window.document.title = meta.title;
+
+		// 激活路由
+		this.$store.commit('access/active',meta);
+
+		// 设置面包屑数据
+		this.breadcrumbs = this.$store.getters['access/breadcrumb'];
+
 		let user = this.$store.getters['auth/user'];
-		console.log(user);
 		user.avatar = 'http://127.0.0.1:8000//static/api/avatar/20.png';
 		this.user = user;
-		console.log(user.avatar);
+
 	},
 
 	methods:{
@@ -125,7 +138,6 @@ export default {
 					width: 32px;
 					height: 32px;
 				}
-
 			}
 
 			&:after{
@@ -213,21 +225,28 @@ export default {
 	}
 
 	.container-header{
+		padding: 0 !important;
+
 		background: #fff;
 		height: auto !important;
-	}
 
-	.container-header .navbar{
-		height: 64px;
-		box-shadow: 0 1px 4px rgba(0,21,41,.08);
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
+		 .navbar{
+			padding: 0 20px;
+			height: 64px;
+			box-shadow: 0 1px 4px rgba(0,21,41,.08);
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
 
-	.container-header .expand .breadcrumb{
-		padding: 12px 16px;
-		padding-left: 0;
+		.expand{
+			padding: 0 20px;
+
+			.breadcrumb{
+				padding: 12px 16px;
+				padding-left: 0;
+			}
+		}
 	}
 
 	.content-box{

@@ -1,5 +1,12 @@
 <template>
 	<lyaout>
+
+		<template #breadcrumb-after>
+			<div>
+				<h2 class="page-title">一般列表</h2>
+			</div>
+		</template>
+
 		<el-card>
 			<div slot="header" class="clearfix">
 				<div class="table-toolbar">
@@ -11,7 +18,7 @@
 				<div class="table-search">
 					<el-input
 						placeholder="请输入搜索内容"
-						v-model="input4"
+						v-model="search.keyword"
 						size="mini"
 					>
 						<i slot="suffix" class="el-input__icon el-icon-search"></i>
@@ -83,6 +90,9 @@ export default {
 	},
   	data() {
       	return {
+			search: {
+				keyword: '',
+			},
 			tableData: [{
 				id: 1,
 				name: '测试项目 0-01',
@@ -146,6 +156,14 @@ export default {
 </script>
 
 <style lang="scss">
+.page-title{
+	color: rgba(0,0,0,.85);
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 32px;
+	margin-top: 0;
+}
+
 #filter-box{
 	margin-bottom: 24px;
 
