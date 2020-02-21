@@ -111,7 +111,7 @@
 import Lyaout from "@/components/layout/base-layout.vue";
 
 export default {
-	name: "form-basic",
+	name: "list-filter",
 	components: {
 		Lyaout
 	},
