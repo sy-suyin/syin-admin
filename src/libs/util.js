@@ -100,12 +100,12 @@ let util = {
 				if(response.data && typeof(response.data.status) != 'undefined' && response.data.status < 0){
 					// 这里退出登录
 
-					// store.commit('logout');
+					store.commit('auth/logout');
 					return false;
 				}
 
 				if(response.headers && typeof(response.headers.token) != 'undefined'){
-					store.commit('updateToken',response.headers.token);
+					store.commit('auth/updateToken',response.headers.token);
 				}
 
 				resolve(response.data);

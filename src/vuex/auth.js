@@ -30,7 +30,8 @@ const mutations = {
 		state.currentUser = null;
 		localStorage.removeItem('currentUser');
 		localStorage.removeItem('authToken');
-		router.push({name:'login'});
+		// 直接刷新: 重置动态添加的路由
+		history.go(0);
 	},
 
 	/*

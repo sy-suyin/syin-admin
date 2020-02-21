@@ -30,9 +30,26 @@
 					<i class="el-icon-s-unfold"></i>
 
 					<div>
-						<i class="el-icon-s-unfold"></i>
-						<i class="el-icon-s-unfold"></i>
-						<i class="el-icon-s-unfold"></i>
+						<ul class="navbar-right">
+							<li>
+								<i class="el-icon-s-unfold"></i>
+							</li>
+							<li>
+								<i class="el-icon-s-unfold"></i>
+							</li>
+							<li>
+								<el-dropdown @command="userCommand">
+									<span class="el-dropdown-link">
+										<i class="el-dropdown-icon el-icon-user-solid"></i>
+									</span>
+									<el-dropdown-menu slot="dropdown">
+										<el-dropdown-item command="profile">个人中心</el-dropdown-item>
+										<el-dropdown-item command="setting">系统设置</el-dropdown-item>
+										<el-dropdown-item command="logout">退出登录</el-dropdown-item>
+									</el-dropdown-menu>
+								</el-dropdown>
+							</li>
+						</ul>
 					</div>
 				</div>
 
@@ -88,13 +105,27 @@ export default {
 		// 设置面包屑数据
 		this.breadcrumbs = this.$store.getters['access/breadcrumb'];
 
+		// 获取用户信息
 		let user = this.$store.getters['auth/user'];
-		user.avatar = 'http://127.0.0.1:8000//static/api/avatar/20.png';
+
+		// 验证用户信息
+		if(!user){
+			this.$store.commit('auth/logout');
+			return false;
+		}
+
+		user.avatar = 'http://127.0.0.1:8000/static/api/avatar/20.png';
 		this.user = user;
 
 	},
 
 	methods:{
+		userCommand(command){
+			// 退出登录
+			if(command == 'logout'){
+				this.$store.commit('auth/logout');
+			}
+		}
 	}
 };
 </script>
@@ -230,13 +261,28 @@ export default {
 		background: #fff;
 		height: auto !important;
 
-		 .navbar{
+		.navbar{
 			padding: 0 20px;
 			height: 64px;
 			box-shadow: 0 1px 4px rgba(0,21,41,.08);
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
+			padding-right: 30px;
+			font-size: 18px;
+
+			.navbar-right{
+				display: flex;
+				align-items: center;
+
+				li{
+					padding: 0 4px;
+				}
+
+				.el-dropdown-icon{
+					font-size: 16px;
+				}
+			}
 		}
 
 		.expand{
