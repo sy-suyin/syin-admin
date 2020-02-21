@@ -17,11 +17,6 @@ const routes = [
 		name: 'login',
 		component: () => import('../views/login.vue')
 	},
-	// {
-	// 	path: '/test/form',
-	// 	name: 'test_form',
-	// 	component: () => import('../views/test/form.vue')
-	// },
 ]
 
 const router = new VueRouter({
@@ -40,14 +35,15 @@ router.beforeEach((to, from, next) => {
 
 	if(is_logged ){
 		// 在此处动态添加路由
+		// is_calc 用于next修正路由后, 解决第二次路由加载时又会修正的问题
 		let is_calc = false;
-		let router_configs = store.state.access.routers;	
+		let router_configs = store.state.access.routers;
 
 		if(!is_router_add){
 			if(! store.state.access.is_calc){
 				store.commit('access/reload');
 			}
-			
+
 			router.addRoutes(router_configs);
 			is_router_add = is_calc = true;
 		}
@@ -64,7 +60,7 @@ router.beforeEach((to, from, next) => {
 			}else{
 				next();
 			}
-		}		
+		}
 	}else if(['login','register'].findIndex((value)=>{return value==path}) == -1){
 		next({
 			replace: true,

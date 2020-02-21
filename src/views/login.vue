@@ -74,10 +74,16 @@ export default {
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
 					// 此处添加相关登录代码
 					this.$store.commit('auth/set_login',res.result.user);
+					this.$store.commit('access/set', {
+						data_forbid: [],	// 数据权限黑名单
+						page_forbid: [],	// 页面权限黑名单
+					});
 
 					let redirect = localStorage.getItem('user_redirect');
 					localStorage.removeItem('user_redirect');
-					this.$router.push({name:redirect ? redirect : 'index'})
+
+					let redirect_path = redirect ? redirect : this.$store.getters['access/routers'][0].path;
+					this.$router.push({path: redirect_path})
 				}
 				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
 					this.$message({

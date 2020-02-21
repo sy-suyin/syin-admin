@@ -106,7 +106,7 @@ const mutations = {
 	},
 
 	// 重新加载, 从缓存中读取数据
-	reload(){
+	reload(state){
 		let data_forbid = localStorage.getItem('data_forbid');
 		let page_forbid = localStorage.getItem('page_forbid');
 
