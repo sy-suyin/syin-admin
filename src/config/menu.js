@@ -129,21 +129,21 @@ const menus = [
 			{
 				name: '403',
 				icon: '',
-				controller: 'abnormal',
+				controller: 'error',
 				action: '403',
 				is_hidden: 0
 			},
 			{
 				name: '404',
 				icon: '',
-				controller: 'abnormal',
+				controller: 'error',
 				action: '404',
 				is_hidden: 0
 			},
 			{
 				name: '500',
 				icon: '',
-				controller: 'abnormal',
+				controller: 'error',
 				action: '500',
 				is_hidden: 0,
 			}

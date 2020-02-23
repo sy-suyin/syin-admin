@@ -1,10 +1,10 @@
 <template>
 	<lyaout>
-		<div class="error-page" id="error-404">
+		<div class="error-page" id="error-403">
 			<div class="pag-container">
 				<div class="error-img"></div>
 				<div class="error-info">
-					<h1 class="error-title">404</h1>
+					<h1 class="error-title">403</h1>
 					<p class="error-desc">
 						未找到相关页面
 					</p>
@@ -22,7 +22,7 @@
 import Lyaout from "@/components/layout/base-layout.vue";
 
 export default {
-	name: "error-404",
+	name: "error-403",
 	components: {
 		Lyaout
 	},
@@ -40,7 +40,7 @@ export default {
 </script>
 
 <style lang="scss">
-#error-404{
+#error-403{
 	padding: 48px 32px;
 	font-family: Chinese Quote,-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Helvetica Neue,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
 
@@ -51,7 +51,7 @@ export default {
 		justify-content: center;
 
 		.error-img{
-			background-image: url("../../assets/img/404.svg");
+			background-image: url("../../assets/img/403.svg");
 			height: 360px;
 			width: 500px;
 			margin-right: 82px;

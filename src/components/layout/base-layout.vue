@@ -54,7 +54,7 @@
 				</div>
 
 				<!-- 此处为顶部下面的面包屑 -->
-				<div class="expand">
+				<div class="expand" v-if="!is_error">
 					<slot name="breadcrumb">
 						<el-breadcrumb class="breadcrumb" separator-class="el-icon-arrow-right">
 							<el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
@@ -85,7 +85,7 @@ export default {
 	},
 	data(){
 		return {
-			menus: [],
+			is_error: false,
 			breadcrumbs: [],
 			user: {
 				name: '',
@@ -94,17 +94,6 @@ export default {
 		}
 	},
 	created(){
-		let meta = this.$route.meta;
-
-		// 设置浏览器标题
-		window.document.title = meta.title;
-
-		// 激活路由
-		this.$store.commit('access/active',meta);
-
-		// 设置面包屑数据
-		this.breadcrumbs = this.$store.getters['access/breadcrumb'];
-
 		// 获取用户信息
 		let user = this.$store.getters['auth/user'];
 
@@ -117,6 +106,32 @@ export default {
 		user.avatar = 'http://127.0.0.1:8000/static/api/avatar/20.png';
 		this.user = user;
 
+		if(this.$route.name != 'not_fonund'){
+
+			let meta = this.$route.meta;
+
+			// 设置浏览器标题
+			window.document.title = meta.title;
+	
+			// 激活路由
+			this.$store.commit('access/active',meta);
+
+			// 设置面包屑数据
+			this.breadcrumbs = this.$store.getters['access/breadcrumb'];
+		}else{
+			// 设置浏览器标题
+			window.document.title = 404;
+
+			let meta = {
+				controller: 'errorpage',
+				action: 404
+			};
+
+			// 激活路由
+			this.$store.commit('access/active',meta);
+
+			this.is_error = true;
+		}
 	},
 
 	methods:{

@@ -37,25 +37,7 @@ const mutations = {
 
 	// 激活菜单
 	active(state, payload){
-		function deepClone(obj){
-			let objClone = Array.isArray(obj)?[]:{};
-			if(obj && typeof obj==="object"){
-				for(let key in obj){
-					if(obj.hasOwnProperty(key)){
-						//判断ojb子元素是否为对象，如果是，递归复制
-						if(obj[key]&&typeof obj[key] ==="object"){
-							objClone[key] = deepClone(obj[key]);
-						}else{
-							//如果不是，简单复制
-							objClone[key] = obj[key];
-						}
-					}
-				}
-			}
-			return objClone;
-		}
-
-		let menus = [state.menus[0], deepClone(state.menus[1]), deepClone(state.menus[2]), state.menus[3]];
+		let menus = state.menus;
 		let active_controller = payload.controller;
 		let active_action = payload.action;
 		let breadcrumb = [];
@@ -92,9 +74,9 @@ const mutations = {
 							breadcrumb.unshift(item);
 						}else if(item.has_children){
 							menus[i][key][index].is_open = false;
-							// menus[i][key][index].is_active = false;
+							menus[i][key][index].is_active = false;
 						}else{
-							// menus[i][key][index].is_active = false;
+							menus[i][key][index].is_active = false;
 						}
 					});
 				}
@@ -255,7 +237,7 @@ const mutations = {
 			// 添加404页面
 			routers_temp.push({
 				path: `/*`,
-				name: 'error_404',
+				name: 'not_fonund',
 				component: () => import( `../views/error/404.vue`),
 			});
 
