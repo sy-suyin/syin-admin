@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>404</title>
+	<link rel="stylesheet" href="/static/error/css/error.css">
+</head>
+<body>
+	<style>
+		.error-img{background-image: url("/static/error/images/404.svg");}
+	</style>
+	<div id="error-page">
+		<div class="left">
+			<div class="error-img"></div>
+		</div>
+		<div class="right">
+			<div>
+				<h1>404</h1>
+				<p class="error-desc"><?php echo !empty($msg)?$msg:'抱歉，你访问的页面不存在'?></p>
+				<a class="error-action" href="javascript:history.back(-1)">返回上页</a>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

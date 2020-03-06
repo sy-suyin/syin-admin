@@ -1,0 +1,10 @@
+body{text-align: center;margin: 0;background: #F0F2F5;font-family: Chinese Quote,-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Helvetica Neue,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;}
+#error-page{padding-top: 100px;/* text-align: center;*/width: auto;margin: 0 auto;position: relative;}
+#error-page > div{display: inline-block;}
+.error-img{height: 360px;width: 500px;margin-right: 112px;background-repeat: no-repeat;background-position: 50% 50%;background-size: contain;}
+#error-page .right{text-align: left;/* margin-bottom: 200px;*//* margin-top: -200px;*/position: relative ;height: 360px;padding-top: 20px;}
+#error-page .right > div{display: table;}
+#error-page .right h1{color: #434e59;font-size: 72px;font-weight: 600;line-height: 72px;margin-bottom: 24px;}
+#error-page .right .error-desc{color: rgba(0,0,0,.45);font-size: 20px;line-height: 28px;margin-bottom: 16px;}
+#error-page .right .error-action{box-sizing: border-box;display: inline-block;font-weight: 400;text-align: center;padding: 0 15px;font-size: 14px;border-radius: 4px;height: 32px;line-height: 32px;border: 1px solid #d9d9d9;text-decoration: none;outline: none;cursor: pointer;color: #fff;background-color: #1890ff;border-color: #1890ff;text-shadow: 0 -1px 0 rgba(0,0,0,.12);box-shadow: 0 2px 0 rgba(0,0,0,.045);}
+#error-page .right .error-action:hover{background: #40A9FF;}

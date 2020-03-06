@@ -150,42 +150,72 @@ const menus = [
 		]
 	},
 	{
-		name: '数据仓库',
+		name: '系统设置',
 		icon: '',
-		controller: 'databank',
+		controller: 'system',
 		action: 'indexman',
 		is_hidden: 0,
 		children: [
 			{
-				name: '数据类型',
+				name: '管理员列表',
 				icon: '',
-				controller: 'databank',
-				action: 'typeman',
+				controller: 'system',
+				action: 'adminman',
 				is_hidden: 0,
 				children: [
 					{
 						name: '列表',
 						icon: '',
-						controller: 'databank',
-						action: 'typelist',
+						controller: 'system',
+						action: 'adminlist',
 						is_hidden: 0
 					},
 					{
 						name: '添加',
 						icon: '',
-						controller: 'databank',
-						action: 'typeadd',
+						controller: 'system',
+						action: 'adminadd',
 						is_hidden: 0
 					},
 					{
 						name: '修改',
 						icon: '',
-						controller: 'databank',
-						action: 'typeedit',
+						controller: 'system',
+						action: 'adminedit',
 						is_hidden: 1
 					},
 				]
 			},
+			{
+				name: '角色列表',
+				icon: '',
+				controller: 'system',
+				action: 'roleman',
+				is_hidden: 0,
+				children: [
+					{
+						name: '列表',
+						icon: '',
+						controller: 'system',
+						action: 'rolelist',
+						is_hidden: 0
+					},
+					{
+						name: '添加',
+						icon: '',
+						controller: 'system',
+						action: 'roleadd',
+						is_hidden: 0
+					},
+					{
+						name: '修改',
+						icon: '',
+						controller: 'system',
+						action: 'roleedit',
+						is_hidden: 1
+					},
+				]
+			}
 		]
 	},
 ];
