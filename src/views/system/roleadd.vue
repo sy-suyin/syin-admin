@@ -11,11 +11,11 @@
 				</el-form-item>
 
 				<el-form-item label="数据权限">
-					<el-button size="small">设置权限</el-button>
+					<el-button size="small" @click="dialog.visible.page=true">设置权限</el-button>
 				</el-form-item>
 
 				<el-form-item label="访问权限">
-					<el-button size="small">设置权限</el-button>
+					<el-button size="small" @click="dialog.visible.data=true">设置权限</el-button>
 				</el-form-item>
 
 				<el-form-item label="备注说明">
@@ -32,12 +32,11 @@
 		<el-dialog
   			title="提示"
 			:visible.sync="dialog.visible.page"
-			width="50%"
-			:before-close="handleClose">
+			width="50%">
 
 			<el-tree
-				ref="tree"
-				:data="menus"
+				ref="page_tree"
+				:data="dialog.data.page"
 				:props="dialog.props.page"
 				show-checkbox
 				node-key="path"
@@ -47,7 +46,29 @@
 
 			<div style="float:right">
 				<el-button type="danger" @click="dialog.visible.page=false">取消</el-button>
-				<el-button type="primary" @click="conmfirmRole">确认</el-button>
+				<el-button type="primary" @click="pageConfirm">确认</el-button>
+			</div>
+
+		</el-dialog>
+
+		<el-dialog
+  			title="提示"
+			:visible.sync="dialog.visible.data"
+			width="50%">
+
+			<el-tree
+				ref="data_tree"
+				:data="dialog.data.data"
+				:props="dialog.props.data"
+				show-checkbox
+				node-key="path"
+				class="permission-tree"
+				label="name"
+			/>
+
+			<div style="float:right">
+				<el-button type="danger" @click="dialog.visible.data=false">取消</el-button>
+				<el-button type="primary" @click="dataConfirm">确认</el-button>
 			</div>
 
 		</el-dialog>
@@ -69,12 +90,6 @@ export default {
       	return {
         	form: {
           		name: '',
-				region: '',
-				date1: '',
-				date2: '',
-				delivery: false,
-				type: [],
-				resource: '',
 				desc: ''
 			},
 
@@ -92,36 +107,25 @@ export default {
 				visible: {
 					data: false,
 					page: true
+				},
+				data: {
+					data: [],
+					page: []
+				},
+				selected: {
+					data: [],
+					page: []
 				}
 			},
-
-			menus: [],
 		}
 	},
 
 	mounted(){
-		this.menus = menus;
-		console.log(menus);
-
+		this.dialog.data.page = menus;
 		
 		util.get('/system/getaccessdata').then(res => {
-			// this.is_loading = false;
-			console.log(res);
-			return;
-
 			if(res && typeof(res.status) != 'undefined' && res.status > 0){
-				// 此处添加相关登录代码
-				this.$store.commit('auth/set_login',res.result.user);
-				this.$store.commit('access/set', {
-					data_forbid: [],	// 数据权限黑名单
-					page_forbid: [],	// 页面权限黑名单
-				});
-
-				let redirect = localStorage.getItem('user_redirect');
-				localStorage.removeItem('user_redirect');
-
-				let redirect_path = redirect ? redirect : this.$store.getters['access/routers'][0].path;
-				this.$router.push({path: redirect_path})
+				this.dialog.data.data = Object.values(res.result.config);
 			}
 			else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
 				this.$message({
@@ -138,7 +142,8 @@ export default {
 				});
 			}
 		}).catch(err => {
-			this.is_loading = false;
+			// this.is_loading = false;
+			console.log(err);
 
 			this.$message({
 				showClose: true,
@@ -150,27 +155,38 @@ export default {
 
 	methods: {
 		onSubmit(formName) {
-			this.$refs[formName].validate((valid) => {
-				if (valid) {
-					alert('submit!');
-				} else {
-					console.log('error submit!!');
-					return false;
-				}
-			});
+			let args = {...this.form};
+			console.log(args);
+			console.log(this.dialog.selected);
 		},
 		resetForm(formName) {
 			this.$refs[formName].resetFields();
 		},
 
-		conmfirmRole(){
+		dataConfirm(){
+			this.dialog.visible.data = false;
+			this.dialog.selected.data = this.$refs.data_tree.getCheckedNodes();
+		},
+
+		pageConfirm(){
 			this.dialog.visible.page = false;
+			this.dialog.selected.page = this.$refs.page_tree.getCheckedNodes();
+			this.getUnselected(this.dialog.selected.page, this.dialog.data.page);
+		},
 
-			let keys = this.$refs.tree.getCheckedKeys();
-			console.log(keys);
+		// 获取未选择的选项
+		getUnselected(selected, data){
 
-			let nodes = this.$refs.tree.getCheckedNodes();
-			console.log(nodes);
+			do{
+				let next = [];
+				data.forEach((val, key)=> {
+					console.log(val);
+					console.log(key);
+				})
+			}while(next.length > 0);
+
+			console.log(data);
+			console.log(selected);
 		}
     }
 };
