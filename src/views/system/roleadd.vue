@@ -11,11 +11,11 @@
 				</el-form-item>
 
 				<el-form-item label="数据权限">
-					<el-button size="small" @click="dialog.visible.page=true">设置权限</el-button>
+					<el-button size="small" @click="dialog.visible.data=true">设置权限</el-button>
 				</el-form-item>
 
 				<el-form-item label="访问权限">
-					<el-button size="small" @click="dialog.visible.data=true">设置权限</el-button>
+					<el-button size="small" @click="dialog.visible.page=true">设置权限</el-button>
 				</el-form-item>
 
 				<el-form-item label="备注说明">
@@ -30,7 +30,7 @@
 		</el-card>
 
 		<el-dialog
-  			title="提示"
+  			title="页面权限"
 			:visible.sync="dialog.visible.page"
 			width="50%">
 
@@ -44,15 +44,15 @@
 				label="name"
 			/>
 
-			<div style="float:right">
-				<el-button type="danger" @click="dialog.visible.page=false">取消</el-button>
-				<el-button type="primary" @click="pageConfirm">确认</el-button>
+			<div slot="footer">
+				<el-button type="danger" size="small" @click="dialog.visible.page=false">取消</el-button>
+				<el-button type="primary" size="small" @click="pageConfirm">确认</el-button>
 			</div>
 
 		</el-dialog>
 
 		<el-dialog
-  			title="提示"
+  			title="数据权限"
 			:visible.sync="dialog.visible.data"
 			width="50%">
 
@@ -66,9 +66,9 @@
 				label="name"
 			/>
 
-			<div style="float:right">
-				<el-button type="danger" @click="dialog.visible.data=false">取消</el-button>
-				<el-button type="primary" @click="dataConfirm">确认</el-button>
+			<div slot="footer">
+				<el-button type="danger" size="small" @click="dialog.visible.data=false">取消</el-button>
+				<el-button type="primary" size="small" @click="dataConfirm">确认</el-button>
 			</div>
 
 		</el-dialog>
@@ -82,7 +82,7 @@ import {menus} from '@/config/menu';
 import util from '@/libs/util.js';
 
 export default {
-	name: "roleadd",
+	name: "system_roleadd",
 	components: {
 		Lyaout
 	},
@@ -105,8 +105,8 @@ export default {
 					}
 				},
 				visible: {
-					data: false,
-					page: true
+					data: true,
+					page: false
 				},
 				data: {
 					data: [],
@@ -122,7 +122,7 @@ export default {
 
 	mounted(){
 		this.dialog.data.page = menus;
-		
+
 		util.get('/system/getaccessdata').then(res => {
 			if(res && typeof(res.status) != 'undefined' && res.status > 0){
 				this.dialog.data.data = Object.values(res.result.config);
@@ -142,9 +142,6 @@ export default {
 				});
 			}
 		}).catch(err => {
-			// this.is_loading = false;
-			console.log(err);
-
 			this.$message({
 				showClose: true,
 				message: '网络异常, 请稍后重试',
@@ -156,9 +153,29 @@ export default {
 	methods: {
 		onSubmit(formName) {
 			let args = {...this.form};
-			console.log(args);
-			console.log(this.dialog.selected);
+			args['data_forbid'] = this.getUnselected(this.dialog.selected.data, this.dialog.data.data);
+			args['page_forbid'] = this.getUnselected(this.dialog.selected.page, this.dialog.data.page);
+
+			if(args.name == ''){
+				return this.message('角色名称不能为空');
+			}
+
+			util.post('/system/roleadd', args).then(res => {
+				if(res && typeof(res.status) != 'undefined' && res.status > 0){
+					this.$router.push({path: 'system/rolelist'})
+				}
+				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
+					this.message(res.msg);
+				}
+				else{
+					this.message('服务器未响应，请稍后重试');
+				}
+			}).catch(err => {
+				// this.is_loading = false;
+				this.message('网络异常, 请稍后重试');
+			});
 		},
+
 		resetForm(formName) {
 			this.$refs[formName].resetFields();
 		},
@@ -166,27 +183,54 @@ export default {
 		dataConfirm(){
 			this.dialog.visible.data = false;
 			this.dialog.selected.data = this.$refs.data_tree.getCheckedNodes();
-		},
+ 		},
 
 		pageConfirm(){
 			this.dialog.visible.page = false;
 			this.dialog.selected.page = this.$refs.page_tree.getCheckedNodes();
-			this.getUnselected(this.dialog.selected.page, this.dialog.data.page);
 		},
 
 		// 获取未选择的选项
 		getUnselected(selected, data){
+			let unselected = [];
 
 			do{
-				let next = [];
+				var next = [];
 				data.forEach((val, key)=> {
-					console.log(val);
-					console.log(key);
+
+					if(val.hasOwnProperty('children') && val.children.length > 0){
+						next.push(...val.children);
+					}else{
+						let is_selected = false;
+						selected.forEach((item, key) => {
+							if(item.controller == val.controller && item.action == val.action){
+								is_selected = true;
+								return false;
+							}
+						});
+
+						if(!is_selected){
+							if(! unselected.hasOwnProperty(val.controller)){
+								unselected[val.controller] = [];
+							}
+
+							unselected[val.controller].push(val.action);
+						}
+					}
 				})
+
+				data = next; 
 			}while(next.length > 0);
 
-			console.log(data);
-			console.log(selected);
+			return unselected;
+		},
+
+		message(msg, type='warning'){
+			this.$message({
+				showClose: true,
+				message: msg,
+				type: type
+			});
 		}
     }
 };

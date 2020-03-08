@@ -20,12 +20,12 @@ return [
 					[
 						'name'  => '添加',
 						'controller' => 'system',
-						'action' => 'adminlist',
+						'action' => 'adminladd',
 					],
 					[
 						'name'  => '修改',
 						'controller' => 'system',
-						'action' => 'adminlist',
+						'action' => 'adminedit',
 					],
 				]
 			],
@@ -42,12 +42,12 @@ return [
 					[
 						'name'  => '添加',
 						'controller' => 'system',
-						'action' => 'rolelist',
+						'action' => 'roleadd',
 					],
 					[
 						'name'  => '修改',
 						'controller' => 'system',
-						'action' => 'rolelist',
+						'action' => 'roleledit',
 					],
 				]
 			],

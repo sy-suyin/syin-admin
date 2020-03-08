@@ -51,6 +51,9 @@ class BaseTool{
 		return $args;
 	}
 
+	/** 
+	 * 过滤处理表单数据
+	 */
 	public static function input($name, $type, $default=null, $data=null){
 		!empty($data) || $data = $_REQUEST;
 		$value = '';
@@ -58,13 +61,13 @@ class BaseTool{
 			case self::STRING_TYPE:{
 				// 字符串
 				$default == null && $default = '';
-				$value = isset($data[$name]) ? htmlspecialchars(urldecode(strip_tags($data[$name])), ENT_QUOTES, 'UTF-8') : $default;
+				$value = self::stringFilter($data[$name], $default);
 				break;
 			}
 			case self::INT_TYPE:{
 				// 数字
 				$default == null && $default = 0;
-				$value = isset($data[$name]) ? absint($data[$name]) : $default;
+				$value = self::intFilter($data[$name], $default);
 				break;
 			}
 			case self::PRICE_TYPE:{
@@ -76,7 +79,7 @@ class BaseTool{
 			case self::FLOAT_TYPE:{
 				// 浮点数
 				$default == null && $default = 0;
-				$value = isset($data[$name])  ? filter_var($data[$name], FILTER_VALIDATE_FLOAT) : $default;
+				$value = self::floatFilter($data[$name], $default);
 				is_bool($value) && $value = $default;
 				break;
 			}
@@ -111,6 +114,30 @@ class BaseTool{
 	}
 
 	/**
+	 * 字符串过滤
+	 */
+	public static function stringFilter($value, $default=''){
+		$value = isset($value) ? htmlspecialchars(urldecode(strip_tags($value)), ENT_QUOTES, 'UTF-8') : $default;
+		return $value;
+	} 
+
+	/**
+	 * 整数过滤
+	 */
+	public static function intFilter($value, $default=0){
+		$value = isset($value) ? absint($value) : $default;
+		return $value;
+	}
+
+	/**
+	 * 浮点数过滤
+	 */
+	public static function floatFilter($value, $default=0){
+		$value = isset($value)  ? filter_var($value, FILTER_VALIDATE_FLOAT) : $default;
+		return $value;
+	}
+
+	/**
 	 * 获取表单提交的数据
 	 */
 	public static function autoDeal(){
@@ -138,9 +165,6 @@ class BaseTool{
 			}
 
 		}
-
-		p($part);
-		p($args);
 	}
 
 	/** 
