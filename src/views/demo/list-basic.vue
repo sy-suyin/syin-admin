@@ -162,6 +162,7 @@ export default {
     font-size: 20px;
     line-height: 32px;
 	margin-top: 0;
+	padding-bottom: 10px;
 }
 
 #filter-box{

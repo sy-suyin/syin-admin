@@ -1,16 +1,23 @@
 <template>
 	<lyaout>
+
+		<template #breadcrumb-after>
+			<div>
+				<h2 class="page-title">筛选列表</h2>
+			</div>
+		</template>
+
 		<el-card id="filter-box">
 			<el-row>
-				<el-form ref="form" :model="form" label-width="80px">
+				<el-form ref="filter_form" :model="filter" label-width="80px">
 					<el-col :xs="12" :sm="8" :xl="6">
-						<el-form-item label="筛选输入">
+						<el-form-item label="筛选输入" prop="name">
 							<el-input v-model="filter.name" size="mini"></el-input>
 						</el-form-item>
 					</el-col>
 
 					<el-col :xs="12" :sm="8" :xl="6">
-						<el-form-item label="筛选下拉">
+						<el-form-item label="筛选下拉" prop="region">
 							<el-select v-model="filter.region" placeholder="请选择活动区域" size="mini">
 								<el-option label="区域一" value="shanghai"></el-option>
 								<el-option label="区域二" value="beijing"></el-option>
@@ -19,7 +26,7 @@
 					</el-col>
 
 					<el-col :xs="12" :sm="8" :xl="6">
-						<el-form-item label="筛选时间">
+						<el-form-item label="筛选时间" prop="time">
 							<el-date-picker
 								v-model="filter.time"
 								type="daterange"
@@ -32,14 +39,14 @@
 					</el-col>
 
 					<el-col :xs="12" :sm="8" :xl="6">
-						<el-form-item label="筛选输入">
+						<el-form-item label="筛选输入" prop="name2">
 							<el-input v-model="filter.name2" size="mini"></el-input>
 						</el-form-item>
 					</el-col>
 
-					<el-col :xs="{offset: 12,span: 12}" :sm="{offset: 16,span: 8}" :xl="{offset: 18,span: 6}">
+					<el-col class="filter-toolbar" :xs="{offset: 12,span: 12}" :sm="{offset: 16,span: 8}" :xl="{offset: 18,span: 6}">
 						<el-button size="mini" type="primary">查询</el-button>
-						<el-button size="mini" type="danger">重置</el-button>
+						<el-button size="mini" type="danger" @click="resetForm('filter_form')">重置</el-button>
 					</el-col>
 
 				</el-form>
@@ -48,13 +55,22 @@
 
 		<el-card>
 			<div slot="header" class="clearfix">
-				<span>筛选列表</span>
-
+				<div class="table-search">
+					<el-input
+						placeholder="请输入搜索内容"
+						v-model="search.keyword"
+						size="mini"
+					>
+						<i slot="suffix" class="el-input__icon el-icon-search"></i>
+					</el-input>
+				</div>
+			
 				<div class="table-toolbar">
-					<el-button size="mini" type="primary">添加</el-button>
-					<el-button size="mini" type="danger">删除</el-button>
+					<el-button size="mini" type="primary" icon="el-icon-plus">添加</el-button>
+					<el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
 					<!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
 				</div>
+
 			</div>
 
 			<el-table
@@ -117,6 +133,9 @@ export default {
 	},
   	data() {
       	return {
+			search: {
+				keyword: '',
+			},
         	filter: {
           		name: '',
 				region: '',
@@ -173,17 +192,32 @@ export default {
 		},
 		handleCurrentChange(val) {
 			console.log(`当前页: ${val}`);
-		}
+		},
+
+		resetForm(formName) {
+        	this.$refs[formName].resetFields();
+      	}
     }
 };
 </script>
 
 <style lang="scss">
+.page-title{
+	color: rgba(0,0,0,.85);
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 32px;
+	margin-top: 0;
+	padding-bottom: 10px;
+}
+
 #filter-box{
 	margin-bottom: 24px;
 
 	.el-form-item{
-		padding-right: 20px;
+		// padding-right: 20px;
+		padding-left: 12px;
+
 		.el-select{
 			width: 100%;
 		}
@@ -191,15 +225,45 @@ export default {
 		.el-date-editor{
 			width: 100%;
 		}
+
+		.el-range-separator{
+			width: 20px;
+		}
+	
+		&:nth-child(4n+0){
+			padding-left: 20px;
+		}
+
+
+	}
+	
+	.el-col:nth-child(4n+1) .el-form-item{
+		padding-left: 0;
+	}
+
+
+	.filter-toolbar{
+		text-align: right;
 	}
 }
 
 .table-toolbar{
+	// display: inline-block;
 	float: right;
+}
+
+.table-search{
+	float: left;
+	padding-left: 16px;
+	// float: right;
 }
 
 #pagination{
 	margin: 16px 0;
 	float: right;
+
+	.el-pagination{
+		font-weight: 500;
+	}
 }
 </style>
