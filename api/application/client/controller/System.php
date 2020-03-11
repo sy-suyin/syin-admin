@@ -30,11 +30,28 @@ class System extends Client {
 		]);
 	}
 
+	/** 
+	 * 获取角色详情
+	 */
+	public function roledetailAction(){
+		$id = absint(input('id'));
+
+		if($id){
+			$model = \app\client\model\Role::get($id);
+		}
+
+		if(empty($model)){
+			return show_error('未找到相关信息');
+		}
+
+		$result = $model -> toArray();
+		return show_success('', $result);
+	}
+
 	/**
 	 * 添加角色
 	 */
 	public function roleaddAction(Request $request){
-
 		if(! $request->isPost()){
 			return show_error('请求失败，请稍后重试');
 		}
@@ -86,8 +103,28 @@ class System extends Client {
 	public function getaccessdataAction(){
 		// 数据权限配置数据
 		$config = config('access.');
+		// 角色id
+		$id = absint(input('id'));
 		// 禁止访问数据权限
-		$forbid = [];
+		$forbid = [
+			'data_forbid' => [],
+			'page_forbid' => [],
+		];
+
+		if($id > 0){
+			$forbid_data = db('admin_role_ban')->where('role_id', $id)->select();
+
+			if(!empty($forbid_data)){
+				foreach($forbid_data as $val){
+					if($val['type'] == 1){
+						$forbid['data_forbid'][] = $val;
+					}elseif($val['type'] == 2){
+						$forbid['page_forbid'][] = $val;
+					} 
+				}
+			}
+		}
+
 
 		return show_success('', [
 			'forbid' => $forbid,

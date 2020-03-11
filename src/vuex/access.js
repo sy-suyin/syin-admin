@@ -201,9 +201,13 @@ const mutations = {
 			let mapping = {};
 
 			routers.forEach(router => {
+				if(! router.hasOwnProperty('params')){
+					router['params'] = '';
+				}
+
 				// 添加二级路由导航
 				routers_temp.push({
-					path: `/${router.controller}/${router.action}`,
+					path: `/${router.controller}/${router.action}${router.params}`,
 					name: `${router.controller}_${router.action}`,
 					component: () => import( `../views/${router.controller}/${router.action}.vue`),
 					meta: {

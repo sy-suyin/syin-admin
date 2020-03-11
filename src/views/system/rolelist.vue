@@ -51,7 +51,7 @@
 					<template slot-scope="scope">
 						<el-button
 						size="mini" type="text" 
-						@click="handleEdit(scope.$index, scope.row)">修改</el-button>
+						@click="edit(scope.$index, scope.row)">修改</el-button>
 
 						<el-divider direction="vertical"></el-divider>
 
@@ -114,8 +114,8 @@ export default {
 		},
 
 		// 修改
-		edit(){
-
+		edit(index, row){
+			this.$router.push({path: `/system/roleedit/${row.id}`})
 		},
 
 		// 删除

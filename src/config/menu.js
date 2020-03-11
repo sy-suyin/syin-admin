@@ -182,6 +182,7 @@ const menus = [
 						icon: '',
 						controller: 'system',
 						action: 'adminedit',
+						params: '/:id',
 						is_hidden: 1
 					},
 				]
@@ -205,13 +206,14 @@ const menus = [
 						icon: '',
 						controller: 'system',
 						action: 'roleadd',
-						is_hidden: 0
+						is_hidden: 1
 					},
 					{
 						name: '修改',
 						icon: '',
 						controller: 'system',
 						action: 'roleedit',
+						params: '/:id',
 						is_hidden: 1
 					},
 				]
