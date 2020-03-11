@@ -8,6 +8,27 @@ use think\Request;
 
 class System extends Client {
 
+	/**
+	 * 角色管理 - 列表
+	 */
+	public function rolelistAction(){
+		$result	= SystemTool::getRoleResultsArgs(false);
+		$num = config('common.page_num');
+		$results = $result['model']->paginate($num, false, ['query'=>$result['args']]);
+		$results = $results->toArray();
+
+		foreach($results['data'] as $key => $val){
+			$results['data'][$key]['add_time'] = date('Y-m-d H:i:s', $val['add_time']);
+		}
+
+		return show_success('', [
+			'total' => $results['total'],
+			'current_page' => $results['current_page'],
+			'page_max' => ceil($results['total'] / $num),
+			'page_num' => $num,
+			'results'  => $results['data'],
+		]);
+	}
 
 	/**
 	 * 添加角色

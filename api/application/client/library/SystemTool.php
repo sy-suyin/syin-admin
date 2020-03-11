@@ -12,7 +12,7 @@ class SystemTool extends BaseTool{
 	 * @param bool 	$is_deleted		是否查询被删除的数据
 	 */
 	public static function getRoleResultsArgs($is_deleted = false){
-		$model = new \app\admin\model\Role();
+		$model = new \app\client\model\Role();
 		$keyword = urldecode(input('k', ''));
 		$args = array();
 
