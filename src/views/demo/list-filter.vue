@@ -1,13 +1,12 @@
 <template>
-	<lyaout>
-
+	<lyaout class="table-filter">
 		<template #breadcrumb-after>
 			<div>
 				<h2 class="page-title">筛选列表</h2>
 			</div>
 		</template>
 
-		<el-card id="filter-box">
+		<el-card class="filter-box">
 			<el-row>
 				<el-form ref="filter_form" :model="filter" label-width="80px">
 					<el-col :xs="12" :sm="8" :xl="6">
@@ -202,68 +201,5 @@ export default {
 </script>
 
 <style lang="scss">
-.page-title{
-	color: rgba(0,0,0,.85);
-    font-weight: 600;
-    font-size: 20px;
-    line-height: 32px;
-	margin-top: 0;
-	padding-bottom: 10px;
-}
-
-#filter-box{
-	margin-bottom: 24px;
-
-	.el-form-item{
-		// padding-right: 20px;
-		padding-left: 12px;
-
-		.el-select{
-			width: 100%;
-		}
-
-		.el-date-editor{
-			width: 100%;
-		}
-
-		.el-range-separator{
-			width: 20px;
-		}
-	
-		&:nth-child(4n+0){
-			padding-left: 20px;
-		}
-
-
-	}
-	
-	.el-col:nth-child(4n+1) .el-form-item{
-		padding-left: 0;
-	}
-
-
-	.filter-toolbar{
-		text-align: right;
-	}
-}
-
-.table-toolbar{
-	// display: inline-block;
-	float: right;
-}
-
-.table-search{
-	float: left;
-	padding-left: 16px;
-	// float: right;
-}
-
-#pagination{
-	margin: 16px 0;
-	float: right;
-
-	.el-pagination{
-		font-weight: 500;
-	}
-}
+@import "../../assets/style/table-filter.scss";
 </style>

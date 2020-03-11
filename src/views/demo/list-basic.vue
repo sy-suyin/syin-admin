@@ -1,6 +1,5 @@
 <template>
-	<lyaout>
-
+	<lyaout class="table-base">
 		<template #breadcrumb-after>
 			<div>
 				<h2 class="page-title">一般列表</h2>
@@ -9,12 +8,6 @@
 
 		<el-card>
 			<div slot="header" class="clearfix">
-				<div class="table-toolbar">
-					<el-button size="mini" type="primary" icon="el-icon-plus">添加</el-button>
-					<el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
-					<!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
-				</div>
-
 				<div class="table-search">
 					<el-input
 						placeholder="请输入搜索内容"
@@ -23,6 +16,11 @@
 					>
 						<i slot="suffix" class="el-input__icon el-icon-search"></i>
 					</el-input>
+				</div>
+
+				<div class="table-toolbar">
+					<el-button size="mini" type="primary" icon="el-icon-plus">添加</el-button>
+					<el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
 				</div>
 			</div>
 
@@ -156,44 +154,5 @@ export default {
 </script>
 
 <style lang="scss">
-.page-title{
-	color: rgba(0,0,0,.85);
-    font-weight: 600;
-    font-size: 20px;
-    line-height: 32px;
-	margin-top: 0;
-	padding-bottom: 10px;
-}
-
-#filter-box{
-	margin-bottom: 24px;
-
-	.el-form-item{
-		padding-right: 20px;
-		.el-select{
-			width: 100%;
-		}
-
-		.el-date-editor{
-			width: 100%;
-		}
-	}
-}
-
-.table-toolbar{
-	display: inline-block;
-}
-
-.table-search{
-	float: right;
-}
-
-#pagination{
-	margin: 16px 0;
-	float: right;
-
-	.el-pagination{
-		font-weight: 500;
-	}
-}
+@import "../../assets/style/table-base.scss";
 </style>

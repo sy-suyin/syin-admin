@@ -5,7 +5,7 @@
 </template>
 
 <style lang="scss" scoped>
-@import "./assets/css/reset.css";
+@import "./assets/style/reset.css";
 
 html,body,#app{
   height: 100%;

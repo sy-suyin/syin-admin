@@ -1,0 +1,65 @@
+/* 筛选列表页面样式 */
+
+.table-filter {
+	.page-title{
+		color: rgba(0,0,0,.85);
+		font-weight: 600;
+		font-size: 20px;
+		line-height: 32px;
+		margin-top: 0;
+		padding-bottom: 10px;
+	}
+	
+	.filter-box{
+		margin-bottom: 24px;
+	
+		.el-form-item{
+			padding-left: 12px;
+	
+			.el-select{
+				width: 100%;
+			}
+	
+			.el-date-editor{
+				width: 100%;
+			}
+	
+			.el-range-separator{
+				width: 20px;
+			}
+		
+			&:nth-child(4n+0){
+				padding-left: 20px;
+			}
+	
+	
+		}
+		
+		.el-col:nth-child(4n+1) .el-form-item{
+			padding-left: 0;
+		}
+	
+	
+		.filter-toolbar{
+			text-align: right;
+		}
+	}
+	
+	.table-toolbar{
+		float: right;
+	}
+	
+	.table-search{
+		float: left;
+		padding-left: 16px;
+	}
+	
+	#pagination{
+		margin: 16px 0;
+		float: right;
+	
+		.el-pagination{
+			font-weight: 500;
+		}
+	}
+}

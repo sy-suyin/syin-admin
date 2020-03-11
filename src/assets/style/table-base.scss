@@ -1,0 +1,29 @@
+// 一般列表页面样式
+
+.table-base{
+	.page-title{
+		color: rgba(0,0,0,.85);
+		font-weight: 600;
+		font-size: 20px;
+		line-height: 32px;
+		margin-top: 0;
+		padding-bottom: 10px;
+	}
+	
+	.table-toolbar{
+		float: right;
+	}
+	
+	.table-search{
+		display: inline-block;
+	}
+	
+	#pagination{
+		margin: 16px 0;
+		float: right;
+	
+		.el-pagination{
+			font-weight: 500;
+		}
+	}
+}
