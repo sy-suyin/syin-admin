@@ -23,7 +23,7 @@
 				</el-form-item>
 
 				<el-form-item>
-					<el-button type="primary" @click="onSubmit">立即创建</el-button>
+					<el-button type="primary" @click="onSubmit" :loading="loading">立即创建</el-button>
 					<el-button>取消</el-button>
 				</el-form-item>
 			</el-form>
@@ -88,6 +88,8 @@ export default {
 	},
   	data() {
       	return {
+			loading: false,
+
         	form: {
           		name: '',
 				desc: ''
@@ -160,9 +162,11 @@ export default {
 				return this.message('角色名称不能为空');
 			}
 
+			this.loading = true;
 			util.post('/system/roleadd', args).then(res => {
+				this.loading = false;
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
-					this.$router.push({path: 'system/rolelist'})
+					this.$router.push({path: '/system/rolelist'})
 				}
 				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
 					this.message(res.msg);
@@ -171,7 +175,7 @@ export default {
 					this.message('服务器未响应，请稍后重试');
 				}
 			}).catch(err => {
-				// this.is_loading = false;
+				this.loading = false;
 				this.message('网络异常, 请稍后重试');
 			});
 		},

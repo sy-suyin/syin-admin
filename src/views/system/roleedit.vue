@@ -23,7 +23,7 @@
 				</el-form-item>
 
 				<el-form-item>
-					<el-button type="primary" @click="onSubmit">提交修改</el-button>
+					<el-button type="primary" @click="onSubmit" :loading="loading">提交修改</el-button>
 					<el-button>取消</el-button>
 				</el-form-item>
 			</el-form>
@@ -39,8 +39,9 @@
 				:data="dialog.data.page"
 				:props="dialog.props.page"
 				show-checkbox
-				node-key="path"
+				node-key="key"
 				class="permission-tree"
+				:default-checked-keys="dialog.default_checked.page"
 				label="name"
 			/>
 
@@ -61,8 +62,9 @@
 				:data="dialog.data.data"
 				:props="dialog.props.data"
 				show-checkbox
-				node-key="path"
+				node-key="key"
 				class="permission-tree"
+				:default-checked-keys="dialog.default_checked.data"
 				label="name"
 			/>
 
@@ -90,9 +92,13 @@ export default {
       	return {
 			id: 0,
 
+			loading: false,
+
         	form: {
           		name: '',
-				desc: ''
+				desc: '',
+				data_forbid_edit: false,
+				page_forbid_edit: false,
 			},
 
 			dialog:{
@@ -130,8 +136,6 @@ export default {
 		this.dialog.data.page = menus;
 
 		this.init();
-
-
 	},
 
 	methods: {
@@ -141,11 +145,12 @@ export default {
 			let id = +this.$route.params.id || 0;
 
 			if(id < 1){
-				this.message('未找到相关数据, 请检查后重试');
-				return this.$router.push({path: `/system/rolelist`});
+				return this.message('未找到相关数据, 请检查后重试', 'warning', 3000, '/system/rolelist');
 			}
 
+			this.loading = true;
 			util.get('/system/roledetail/id/'+id).then(res => {
+				this.loading = false;
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
 					this.id = id;
 					this.form.name = res.result.name;
@@ -153,70 +158,62 @@ export default {
 					this.getAccessData();
 				}
 				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-					this.$message({
-						showClose: true,
-						message: res.msg,
-						type: 'warning'
-					});
+					this.message(res.msg, 'warning', 3000, '/system/rolelist');
 				}
 				else{
-					this.$message({
-						showClose: true,
-						message: '服务器未响应，请稍后重试',
-						type: 'warning'
-					});
+					this.message('服务器未响应，请稍后重试', 'warning', 3000, '/system/rolelist');
 				}
 			}).catch(err => {
-				this.$message({
-					showClose: true,
-					message: '网络异常, 请稍后重试',
-					type: 'warning'
-				});
+				this.loading = false;
+				this.message('网络异常, 请稍后重试', 'warning', 3000, '/system/rolelist');
 			});
 		},
 
 		// 获取权限数据
 		getAccessData(){
+			this.loading = true;
+
 			util.get('/system/getaccessdata/id/'+this.id).then(res => {
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
 					this.dialog.data.data = Object.values(res.result.config);
 					this.treeInit(res.result.forbid);
 				}
 				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-					this.$message({
-						showClose: true,
-						message: res.msg,
-						type: 'warning'
-					});
+					this.message(res.msg, 'warning', 3000, '/system/rolelist');
 				}
 				else{
-					this.$message({
-						showClose: true,
-						message: '服务器未响应，请稍后重试',
-						type: 'warning'
-					});
+					this.message('服务器未响应，请稍后重试', 'warning', 3000, '/system/rolelist');
 				}
+				this.loading = false;
 			}).catch(err => {
-				this.$message({
-					showClose: true,
-					message: '网络异常, 请稍后重试',
-					type: 'warning'
-				});
+				this.loading = false;
+				this.message('网络异常, 请稍后重试', 'warning', 3000, '/system/rolelist');
 			});
 		},
 
 		onSubmit(formName) {
 			let args = {...this.form};
-			args['data_forbid'] = this.getUnselected(this.dialog.selected.data, this.dialog.data.data);
-			args['page_forbid'] = this.getUnselected(this.dialog.selected.page, this.dialog.data.page);
+			args.id = this.id;
+			args.data_forbid_edit = +args.data_forbid_edit;
+			args.page_forbid_edit = +args.page_forbid_edit;
+
+			if(args.data_forbid_edit){
+				args['data_forbid'] = this.getUnselected(this.dialog.selected.data, this.dialog.data.data);
+			}
+
+			if(args.page_forbid_edit){
+				args['page_forbid'] = this.getUnselected(this.dialog.selected.page, this.dialog.data.page);
+			}
 
 			if(args.name == ''){
 				return this.message('角色名称不能为空');
 			}
 
-			util.post('/system/roleadd', args).then(res => {
+			this.loading = true;
+			util.post('/system/roleedit', args).then(res => {
+				this.loading = false;
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
-					this.$router.push({path: 'system/rolelist'})
+					this.$router.push({path: '/system/rolelist'})
 				}
 				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
 					this.message(res.msg);
@@ -225,7 +222,7 @@ export default {
 					this.message('服务器未响应，请稍后重试');
 				}
 			}).catch(err => {
-				// this.is_loading = false;
+				this.loading = false;
 				this.message('网络异常, 请稍后重试');
 			});
 		},
@@ -237,18 +234,46 @@ export default {
 		dataConfirm(){
 			this.dialog.visible.data = false;
 			this.dialog.selected.data = this.$refs.data_tree.getCheckedNodes();
+			this.form.data_forbid_edit = true;
  		},
 
 		pageConfirm(){
 			this.dialog.visible.page = false;
 			this.dialog.selected.page = this.$refs.page_tree.getCheckedNodes();
+			this.form.page_forbid_edit = true;
 		},
 
 		// 权限树初始化
 		treeInit(forbid){
+			let data_checked = [];
+			let page_checked = [];
+
 			// 处理数据权限
+			this.dialog.data.data = this.checkTreeKey(this.dialog.data.data);
+			let data_access = this.getUnselected(forbid.data_forbid, this.dialog.data.data);
+
+			Object.keys(data_access).forEach(controller => {
+				let actions = data_access[controller];
+				actions.forEach(action => {
+					let key = this.keyRevise(`${controller}_${action}`);
+					data_checked.push(key);
+				});
+			});
 
 			// 处理页面权限
+			this.dialog.data.page = this.checkTreeKey(this.dialog.data.page);
+			let page_access = this.getUnselected(forbid.page_forbid, this.dialog.data.page);
+
+			Object.keys(page_access).forEach(controller => {
+				let actions = page_access[controller];
+				actions.forEach(action => {
+					let key = this.keyRevise(`${controller}_${action}`);
+					page_checked.push(key);
+				});
+			});
+
+			this.dialog.default_checked.data = data_checked;
+			this.dialog.default_checked.page = page_checked;
 		},
 
 		// 获取未选择的选项
@@ -278,7 +303,7 @@ export default {
 							unselected[val.controller].push(val.action);
 						}
 					}
-				})
+				});
 
 				data = next; 
 			}while(next.length > 0);
@@ -286,12 +311,51 @@ export default {
 			return unselected;
 		},
 
-		message(msg, type='warning'){
-			this.$message({
+		/** 
+		 * 提示消息
+		 * 
+		 * @param msg  消息内容
+		 * @param type 消息类型
+		 * @param duration 消息显示时间, 单位: 毫秒
+		 * @param path 消息关闭后跳转路径, 为空不跳转
+		 */
+		message(msg, type='warning', duration=3000, path=''){
+			return this.$message({
 				showClose: true,
 				message: msg,
-				type: type
+				type: type,
+				onClose(){
+					if(path != ''){
+						this.$router.push({path});
+					}
+				}
 			});
+		},
+
+		// 检查tree数据key
+		checkTreeKey(data){
+			if(!data){
+				return data;
+			}
+
+			data.forEach((val, key) => {
+				if(!val.hasOwnProperty('children') || val.children.length < 1){
+					if(!val.hasOwnProperty('key')){
+						data[key]['key'] = val.controller + '_' + val.action;
+					}
+
+					data[key]['key'] = this.keyRevise(data[key]['key']);
+				}else{
+					data[key].children = this.checkTreeKey(val.children);
+				}
+			});
+
+			return data;
+		},
+
+		// 将key中 - 转换为 _
+		keyRevise(key){
+			return key.replace('-', '_')
 		}
     }
 };
