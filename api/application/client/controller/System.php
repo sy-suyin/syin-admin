@@ -94,7 +94,7 @@ class System extends Client {
 		// $request->log = '管理员'.($request->admin->name).', 添加了新角色'.$result['model']->name;
 		return show_success('已成功添加角色');
 	}
-	
+
 	/**
 	 * 添加角色
 	 */

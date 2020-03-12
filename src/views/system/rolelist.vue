@@ -25,10 +25,11 @@
 			</div>
 
 			<el-table
-				ref="multipleTable"
+				ref="table"
 				:data="results"
 				tooltip-effect="dark"
 				style="width: 100%"
+				@selection-change="selectionChange"
 			>
 				<el-table-column type="selection" width="46" align="center"></el-table-column>
 
@@ -55,9 +56,7 @@
 
 						<el-divider direction="vertical"></el-divider>
 
-						<el-button
-						size="mini" type="text" 
-						@click="handleDelete(scope.$index, scope.row)">删除</el-button>
+						<el-button size="mini" type="text" @click="del(scope.$index, scope.row)">删除</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -80,6 +79,8 @@
 
 <script>
 import Lyaout from "@/components/layout/base-layout.vue";
+import Table from '@/libs/Table.js';
+import Factory from '@/libs/Factory.js';
 import util from '@/libs/util.js';
 import { Loading } from 'element-ui';
 
@@ -91,7 +92,7 @@ export default {
   	data() {
       	return {
 			search: {
-				keyword: '',
+				keyword: 'hello',
 			},
 			pagination: {
 				current_page: 1,
@@ -105,6 +106,18 @@ export default {
 	},
 	mounted(){
 		this.getRequestData();
+
+		// table.delete.call(this, 'world');
+		// let table = 'Table';
+		// new table(this);
+
+		Factory.get(Table, this);
+
+		console.log(Factory.get(Table));
+
+		Factory.get(Table).delete();
+		Factory.get(Table).delete();
+
 	},
 	methods: {
 
@@ -121,6 +134,8 @@ export default {
 		// 删除
 		del(){
 
+			let res = this.$refs.table;
+			console.log(res);
 		},
 
 		// 批量删除
@@ -213,6 +228,16 @@ export default {
 				message: message,
 				type: 'warning'
 			});
+		},
+
+		// 选择框改变
+		selectionChange(selected){
+			let ids = [];
+			selected.forEach(val => {
+				ids.push(val.id);
+			});
+
+			Factory.get(Table).setIds(ids);
 		}
     }
 };
