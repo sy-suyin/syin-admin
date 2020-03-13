@@ -99,6 +99,25 @@ class Table{
 		});
 	}
 
+	/**
+	 * 异步请求 删除/恢复 数据方法
+	 *
+	 * @param int id			操作项目id, 当为-1时表示为批量操作
+	 * @param int operate		操作类型
+	 * @param string url	 	提交链接
+	 */
+	disabled(id, operate, url){
+		let msg_words = ['启用', '禁用'];
+		let msg = '您确定要执行'+(msg_words[operate] || msg_words[0])+'操作吗?';
+
+		return this.tip(msg).then(()=>{
+			this.post(id, operate, url).then((res)=>{
+				history.go(0);
+			}).catch(e => {
+			});
+		});
+	}
+
 	setIds(ids){
 		this.ids = ids;
 	}

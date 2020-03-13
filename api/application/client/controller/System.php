@@ -179,6 +179,24 @@ class System extends Client {
 		// $request->log = '管理员'.($request->admin->name).', 共'.$operation_type.$result.'个角色';
 		return show_success('操作成功, 共'.$operation_type.$result.'个角色');
 	}
+	
+	/** 
+	 * 角色管理 - 禁用
+	 */
+	public function roledisAction(Request $request){
+		$id = isset($_POST['id'])	?	$_POST['id']	:	array();
+		$disabled = absint(input('operate'));
+		$operation_type = $disabled ? '禁用' : '启用';
+
+		$result = \app\client\model\Role::disableItem($id, $disabled);
+
+		if(is_error($result)){
+			return show_error($result->getErrorMsg());
+		}
+
+		// $request->log = '管理员'.($request->admin->name).', 共'.$operation_type.$result.'个角色';
+		return show_success('操作成功, 共'.$operation_type.$result.'个角色');
+	}
 
 	/**
 	 * 获取数据权限信息

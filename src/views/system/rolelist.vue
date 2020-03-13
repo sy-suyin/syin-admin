@@ -40,8 +40,8 @@
 				<el-table-column label="状态" width="120">
 					<template slot-scope="scope">
 
-						<el-tag type="success" effect="dark" size="mini" @click="disabled" v-if="scope.row.is_disabled < 1">启用</el-tag>
-						<el-tag type="danger" effect="dark" size="mini" @click="disabled" v-else>禁用</el-tag>
+						<el-tag class="disabled-btn" type="success" effect="dark" size="mini" @click="disabled(scope.row, 1)" v-if="scope.row.is_disabled < 1">启用</el-tag>
+						<el-tag class="disabled-btn" type="danger" effect="dark" size="mini" @click="disabled(scope.row, 0)" v-else>禁用</el-tag>
 
 					</template>
 				</el-table-column>
@@ -208,8 +208,8 @@ export default {
 			this.getRequestData(page);
 		},
 
-		disabled(){
-
+		disabled(row, disabled){
+			Factory.get(Table).disabled(row.id, disabled, '/system/roledis');
 		},
 
 		message(message, type='warning'){
@@ -235,4 +235,8 @@ export default {
 
 <style lang="scss">
 @import "@/assets/style/table-base.scss";
+
+.disabled-btn{
+	cursor: pointer;
+}
 </style>
