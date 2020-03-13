@@ -25,20 +25,24 @@ class Table{
 			args.id = this.ids;
 
 			if(args.id.length < 1){
-				return this.target.message('请选择需要操作的项目');
+				this.target.message('请选择需要操作的项目');
+				return Promise.reject('请选择需要操作的项目');
 			}
 		}else{
 			args.id = id;
 
 			if(! +args.id){
-				return this.target.message('请选择需要操作的项目');
+				this.target.message('请选择需要操作的项目');
+				return Promise.reject('请选择需要操作的项目');
 			}
 		}
 
 		return util.post(url, args).then((res)=>{
-			this.success(res);
-		}).catch(()=>{
-			this.error('服务器未响应，请稍后重试');
+			return this.success(res);
+		}).catch((e)=>{
+			let msg = e.message || e;
+			this.error(msg);
+			return Promise.reject(msg);
 		});
 	}
 
@@ -59,13 +63,13 @@ class Table{
 	 */
 	success(res){
 		if(res && typeof(res.status) != 'undefined' && res.status > 0){
-			history.go(0);
+			return Promise.resolve(res);
 		}
 		else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-			this.target.message(res.msg, 'danger');
+			return Promise.reject(res.msg);
 		}
 		else{
-			this.target.message('服务器未响应，请稍后重试', 'warning');
+			return Promise.reject('服务器未响应，请稍后重试');
 		}
 	}
 
@@ -84,17 +88,14 @@ class Table{
 	 * @param string url	 	提交链接
 	 */
 	delete(id, operate, url){
-		// 参数 
-		/*
-			id 如果为 -1 表示为
+		let msg_words = ['还原', '删除'];
+		let msg = '您确定要执行'+(msg_words[operate] || msg_words[0])+'操作吗?';
 
-			是否多选, 或许可以通过 id 参数来判断是否为单选
-
-			msg
-		*/
-
-		return this.tip('您确定要执行删除操作吗?').then(()=>{
-			this.post(id, operate, url);
+		return this.tip(msg).then(()=>{
+			this.post(id, operate, url).then((res)=>{
+				history.go(0);
+			}).catch(e => {
+			});
 		});
 	}
 
