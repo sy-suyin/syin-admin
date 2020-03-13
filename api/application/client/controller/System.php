@@ -163,6 +163,24 @@ class System extends Client {
 	}
 
 	/**
+	 * 角色管理 - 删除
+	 */
+	public function roledelAction(Request $request){
+		$id = isset($_POST['id'])	?	$_POST['id']	:	array();
+		$deleted = absint(input('operate'));
+		$operation_type = $deleted ? '删除' : '恢复';
+
+		$result = \app\client\model\Role::deletedItemLogically($id, $deleted);
+
+		if(is_error($result)){
+			return show_error($result->getErrorMsg());
+		}
+
+		// $request->log = '管理员'.($request->admin->name).', 共'.$operation_type.$result.'个角色';
+		return show_success('操作成功, 共'.$operation_type.$result.'个角色');
+	}
+
+	/**
 	 * 获取数据权限信息
 	 */
 	public function getaccessdataAction(){

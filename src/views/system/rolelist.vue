@@ -20,7 +20,7 @@
 
 				<div class="table-toolbar">
 					<el-button size="mini" type="primary" icon="el-icon-plus">添加</el-button>
-					<el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
+					<el-button size="mini" type="danger" icon="el-icon-delete" @click="delAll">删除</el-button>
 				</div>
 			</div>
 
@@ -92,7 +92,7 @@ export default {
   	data() {
       	return {
 			search: {
-				keyword: 'hello',
+				keyword: '',
 			},
 			pagination: {
 				current_page: 1,
@@ -107,17 +107,7 @@ export default {
 	mounted(){
 		this.getRequestData();
 
-		// table.delete.call(this, 'world');
-		// let table = 'Table';
-		// new table(this);
-
 		Factory.get(Table, this);
-
-		console.log(Factory.get(Table));
-
-		Factory.get(Table).delete();
-		Factory.get(Table).delete();
-
 	},
 	methods: {
 
@@ -132,15 +122,15 @@ export default {
 		},
 
 		// 删除
-		del(){
-
-			let res = this.$refs.table;
-			console.log(res);
+		del(index, row){
+			let deleted = 1;
+			Factory.get(Table).delete(row.id, deleted, '/system/roledel');
 		},
 
 		// 批量删除
 		delAll(){
-
+			let deleted = 1;
+			Factory.get(Table).delete(-1, deleted, '/system/roledel');
 		},
 
 		// 设置加载中

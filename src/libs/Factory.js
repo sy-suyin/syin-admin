@@ -17,7 +17,6 @@ let Factory = {
 
 			let instance = new Class(...params);
 			this.instances[class_name] = instance;
-			console.log(instance.delete());
 			return instance;
 		}
 	}
