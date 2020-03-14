@@ -63,3 +63,12 @@ CREATE TABLE `sy_admin_role_ban` (
   PRIMARY KEY (`id`),
   KEY `role_id` (`role_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='管理员权限黑名单表';
+
+CREATE TABLE `sy_admin_role_relation` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `admin_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '管理员id',
+  `role_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '角色id',
+  PRIMARY KEY (`id`),
+  KEY `role_id` (`role_id`),
+  KEY `admin_id` (`admin_id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='管理员与角色绑定表';

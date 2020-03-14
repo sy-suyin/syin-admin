@@ -84,7 +84,7 @@ import {menus} from '@/config/menu';
 import util from '@/libs/util.js';
 
 export default {
-	name: "system_roleadd",
+	name: "system_roleedit",
 	components: {
 		Lyaout
 	},
@@ -324,7 +324,7 @@ export default {
 				showClose: true,
 				message: msg,
 				type: type,
-				onClose(){
+				onClose: ()=>{
 					if(path != ''){
 						this.$router.push({path});
 					}

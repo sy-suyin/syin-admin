@@ -229,13 +229,26 @@ export default {
 			return unselected;
 		},
 
-		message(msg, type='warning'){
-			this.$message({
+		/** 
+		 * 提示消息
+		 * 
+		 * @param msg  消息内容
+		 * @param type 消息类型
+		 * @param duration 消息显示时间, 单位: 毫秒
+		 * @param path 消息关闭后跳转路径, 为空不跳转
+		 */
+		message(msg, type='warning', duration=3000, path=''){
+			return this.$message({
 				showClose: true,
 				message: msg,
-				type: type
+				type: type,
+				onClose: ()=>{
+					if(path != ''){
+						this.$router.push({path});
+					}
+				}
 			});
-		}
+		},
     }
 };
 </script>

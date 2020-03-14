@@ -8,6 +8,34 @@ use think\Request;
 
 class System extends Client {
 
+
+	/** 
+	 * 管理员 - 添加
+	 */
+	public function adminaddAction(Request $request){
+		$result = SystemTool::getAdminArgs();
+
+		if(is_error($result)){
+			return show_error($result->getErrorMsg());
+		}
+
+		if(! $result['model']->save()){
+			return show_error('新建失败，请稍后重试');
+		}
+
+		$relation_args = [];
+		foreach($result['roles'] as $role){
+			$relation_args[] = [
+				'admin_id' => $result['model']->id,
+				'role_id'  => $role,
+			];
+		}
+
+		db('admin_role_relation')->insertAll($relation_args);
+		// $request->log = '管理员'.($request->admin->name).', 新建了管理员'.$result['model']->name;
+		return show_success('已成功添加管理员');
+	}
+
 	/**
 	 * 角色管理 - 列表
 	 */
@@ -28,6 +56,19 @@ class System extends Client {
 			'page_num' => $num,
 			'results'  => $results['data'],
 		]);
+	}
+
+	/**
+	 * 获取所有角色数据
+	 */
+	public function getallrolesAction(){
+		$results = db('admin_role')
+			->field('id, name, description')
+			->where('is_disabled', 0)
+			->where('is_deleted', 0)
+			->select();
+
+		return show_success('', $results);
 	}
 
 	/** 

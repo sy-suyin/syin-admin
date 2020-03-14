@@ -5,8 +5,82 @@ use \app\common\library\RuntimeError;
 use app\common\library\BaseTool;
 
 class SystemTool extends BaseTool{
+	
+	/**
+	 * 获取新增/编辑管理员的表单字段
+	 *
+	 * @param bool 	$is_edit	是否为编辑状态
+	 * @param mixed $model		Model对象实例, 当为修改时传入
+	 */
+	public static function getAdminArgs($is_edit = false, $model = null){
+		$validate = new \app\client\validate\AdminValidate;
 
-		/**
+		$args = self::getRequestParams(array(
+			'name'	 	 => array('type'=>self::STRING_TYPE),
+			'login_name' => array('name'=>'login', 'type'=>self::STRING_TYPE),
+			'password'	 => array('type'=>self::STRING_TYPE),
+		));
+		
+		$roles = self::input('roles', self::ARRAY_TYPE);
+
+		$args['update_time'] = time();
+
+		if($is_edit){
+			if(empty($model)){
+				return new RuntimeError('未找到相关数据');
+			}
+
+			$args['id'] = $model->id;
+		}else{
+			$model = new \app\client\model\Admin();
+			$args['add_time'] = $args['update_time'];
+			$args['avatar'] = '/static/common/imgs/avatar/'.mt_rand(1,110).'.png';
+		}
+
+		$validate_res = $validate->check($args);
+		
+		if(false === $validate_res){
+			return new RuntimeError($validate->getError());
+		}
+
+		if($args['password'] != ''){
+			if(!check_password_strength($args['password'])){
+				return new RuntimeError('密码格式有误');
+			}
+
+			$args['password'] = generate_password_hash($args['password']);
+		}else{
+			if(!$is_edit){
+				return new RuntimeError('请先输入登录密码');
+			}
+
+			unset($args['password']);
+		}
+
+		$roles = array_filter(array_map('absint', $roles));
+
+		if(empty($roles)){
+			return new RuntimeError('请先选择权限角色');
+		}
+
+		$role_selected = db('admin_role')->where('is_deleted', 0)->where('is_disabled', 0)->where('id', 'in', $roles)->column('id');
+
+		if(empty($role_selected)){
+			return new RuntimeError('请刷新后，再重新选择权限角色');
+		}
+
+		$roles = $role_selected;
+		unset($role_selected);
+
+		$model->data($args);
+
+		return [
+			'roles' => $roles,
+			'model' => $model
+		];
+	}
+	
+	/**
 	 * 获取角色列表参数
 	 *
 	 * @param bool 	$is_deleted		是否查询被删除的数据

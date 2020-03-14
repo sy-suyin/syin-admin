@@ -85,7 +85,7 @@ import util from '@/libs/util.js';
 import { Loading } from 'element-ui';
 
 export default {
-	name: "list-basic",
+	name: "system_rolelist",
 	components: {
 		Lyaout
 	},
