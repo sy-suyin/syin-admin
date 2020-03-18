@@ -13,7 +13,7 @@ class SystemTool extends BaseTool{
 	 */
 	public static function getAdminResultsArgs($is_deleted = false){
 		$model = new \app\client\model\Admin();
-		$keyword = urldecode(input('k', ''));
+		$keyword = urldecode(input('keyword', ''));
 		$args = array();
 
 		if($keyword){
@@ -187,7 +187,7 @@ class SystemTool extends BaseTool{
 	 */
 	public static function getRoleResultsArgs($is_deleted = false){
 		$model = new \app\client\model\Role();
-		$keyword = urldecode(input('k', ''));
+		$keyword = urldecode(input('keyword', ''));
 		$args = array();
 
 		if($keyword){

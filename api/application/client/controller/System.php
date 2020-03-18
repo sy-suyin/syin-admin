@@ -30,6 +30,62 @@ class System extends Client {
 	}
 
 	/**
+	 * 管理员 - 回收站
+	 */
+	public function adminrecycleAction(){
+		$result	= SystemTool::getAdminResultsArgs(true);
+		$num = 10;
+		$results = $result['model']->paginate($num, false, ['query'=>$result['args']]);
+		$results = $results->toArray();
+
+		$results['data' ] = SystemTool::convertTime($results['data']);
+
+		return show_success('', [
+			'total' => $results['total'],
+			'current_page' => $results['current_page'],
+			'page_max' => ceil($results['total'] / $num),
+			'page_num' => $num,
+			'results'  => $results['data'],
+		]);
+	}
+	
+	/**
+	 * 管理员管理 - 删除
+	 */
+	public function admindelAction(Request $request){
+		$id = isset($_POST['id'])	?	$_POST['id']	:	array();
+		$deleted = absint(input('operate'));
+		$operation_type = $deleted ? '删除' : '恢复';
+
+		$result = \app\client\model\Admin::deletedItemLogically($id, $deleted);
+
+		if(is_error($result)){
+			return show_error($result->getErrorMsg());
+		}
+
+		// $request->log = '管理员'.($request->admin->name).', 共'.$operation_type.$result.'个管理员';
+		return show_success('操作成功, 共'.$operation_type.$result.'个管理员');
+	}
+
+	/**
+	 * 管理员管理 - 禁用
+	 */
+	public function admindisAction(Request $request){
+		$id = isset($_POST['id'])	?	$_POST['id']	:	array();
+		$disabled = absint(input('operate'));
+		$operation_type = $disabled ? '禁用' : '启用';
+
+		$result = \app\client\model\Admin::disableItem($id, $disabled, ['is_admin' => 0]);
+
+		if(is_error($result)){
+			return show_error($result->getErrorMsg());
+		}
+
+		// $request->log = '管理员'.($request->admin->name).', 共'.$operation_type.$result.'个管理员';
+		return show_success('操作成功, 共'.$operation_type.$result.'个管理员');
+	}
+
+	/**
 	 * 管理员 - 添加
 	 */
 	public function adminaddAction(Request $request){
@@ -129,6 +185,26 @@ class System extends Client {
 	}
 
 	/**
+	 * 角色管理 - 回收站
+	 */
+	public function rolerecycleAction(){
+		$result	= SystemTool::getRoleResultsArgs(true);
+		$num = config('common.page_num');
+		$results = $result['model']->paginate($num, false, ['query'=>$result['args']]);
+		$results = $results->toArray();
+
+		$results['data' ] = SystemTool::convertTime($results['data']);
+
+		return show_success('', [
+			'total' => $results['total'],
+			'current_page' => $results['current_page'],
+			'page_max' => ceil($results['total'] / $num),
+			'page_num' => $num,
+			'results'  => $results['data'],
+		]);
+	}
+
+	/**
 	 * 角色管理 - 列表
 	 */
 	public function rolelistAction(){
@@ -147,6 +223,7 @@ class System extends Client {
 			'results'  => $results['data'],
 		]);
 	}
+
 
 	/**
 	 * 获取所有角色数据

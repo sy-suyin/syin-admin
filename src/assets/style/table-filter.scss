@@ -44,6 +44,10 @@
 			text-align: right;
 		}
 	}
+
+	.search-btn{
+		cursor: pointer;
+	}
 	
 	.table-toolbar{
 		float: right;
@@ -61,5 +65,9 @@
 		.el-pagination{
 			font-weight: 500;
 		}
+	}
+
+	.disabled-btn{
+		cursor: pointer;
 	}
 }

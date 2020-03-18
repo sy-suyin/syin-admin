@@ -171,11 +171,18 @@ const menus = [
 						is_hidden: 0
 					},
 					{
+						name: '回收站',
+						icon: '',
+						controller: 'system',
+						action: 'adminrecycle',
+						is_hidden: 1
+					},
+					{
 						name: '添加',
 						icon: '',
 						controller: 'system',
 						action: 'adminadd',
-						is_hidden: 0
+						is_hidden: 1
 					},
 					{
 						name: '修改',
@@ -200,6 +207,13 @@ const menus = [
 						controller: 'system',
 						action: 'rolelist',
 						is_hidden: 0
+					},
+					{
+						name: '回收站',
+						icon: '',
+						controller: 'system',
+						action: 'rolerecycle',
+						is_hidden: 1
 					},
 					{
 						name: '添加',

@@ -2,7 +2,7 @@
 	<lyaout class="table-base">
 		<template #breadcrumb-after>
 			<div>
-				<h2 class="page-title">角色列表</h2>
+				<h2 class="page-title">管理员列表</h2>
 			</div>
 		</template>
 
@@ -11,15 +11,16 @@
 				<div class="table-search">
 					<el-input
 						placeholder="请输入搜索内容"
-						v-model="search.keyword"
+						v-model="search_args.keyword"
 						size="mini"
 					>
-						<i slot="suffix" class="el-input__icon el-icon-search"></i>
+						<i slot="suffix" class="el-input__icon el-icon-search search-btn" @click="search"></i>
 					</el-input>
 				</div>
 
 				<div class="table-toolbar">
-					<el-button size="mini" type="primary" icon="el-icon-plus">添加</el-button>
+					<el-button size="mini" type="primary" icon="el-icon-plus" @click="add">添加</el-button>
+					<el-button size="mini" type="warning" icon="el-icon-s-promotion" @click="recycle">回收站</el-button>
 					<el-button size="mini" type="danger" icon="el-icon-delete" @click="delAll">删除</el-button>
 				</div>
 			</div>
@@ -35,7 +36,7 @@
 
 				<el-table-column prop="id" label="编号" width="60"></el-table-column>
 
-				<el-table-column prop="name" label="角色名称" width="200"></el-table-column>
+				<el-table-column prop="name" label="名称" width="200"></el-table-column>
 
 				<el-table-column label="状态" width="120">
 					<template slot-scope="scope">
@@ -48,8 +49,7 @@
 
 				<el-table-column label="角色">
 					<template slot-scope="scope">
-						<el-tag effect="plain" type="info" size="mini" v-for="item in scope.row.roles" :key="item.id">{{item.name}}</el-tag>
-
+						<el-tag class="role-tag" effect="plain" type="info" size="mini" v-for="item in scope.row.roles" :key="item.id">{{item.name}}</el-tag>
 					</template>
 				</el-table-column>
 
@@ -99,17 +99,27 @@ export default {
 	},
   	data() {
       	return {
-			search: {
+			// 搜索参数
+			search_args: {
 				keyword: '',
 			},
+
+			// 筛选参数 
+			filter_args: {},
+
+			// 请求数据参数, 取值自 search_args 与 filter_args
+			request_args: {},
+
+			// 分页数据
 			pagination: {
 				current_page: 1,
 				page_max: 1,
 				page_num: 0,
 				total: 0,
 			},
+
+			// 表格数据
 			results: [],
-			multipleSelection: [],
 		}
 	},
 	mounted(){
@@ -121,7 +131,12 @@ export default {
 
 		// 添加
 		add(){
+			this.$router.push({path: '/system/adminadd'})
+		},
 
+		// 回收站
+		recycle(){
+			this.$router.push({path: '/system/adminrecycle'})
 		},
 
 		// 修改
@@ -141,6 +156,20 @@ export default {
 			Factory.get(Table).delete(-1, deleted, '/system/admindel');
 		},
 
+		// 搜索
+		search(){
+			this.request_args.keyword = this.search_args.keyword;
+			this.getRequestData(1);
+		},
+
+		// 重置参数
+		reset(){
+			this.search_args = {};
+			this.filter_args = {};
+			this.request_args = {};
+			this.getRequestData(1);
+		},
+
 		// 设置加载中
 		loading(is_open = true){
 			if(is_open){
@@ -152,14 +181,18 @@ export default {
 
 		// 获取页面数据
 		getRequestData(page=1){
-			let args = {};
+			let args = {...this.request_args};
 
 			if(+page < 1){
 				page = 1;
 			}
 
 			if(page > this.pagination.page_max){
-				return this.message('请求页面超过最大页码! ', 'warning');
+				if(page == 1){
+					return this.message('暂无数据! ', 'warning');
+				}else{
+					return this.message('请求页面超过最大页码! ', 'warning');
+				}
 			}
 
 			args['page'] = page;
@@ -217,7 +250,7 @@ export default {
 		},
 
 		disabled(row, disabled){
-			Factory.get(Table).disabled(row.id, disabled, '/system/roledis');
+			Factory.get(Table).disabled(row.id, disabled, '/system/admindis');
 		},
 
 		message(message, type='warning'){
@@ -244,7 +277,7 @@ export default {
 <style lang="scss">
 @import "@/assets/style/table-base.scss";
 
-.disabled-btn{
-	cursor: pointer;
+.role-tag{
+	margin-right: 4px;
 }
 </style>

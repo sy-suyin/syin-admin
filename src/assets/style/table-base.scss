@@ -9,6 +9,10 @@
 		margin-top: 0;
 		padding-bottom: 10px;
 	}
+
+	.search-btn{
+		cursor: pointer;
+	}
 	
 	.table-toolbar{
 		float: right;
@@ -25,5 +29,9 @@
 		.el-pagination{
 			font-weight: 500;
 		}
+	}
+
+	.disabled-btn{
+		cursor: pointer;
 	}
 }

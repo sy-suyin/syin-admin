@@ -19,9 +19,8 @@
 				</div>
 
 				<div class="table-toolbar">
-					<el-button size="mini" type="primary" icon="el-icon-plus" @click="add">添加</el-button>
-					<el-button size="mini" type="warning" icon="el-icon-s-promotion" @click="recycle">回收站</el-button>
-					<el-button size="mini" type="danger" icon="el-icon-delete" @click="delAll">删除</el-button>
+					<el-button size="mini" type="primary" icon="el-icon-s-promotion" @click="list">列表</el-button>
+					<el-button size="mini" type="success" icon="el-icon-delete" @click="restoreAll">还原</el-button>
 				</div>
 			</div>
 
@@ -38,26 +37,11 @@
 
 				<el-table-column prop="name" label="角色名称" width="200"></el-table-column>
 
-				<el-table-column label="状态" width="120">
-					<template slot-scope="scope">
-
-						<el-tag class="disabled-btn" type="success" effect="dark" size="mini" @click="disabled(scope.row, 1)" v-if="scope.row.is_disabled < 1">启用</el-tag>
-						<el-tag class="disabled-btn" type="danger" effect="dark" size="mini" @click="disabled(scope.row, 0)" v-else>禁用</el-tag>
-
-					</template>
-				</el-table-column>
-
 				<el-table-column prop="add_time" label="添加时间" width="180"></el-table-column>
 
 				<el-table-column align="right" label="操作">
 					<template slot-scope="scope">
-						<el-button
-						size="mini" type="text" 
-						@click="edit(scope.$index, scope.row)">修改</el-button>
-
-						<el-divider direction="vertical"></el-divider>
-
-						<el-button size="mini" type="text" @click="del(scope.$index, scope.row)">删除</el-button>
+						<el-button size="mini" type="text" @click="restore(scope.$index, scope.row)">恢复</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -119,30 +103,20 @@ export default {
 	},
 	methods: {
 
-		// 添加
-		add(){
-			this.$router.push({path: `/system/roleadd`})
+		// 列表
+		list(){
+			this.$router.push({path: '/system/rolelist'})
 		},
 
-		// 回收站
-		recycle(){
-			this.$router.push({path: '/system/rolerecycle'})
-		},
-
-		// 修改
-		edit(index, row){
-			this.$router.push({path: `/system/roleedit/${row.id}`})
-		},
-
-		// 删除
-		del(index, row){
-			let deleted = 1;
+		// 还原
+		restore(index, row){
+			let deleted = 0;
 			Factory.get(Table).delete(row.id, deleted, '/system/roledel');
 		},
 
-		// 批量删除
-		delAll(){
-			let deleted = 1;
+		// 批量还原
+		restoreAll(){
+			let deleted = 0;
 			Factory.get(Table).delete(-1, deleted, '/system/roledel');
 		},
 
@@ -188,7 +162,7 @@ export default {
 			args['page'] = page;
 
 			this.loading(true);
-			util.post('/system/rolelist', args).then(res => {
+			util.post('/system/rolerecycle', args).then(res => {
 				this.loading(false);
 
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
@@ -237,10 +211,6 @@ export default {
 			page = +page || 1;
 
 			this.getRequestData(page);
-		},
-
-		disabled(row, disabled){
-			Factory.get(Table).disabled(row.id, disabled, '/system/roledis');
 		},
 
 		message(message, type='warning'){

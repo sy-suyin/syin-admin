@@ -107,7 +107,7 @@ export default {
 					}
 				},
 				visible: {
-					data: true,
+					data: false,
 					page: false
 				},
 				data: {
