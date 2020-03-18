@@ -8,7 +8,6 @@ use think\Request;
 
 class System extends Client {
 
-
 	/** 
 	 * 管理员 - 添加
 	 */
@@ -34,6 +33,78 @@ class System extends Client {
 		db('admin_role_relation')->insertAll($relation_args);
 		// $request->log = '管理员'.($request->admin->name).', 新建了管理员'.$result['model']->name;
 		return show_success('已成功添加管理员');
+	}
+
+	/** 
+	 * 管理员 - 修改
+	 */
+	public function admineditAction(Request $request){
+		$id = absint(input('id'));
+
+		if($id){
+			$model = \app\client\model\Admin::get($id);
+		}
+
+		if(empty($model)){
+			return show_error('未找到相关信息');
+		}
+
+		if(! $request->isPost()){
+			return show_error('请求失败，请稍后重试');
+		}
+
+		$result = SystemTool::getAdminArgs(true, $model);
+		if(is_error($result)){
+			return show_error($result->getErrorMsg());
+		}
+
+		if(! $result['model']->save()){
+			return show_error('修改失败，请稍后重试');
+		}
+
+		$relation_args = [];
+		foreach($result['roles'] as $role){
+			$relation_args[] = [
+				'admin_id' => $id,
+				'role_id'  => $role,
+			];
+		}
+
+		// 先接触绑定,再建立新的绑定
+		db('admin_role_relation')->where('admin_id', $id)->delete();
+		db('admin_role_relation')->insertAll($relation_args);
+		// $request->log = '管理员'.($request->admin->name).', 修改了管理员'.$result['model']->name;
+		return show_success('已成功修改管理员数据');
+	}
+
+	/** 
+	 * 获取管理员详情
+	 */
+	public function admindetailAction(){
+		$id = absint(input('id'));
+
+		if($id){
+			$model = \app\client\model\Admin::get($id);
+		}
+
+		if(empty($model)){
+			return show_error('未找到相关信息');
+		}
+
+		$roles = db('admin_role_relation')
+			->field('r.id, name')
+			->alias('rr')
+			->where('admin_id', $id)
+			->join('admin_role r', 'r.id = rr.role_id')
+			->select();
+
+		$result = $model -> toArray();
+		unset($result['password']);
+
+		$result['avatar_url'] = request()->domain().$result['avatar']; 
+		$result['roles'] = empty($roles) ? [] : $roles;
+		
+		return show_success('', $result);
 	}
 
 	/**

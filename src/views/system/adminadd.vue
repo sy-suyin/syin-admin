@@ -2,7 +2,7 @@
 	<lyaout>
 		<el-card class="box-card">
 			<div slot="header" class="clearfix">
-				表单操作
+				添加管理员
 			</div>
 
 			<el-form ref="form" :model="form" label-width="80px">
@@ -16,7 +16,7 @@
 
 				
 				<el-form-item label="登录密码">
-					<el-input v-model="form.password"></el-input>
+					<el-input v-model="form.password" show-password></el-input>
 				</el-form-item>
 
 				<el-form-item label="权限角色">
