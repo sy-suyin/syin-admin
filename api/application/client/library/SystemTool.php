@@ -5,6 +5,106 @@ use \app\common\library\RuntimeError;
 use app\common\library\BaseTool;
 
 class SystemTool extends BaseTool{
+
+	/**
+	 * 获取管理员列表参数
+	 *
+	 * @param bool 	$is_deleted		是否查询被删除的数据
+	 */
+	public static function getAdminResultsArgs($is_deleted = false){
+		$model = new \app\client\model\Admin();
+		$keyword = urldecode(input('k', ''));
+		$args = array();
+
+		if($keyword){
+			$model = $model->where('name', 'like', '%'.$keyword.'%');
+			$args['k'] = $keyword;
+		}
+
+		$model = $model->where('is_deleted', $is_deleted)->order('id desc');
+
+		\think\facade\View::share('keyword', $keyword);
+
+		return array(
+			'model' => $model,
+			'args'  => $args
+		);
+	}
+
+	/**
+	 * 转换时间
+	 * 
+	 * @param array $data 		 需要进行转换的数据
+	 * @param array $other_times 其他需要转换的时间字段
+	 */
+	public static function convertTime($data, $other_times=[]){
+		$other_count = count($other_times);
+
+		foreach($data as $key => $val){
+			$data[$key]['add_time'] = date('Y-m-d H:i:s', $val['add_time']);
+			$data[$key]['update_time'] = date('Y-m-d H:i:s', $val['update_time']);
+
+			if($other_count > 0){
+				foreach($other_times as $filed){
+					if(!empty($val[$filed])){
+						$data[$key][$filed] = date('Y-m-d H:i:s', $val[$filed]);
+					}
+				}
+			}
+		}
+
+		return $data;
+	}
+
+	/**
+	 * 获取管理员关联角色信息
+	 * 
+	 * @param array $data 		 需要进行转换的数据
+	 */
+	public static function getAdminRelation($data){
+		$ids = [];
+		$role_ids = [];
+
+		// 1. 先获取管理员id
+		foreach($data as $key => $val){
+			$ids[] = $val['id'];
+			$data[$key]['roles'] = [];
+		}
+
+		$relations = db('admin_role_relation')->where('admin_id', 'in', $ids)->select();
+
+		// 2. 获取对应角色id
+		$mapping = [];
+		foreach($relations as $key => $val){
+			if(!isset($mapping[$val['admin_id']])){
+				$mapping[$val['admin_id']] = [];
+			}
+
+			$mapping[$val['admin_id']][] = $val['role_id'];
+			$role_ids[$val['role_id']] = 1; 
+		}
+
+		// 3. 获取角色信息, 并赋给管理, 角色信息可以缓存
+		$role_ids = array_keys($role_ids);
+		$roles = db('admin_role')->where('id', 'IN', $role_ids)->column('id, name');
+
+		if(!empty($roles)){
+			foreach($data as $key => $val){
+				if(isset($mapping[$val['id']])){
+					foreach($mapping[$val['id']] as $rid){
+						if(isset($roles[$rid])){
+							$data[$key]['roles'][] = [
+								'id'   => $rid,
+								'name' => $roles[$rid]
+							];
+						}
+					}
+				}
+			}
+		}
+
+		return $data;
+	}
 	
 	/**
 	 * 获取新增/编辑管理员的表单字段

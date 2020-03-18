@@ -8,7 +8,28 @@ use think\Request;
 
 class System extends Client {
 
-	/** 
+	/**
+	 * 管理员 - 列表
+	 */
+	public function adminlistAction(){
+		$result	= SystemTool::getAdminResultsArgs(false);
+		$num = 10;
+		$results = $result['model']->paginate($num, false, ['query'=>$result['args']]);
+		$results = $results->toArray();
+
+		$results['data' ] = SystemTool::convertTime($results['data']);
+		$results['data' ] = SystemTool::getAdminRelation($results['data']);
+
+		return show_success('', [
+			'total' => $results['total'],
+			'current_page' => $results['current_page'],
+			'page_max' => ceil($results['total'] / $num),
+			'page_num' => $num,
+			'results'  => $results['data'],
+		]);
+	}
+
+	/**
 	 * 管理员 - 添加
 	 */
 	public function adminaddAction(Request $request){
@@ -35,7 +56,7 @@ class System extends Client {
 		return show_success('已成功添加管理员');
 	}
 
-	/** 
+	/**
 	 * 管理员 - 修改
 	 */
 	public function admineditAction(Request $request){
@@ -77,7 +98,7 @@ class System extends Client {
 		return show_success('已成功修改管理员数据');
 	}
 
-	/** 
+	/**
 	 * 获取管理员详情
 	 */
 	public function admindetailAction(){
@@ -101,9 +122,9 @@ class System extends Client {
 		$result = $model -> toArray();
 		unset($result['password']);
 
-		$result['avatar_url'] = request()->domain().$result['avatar']; 
+		$result['avatar_url'] = request()->domain().$result['avatar'];
 		$result['roles'] = empty($roles) ? [] : $roles;
-		
+
 		return show_success('', $result);
 	}
 
@@ -116,9 +137,7 @@ class System extends Client {
 		$results = $result['model']->paginate($num, false, ['query'=>$result['args']]);
 		$results = $results->toArray();
 
-		foreach($results['data'] as $key => $val){
-			$results['data'][$key]['add_time'] = date('Y-m-d H:i:s', $val['add_time']);
-		}
+		$results['data' ] = SystemTool::convertTime($results['data']);
 
 		return show_success('', [
 			'total' => $results['total'],
@@ -142,7 +161,7 @@ class System extends Client {
 		return show_success('', $results);
 	}
 
-	/** 
+	/**
 	 * 获取角色详情
 	 */
 	public function roledetailAction(){
@@ -291,8 +310,8 @@ class System extends Client {
 		// $request->log = '管理员'.($request->admin->name).', 共'.$operation_type.$result.'个角色';
 		return show_success('操作成功, 共'.$operation_type.$result.'个角色');
 	}
-	
-	/** 
+
+	/**
 	 * 角色管理 - 禁用
 	 */
 	public function roledisAction(Request $request){
@@ -333,7 +352,7 @@ class System extends Client {
 						$forbid['data_forbid'][] = $val;
 					}elseif($val['type'] == 2){
 						$forbid['page_forbid'][] = $val;
-					} 
+					}
 				}
 			}
 		}

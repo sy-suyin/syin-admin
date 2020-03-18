@@ -13,7 +13,6 @@
 				<el-form-item label="用户名称">
 					<el-input v-model="form.name"></el-input>
 				</el-form-item>
-
 				
 				<el-form-item label="登录密码">
 					<el-input v-model="form.password" show-password></el-input>
