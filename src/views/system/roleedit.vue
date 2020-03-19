@@ -81,8 +81,7 @@
 // @ is an alias to /src
 import Lyaout from "@/components/layout/base-layout.vue";
 import {menus} from '@/config/menu';
-import util from '@/libs/util.js';
-
+import * as util from '@/libs/util.js';
 export default {
 	name: "system_roleedit",
 	components: {

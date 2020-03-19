@@ -1,7 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
-import menu from '@/libs/menu.js';
 import store from '../vuex/store'
 
 Vue.use(VueRouter)

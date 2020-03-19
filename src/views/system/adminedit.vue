@@ -45,8 +45,7 @@
 <script>
 // @ is an alias to /src
 import Lyaout from "@/components/layout/base-layout.vue";
-import util from '@/libs/util.js';
-
+import * as util from '@/libs/util.js';
 export default {
 	name: "system-adminadd",
 	components: {

@@ -19,8 +19,8 @@
 				</div>
 
 				<div class="table-toolbar">
-					<el-button size="mini" type="primary" icon="el-icon-plus" @click="add">添加</el-button>
-					<el-button size="mini" type="warning" icon="el-icon-s-promotion" @click="recycle">回收站</el-button>
+					<el-button size="mini" type="primary" icon="el-icon-plus" @click="jump('add')">添加</el-button>
+					<el-button size="mini" type="warning" icon="el-icon-s-promotion" @click="jump('recycle')">回收站</el-button>
 					<el-button size="mini" type="danger" icon="el-icon-delete" @click="delAll">删除</el-button>
 				</div>
 			</div>
@@ -60,11 +60,11 @@
 					<template slot-scope="scope">
 						<el-button
 						size="mini" type="text" 
-						@click="edit(scope.$index, scope.row)">修改</el-button>
+						@click="jump('edit', {id: scope.row.id})">修改</el-button>
 
 						<el-divider direction="vertical"></el-divider>
 
-						<el-button size="mini" type="text" @click="del(scope.$index, scope.row)">删除</el-button>
+						<el-button size="mini" type="text" @click="del(scope.row.id)">删除</el-button>
 					</template>
 				</el-table-column>
 			</el-table>
@@ -87,18 +87,30 @@
 
 <script>
 import Lyaout from "@/components/layout/base-layout.vue";
+import {table as tableMixin} from "@/components/mixins/table.js";
+import {common as commonMixin} from "@/components/mixins/common.js";
 import Table from '@/libs/Table.js';
 import Factory from '@/libs/Factory.js';
-import util from '@/libs/util.js';
-import { Loading } from 'element-ui';
+import * as Util from '@/libs/util.js';
 
 export default {
 	name: "system_rolelist",
 	components: {
 		Lyaout
 	},
+	mixins: [tableMixin, commonMixin],
   	data() {
       	return {
+
+			// 各跳转链接
+			urls: {
+				add: '/system/adminadd',
+				del: '/system/admindel',
+				dis: '/system/admindis',
+				edit: '/system/adminedit',
+				recycle: '/system/adminrecycle',
+			},
+
 			// 搜索参数
 			search_args: {
 				keyword: '',
@@ -124,60 +136,11 @@ export default {
 	},
 	mounted(){
 		this.getRequestData();
+		this.init();
 
 		Factory.get(Table, this);
 	},
 	methods: {
-
-		// 添加
-		add(){
-			this.$router.push({path: '/system/adminadd'})
-		},
-
-		// 回收站
-		recycle(){
-			this.$router.push({path: '/system/adminrecycle'})
-		},
-
-		// 修改
-		edit(index, row){
-			this.$router.push({path: `/system/adminedit/${row.id}`})
-		},
-
-		// 删除
-		del(index, row){
-			let deleted = 1;
-			Factory.get(Table).delete(row.id, deleted, '/system/admindel');
-		},
-
-		// 批量删除
-		delAll(){
-			let deleted = 1;
-			Factory.get(Table).delete(-1, deleted, '/system/admindel');
-		},
-
-		// 搜索
-		search(){
-			this.request_args.keyword = this.search_args.keyword;
-			this.getRequestData(1);
-		},
-
-		// 重置参数
-		reset(){
-			this.search_args = {};
-			this.filter_args = {};
-			this.request_args = {};
-			this.getRequestData(1);
-		},
-
-		// 设置加载中
-		loading(is_open = true){
-			if(is_open){
-				Loading.service({ fullscreen: true });
-			}else{
-				Loading.service({ fullscreen: true }).close();
-			}
-		},
 
 		// 获取页面数据
 		getRequestData(page=1){
@@ -198,7 +161,7 @@ export default {
 			args['page'] = page;
 
 			this.loading(true);
-			util.post('/system/adminlist', args).then(res => {
+			Util.post('/system/adminlist', args).then(res => {
 				this.loading(false);
 
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
@@ -247,18 +210,6 @@ export default {
 			page = +page || 1;
 
 			this.getRequestData(page);
-		},
-
-		disabled(row, disabled){
-			Factory.get(Table).disabled(row.id, disabled, '/system/admindis');
-		},
-
-		message(message, type='warning'){
-			this.$message({
-				showClose: true,
-				message: message,
-				type: 'warning'
-			});
 		},
 
 		// 选择框改变

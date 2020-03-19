@@ -30,8 +30,7 @@
 </template>
 
 <script>
-import util from '@/libs/util.js';
-
+import * as util from '@/libs/util.js';
 export default {
 	name: 'login',
 	data(){

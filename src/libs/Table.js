@@ -1,5 +1,4 @@
-import util from '@/libs/util.js';
-
+import * as util from '@/libs/util.js';
 class Table{
 
 	target = null;

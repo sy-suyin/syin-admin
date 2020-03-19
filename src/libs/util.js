@@ -1,130 +1,338 @@
-import VueRouter from 'vue-router';
-import Config from '@/config/common';
-import { Message } from 'element-ui';
-import Qs from 'qs';
-import axios from 'axios';
-import store from '@/vuex/store';
-import {menus} from '@/config/menu';
+// 工具类
+import {request} from './request';
 
-// todo: 具体名称待调整
-/* if(Config.debug && Config.hasOwnProperty('debug_config')){
-	console.log(Config.debug_config);
-	Config = Config.debug_config;
-} */
-
-axios.defaults.withCredentials=false;
-
-let util = {
-
-	/** 
-	 * 生成api网站请求网址
-	 */
-	url(url){
-		return Config.api_url + url;
-	},
-	
-	/**
-	 * 发送AJAX请求
-	 *
-	 * @param url            请求URL
-	 * @param method         请求类型，取值post|get
-	 * @param params         发送数据，对象格式：如{id: 1, ...}；字符串形式：如'id=1&cid=0...'
-	 * @param responseType   服务器响应的数据类型，可以是 'arraybuffer', 'blob', 'document', 'json', 'text', 'stream'
-	 * @param before         提交请求前回调方法
-	 * 
-	 * @return Promise
-	 */
-	request(url='', method='', params={}, responseType='json', before=null) {
-		return new Promise((resolve, reject) => {
-
-			if(typeof(url) === 'undefined' || url === ''){
-				if(window.location.hash != ''){
-					url = '/' + window.location.hash.substr(1, window.location.hash.length);
-				}else{
-					url = window.location.href;
-				}
-			}
-
-			if(url != '' && url[0] == '/'){
-				url = util.url(url);
-			}
-
-			let config = {
-				url
-			};
-		
-			let axioxBefore = {};
-		
-			config.method = (typeof(method) === 'undefined' || method === '') ? 'get' : method;
-			params = (typeof(params) === 'undefined' || params === '') ? {} : params;
-			config.responseType = (typeof(responseType) === 'undefined' || responseType === '') ? 'json' : responseType;
-			config.headers = {
-				'token': store.getters.token,
-				'key': Config.key
-			};
-
-			if(config.method == 'post'){
-				config['data'] = Qs.stringify(params);
-				config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
-			}else{
-				config['params'] = params;
-			}
-
-			if (typeof(before) === 'function') {
-				axioxBefore = axios.interceptors.request.use(function (cfg) {
-					return cfg;
-				}, function (error) {
-					return Promise.reject(error);
-				});
-			}
-
-			axios(config).then(function(response){
-				axioxBefore && axios.interceptors.request.eject(axioxBefore);
-
-				/** 
-				 * 20180605 注释
-				 *
-				 * 因微信安卓版本app调用接口后返回正常，response.statusText 为空导致程序异常问题
-				 * 注释掉 response.statusText 字段验证，以便程序正常运行
-				 */
-				if(response.status !== 200){
-				// if(response.status !== 200 || response.statusText !== 'OK'){
-					Message({
-						showClose: true,
-						message: '服务器未响应，请稍后重试'+response.statusText,
-						type: 'error',
-						duration: 3000
-					});
-				}
-
-				if(response.data && typeof(response.data.status) != 'undefined' && response.data.status < 0){
-					// 这里退出登录
-
-					store.commit('auth/logout');
-					return false;
-				}
-
-				if(response.headers && typeof(response.headers.token) != 'undefined'){
-					store.commit('auth/updateToken',response.headers.token);
-				}
-
-				resolve(response.data);
-			}).catch(function(error){
-				axioxBefore && axios.interceptors.request.eject(axioxBefore);
-
-				reject(error);
-			});
-
-		});
-	},
-
-	post(url='', params={}){
-		return util.request(url, 'post', params);
-	},
-
-	get(url=''){
-		return util.request(url, 'get');
-	},
+/**
+ * 判断数据类型
+ * 
+ * @param mixed 需要进行判断的数据
+ * 
+ */
+export function getType(data) {
+	let type = Object.prototype.toString.call(data).slice(8, -1).toLowerCase()
+	return type;
 }
 
-export default util;
+/**
+ * 判断数据是否为空
+ * 
+ * @param mixed 需要进行判断的数据
+ * 
+ */
+export function isEmpty(data) {
+	let type = getType(data);
+
+	if(!data){
+		return true;
+	}
+
+	let bool = false;
+	switch(type){
+		case 'string': {
+			bool = data.length < 1;
+		}
+		case 'array': {
+			bool = data.length < 1;
+		}
+		case 'object': {
+			bool = Object.keys(data).length < 1;
+		}
+	}
+
+	return bool;
+}
+
+/**
+ * 字符串渲染方法
+ */
+export function strReplace() {
+
+}
+
+/**
+ * 判断对象中是否有某个方法
+ */
+export function objectHas(obj, key) {
+	if(!obj){
+		return false;
+	}
+
+	return obj.hasOwnProperty(key);
+}
+
+/**
+ * 获取当前时间戳
+ */
+export function now() {
+	let time = ~~+(Date.now()/1000)
+	return time;
+}
+
+/**
+ * post提交数据
+ * 
+ * @param url            请求URL
+ * @param params         发送数据，对象格式：如{id: 1, ...}；字符串形式：如'id=1&cid=0...'
+ */
+export function post(url='', params={}){
+	return request(url, 'post', params);
+}
+
+/**
+ * get方式获取数据
+ * @param url            请求URL
+ * 
+ */
+export function get(url=''){
+	return request(url, 'get');
+}
+
+/**
+ * 调试方法 - 断言
+ */
+export function assert() {
+
+}
+
+/**
+ * 输出输入时间距离当前时间友好的时间格式
+ * 
+ * @param string timestamp 时间戳(10位数字或)
+ * @use support '2020-03-20 12:00:21' and '1584676821'
+ * 
+ */
+export function timeAgo (timestamp) {
+	timestamp = +timestamp ? +timestamp : new Date(timestamp).getTime()/1000;
+	let current = now();
+	let interval = 0;
+	let text = '';
+
+	if(!timestamp){
+		return false;
+	}
+
+	interval = current - timestamp;
+
+	if(interval < 1){
+		return false;
+	}
+
+	// 注: 此处为方便计算, 一个月按30.417天计算, 故周也按此计算
+	if(interval < 3600){
+		text =  ~~(compare / 60) + '分钟前';
+	}else if(interval < 3600 * 24){
+		text =  ~~(compare / (60 * 24)) + '小时前';
+	}else if(interval < 3600 * 24 * 7){
+		text =  ~~(compare / (60 * 24 * 7)) + '天前';
+	}else if(interval < 3600 * 24 * 30.417){
+		text =  ~~(compare / (60 * 24 * 7)) + '周前';
+	}else{
+		text =  ~~(compare / (60 * 24 * 30.417)) + '月前';
+	}
+
+	return text;
+}
+
+
+/**
+ * 时间戳转换为时间
+ * @link https://qishaoxuan.github.io/js_tricks/date/
+ *
+ * @param string timestamp 时间戳
+ * @param bool   isMs	   isMs为时间戳是否为毫秒
+ *
+ */
+export function timestampToTime(timestamp = Date.parse(new Date()), isMs = true) {
+	const date = new Date(timestamp * (isMs ? 1 : 1000))
+	return `${date.getFullYear()}-${date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+}
+
+/**
+ * 将驼峰字符串转成-间隔且全小写的Dash模式
+ * @link https://github.com/saqqdy/common/blob/master/src/modules/camel2Dash.js
+ * 
+ * @param string str 需要转换的字符串
+ * 
+ */
+export function camel2Dash(str) {
+	return str
+		.replace(/([A-Z]{1,1})/g, '-$1')
+		.replace(/^-/, '')
+		.toLocaleLowerCase()
+}
+
+/**
+ * 将-间隔且全小写的Dash模式转成驼峰字符串
+ * 
+ * @param string str 需要转换的字符串
+ */
+export function dash2Camel(str){
+	return str.replace(/[\-]{1,1}([a-z]{1,1})/g, function () {
+		return arguments[1].toLocaleUpperCase()
+	})
+}
+
+/**
+ * 设为首页
+ * 
+ * @param string url 访问链接
+ * 
+ */
+export function setHomepage(url) {
+	if (document.all) {
+		document.body.style.behavior = 'url(#default#homepage)';
+		document.body.setHomePage(homeurl);
+	} else if (window.sidebar) {
+
+		if (window.netscape) {
+			try {
+				netscape.security.PrivilegeManager.enablePrivilege('UniversalXPConnect');
+			} catch (e) {
+				return false;
+				// alert('该操作被浏览器拒绝，如果想启用该功能，请在地址栏内输入about:config,然后将项 signed.applets.codebase_principal_support 值该为true');
+			}
+		}
+	}
+	return true;
+}
+
+/**
+ * 加入收藏夹
+ * 
+ * @param string url   网站链接
+ * @param string title 收藏标题
+ * 
+ * @return bool
+ */
+export function addFavorite(url, title) {
+	try {
+		window.external.addFavorite(url, title);
+	} catch (e) {
+		try {
+			window.sidebar.addPanel(title, url, '');
+		} catch (e) {
+			// alert('加入收藏失败，请使用Ctrl+D进行添加');
+			return false;
+		}
+
+		return true;
+	}
+
+	return true;
+}
+
+/** 
+ * 防抖函数
+ * @link [参考] https://www.cnblogs.com/TigerZhang-home/p/11812386.html
+ * 在事件被触发n秒后再执行回调，如果在这n秒内又被触发，则重新计时
+ * 使用方法, 在 methdos添加代码:  你的方法名:debounce(延迟时间, function(你需要的参数){你的代码}),
+ * 
+ * @param int delay   延迟时间
+ * @param function fn 函数 
+ */
+export function debounce(delay, fn){
+	// 存储返回句柄
+	let handle = null;
+	delay = delay || 200;
+
+	return function() {
+		let args = arguments;
+		// 清除上一次延时器
+		handle && clearTimeout(handle);
+		handle = setTimeout(() => {
+			fn.apply(this, args)
+		}, delay);
+	}
+}
+
+/**
+ * 节流函数
+ * 规定在一个单位时间内，只能触发一次函数。如果这个单位时间内触发多次函数，只有一次生效。
+ * 使用方法, 在 methdos添加代码:  你的方法名:throttle(延迟时间, function(你需要的参数){你的代码}),
+ *
+ * @param int delay   延迟时间
+ * @param function fn 函数 
+ */
+export function throttle(delay, fn){
+	// 存储返回句柄
+	let handle = null;
+	let last_time = 0;
+	delay = delay || 200;
+
+	return function(){
+		// 获取当前时间, 毫秒级
+		let current_time = Date.now();
+		let args = arguments;
+
+		if(last_time && current_time < last_time + delay){
+			// 清除上一次延时器
+			handle && clearTimeout(handle);
+
+			handle = setTimeout(()=>{
+				last_time = current_time;
+				fn.apply(this, args);
+			}, delay);
+		}else{
+			handle && clearTimeout(handle);
+			fn.apply(this, args);
+			last_time = current_time;
+		}
+	}
+}
+
+/**
+ * 获取两个数组的差集
+ */
+export const difference = (arr1, arr2) => {
+	return arr1.filter(v => !arr2.includes(v))
+}
+
+/**
+ * 获取两个数组的交集
+ *
+ */
+export function intersection (arr1, arr2) {
+	return arr2.filter(v => arr1.includes(v))
+}
+
+/**
+* 过滤器
+*/
+export function filter (arr, fn) {
+	if (!IS.isArray(arr)) {
+		throw new Error('The first argument to myFilter method must be an array')
+	}
+	const len = arr.length
+	const res = []
+	for (let i = 0; i < len; i++) {
+		if (fn(i, arr[i], arr)) {
+			res.push(arr[i])
+		}
+	}
+	return res
+}
+
+/**
+ * 具体使用参考第二个链接
+ * 
+ * @link https://github.com/tc39/proposal-optional-chaining
+ * @link https://www.mmxiaowu.com/article/5b18d19f2f52003e4d38c639
+ * @link https://github.com/BiYuqi/js-wheels/blob/master/src/object/object.js
+ * 
+ * @param array  target 源数据
+ * @param string props
+ * @param mixed  def 	默认数据
+ * chaining(data, 'name.age.go', '加载中...') // 27
+ * chaining(data, 'name.g.g.b.c', '加载中...') // 加载中...
+ * chaining(data, 'age', '暂无数据') // 38
+ * 
+ */
+export function chaining (target, props, def = '') {
+	if (!props || getType(props) != 'string') {
+	  	return target
+	}
+	const spl = props.split('.')
+	const returnVal = spl.reduce((prev, curr) => {
+	  return prev && prev[curr]
+	}, target)
+	return returnVal || def
+}
