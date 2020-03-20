@@ -82,7 +82,8 @@
 import Lyaout from "@/components/layout/base-layout.vue";
 import Table from '@/libs/Table.js';
 import Factory from '@/libs/Factory.js';
-import * as util from '@/libs/util.js';import { Loading } from 'element-ui';
+import * as util from '@/libs/util.js';
+import { Loading } from 'element-ui';
 
 export default {
 	name: "system_rolelist",

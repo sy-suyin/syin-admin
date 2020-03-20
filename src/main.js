@@ -8,11 +8,11 @@ import store from './vuex/store'
 Vue.config.productionTip = false
 Vue.use(ElementUI);
 
-// 重载路由数据
-store.commit('access/reload');
-
 // 重载用户数据
 store.commit('auth/reload');
+
+// 重载路由数据
+store.commit('access/reload');
 
 new Vue({
   router,

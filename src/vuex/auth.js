@@ -12,13 +12,11 @@ const getters = {
 
 const mutations = {
 
-
 	/**
 	 * 设置登录
 	 */
-	set_login(state, user){
+	setLogin(state, user){
 		state.currentUser = user;
-
 		localStorage.setItem('currentUser',JSON.stringify(user));
 	},
 
@@ -49,7 +47,7 @@ const mutations = {
 		let user = localStorage.getItem('currentUser');
 		if(token && user){
 			user = JSON.parse(user);
-			user && this.commit('auth/set_login',user);
+			user && this.commit('auth/setLogin',user);
 			this.commit('auth/updateToken',token);
 		}
 	}

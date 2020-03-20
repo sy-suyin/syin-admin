@@ -1,53 +1,47 @@
 import store from '@/vuex/store'
+import {isEmpty, isSet} from '@/libs/util.js';
 
 export default {
 	inserted(el, binding, vnode) {
 		const { value, arg } = binding
-		// const roles = store.getters && store.getters.roles
 
 		let type = 'data';
+
+		let user = store.getters['auth/user'];
 
 		// 默认为页面权限
 		if(arg == '' || arg != 'data'){
 			type = 'page';
 		}
 
-		let user = store.getters['auth/user'];
-		console.log(user);
+		if(isEmpty(value) || value.length != 2){
+			throw new Error(`need roles! Like v-permission="['admin','index']"`)
+		}
+
+		let forbid_list = store.getters[`access/${type}_forbid`];
+		let controller = value[0];
+		let action = value[1];
 
 		if(!user){
-			return false;
+			el.parentNode && el.parentNode.removeChild(el)
 		}
 
 		if(!!user.is_admin){
 			return true;
 		}
 
-		let forbid_list = store.getters[`access/${type}_forbid`];
-
-		if(!forbid_list || forbid_list.length < 1){
+		if(isEmpty(forbid_list)){
 			return true;
 		}
 
-		console.log(forbid_list);
+		if(! isSet(forbid_list, controller)){
+			return true;
+		}
 
-		// 1. 获取用户信息, 如果是超级管理员则默认有最高级权限
+		if(-1 == forbid_list[controller].indexOf(action)){
+			return true;
+		}
 
-		// 2. 获取对应名单
-
-
-		// if (value && value instanceof Array && value.length > 0) {
-		// const permissionRoles = value
-
-		// const hasPermission = roles.some(role => {
-		// 	return permissionRoles.includes(role)
-		// })
-
-		// if (!hasPermission) {
-		// 	el.parentNode && el.parentNode.removeChild(el)
-		// }
-		// } else {
-		// 	throw new Error(`need roles! Like v-permission="['admin','index']"`)
-		// }
+		el.parentNode && el.parentNode.removeChild(el)
 	}
 }

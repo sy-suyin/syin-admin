@@ -74,8 +74,8 @@ export default {
 					// 此处添加相关登录代码
 					this.$store.commit('auth/set_login',res.result.user);
 					this.$store.commit('access/set', {
-						data_forbid: [],	// 数据权限黑名单
-						page_forbid: [],	// 页面权限黑名单
+						data_forbid: res.result.forbid.data_forbid,	// 数据权限黑名单
+						page_forbid: res.result.forbid.page_forbid,	// 页面权限黑名单
 					});
 
 					let redirect = localStorage.getItem('user_redirect');

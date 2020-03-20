@@ -1,5 +1,6 @@
 // 工具类
 import {request} from './request';
+import store from '@/vuex/store'
 
 /**
  * 判断数据类型
@@ -10,6 +11,44 @@ import {request} from './request';
 export function getType(data) {
 	let type = Object.prototype.toString.call(data).slice(8, -1).toLowerCase()
 	return type;
+}
+
+/**
+ * 判断是否有访问权限
+ * 
+ * @param string controller 请求的控制
+ * @param string action		请求的方法
+ * @param string type		page/data 权限类型，默认为data 
+ */
+export function checkPermission(controller, action, type='data'){
+	let user = store.getters['auth/user'];
+	let forbid_list = store.getters[`access/${type}_forbid`];
+
+	if(!user){
+		return false;
+	}
+
+	if(!!user.is_admin){
+		return true;
+	}
+
+	if(isEmpty(forbid_list)){
+		return true;
+	}
+
+	if(! isSet(forbid_list, controller)){
+		return true;
+	}
+
+	if(-1 == forbid_list[controller].findIndex(val=>{return val==action;})){
+		return true;
+	}
+
+	// console.log(forbid_list);
+	// console.log(controller);
+	// console.log(action);
+
+	return false;
 }
 
 /**

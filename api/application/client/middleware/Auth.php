@@ -38,6 +38,12 @@ class Auth{
 
 		if($is_logged){
 			$request->admin = $admin;
+
+			$verify_res = \app\client\library\AdminTool::verifyPermission($admin, $request->controller, $request->admin);
+
+			if(false == $verify_res){
+				return show_error('对不起，您没有权限执行该操作');
+			}
 		}else{
 			// TODO: 于此处判断用户访问的页面是否允许未登录直接访问
 		}

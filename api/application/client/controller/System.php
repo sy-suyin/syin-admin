@@ -48,7 +48,7 @@ class System extends Client {
 			'results'  => $results['data'],
 		]);
 	}
-	
+
 	/**
 	 * 管理员管理 - 删除
 	 */
@@ -223,7 +223,6 @@ class System extends Client {
 			'results'  => $results['data'],
 		]);
 	}
-
 
 	/**
 	 * 获取所有角色数据

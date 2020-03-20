@@ -4,10 +4,6 @@
 
 import * as Util from '@/libs/util.js';
 
-function can_access(){
-	return true;
-}
-
 /**
  * 组件基类
  */
@@ -18,9 +14,9 @@ class Component{
 
 	/**
 	 * 添加子组件, 传入的数据必须为继承自该类的实例
-	 * 
-	 * @param Component com 
-	 * 
+	 *
+	 * @param Component com
+	 *
 	 * @returns int 返回插入的实例在列表中的索引
 	 */
 	add(com){
@@ -30,13 +26,13 @@ class Component{
 
 	/**
 	 * 从组件列表中移除子组件
-	 * 
-	 * @param int index 子组件在列表中的位置索引 
+	 *
+	 * @param int index 子组件在列表中的位置索引
 	 */
 	remove(index){
 		this.components.splice(index, 1);
 	}
-	
+
 	/**
 	 * 获取子组件列表长度
 	 */
@@ -46,7 +42,7 @@ class Component{
 
 	/**
 	 * 清空子组件列表
-	 */	
+	 */
 	clear(){
 		delete this.component;
 		this.components = [];
@@ -54,9 +50,9 @@ class Component{
 
 	/**
 	 * 循环子组件列表
-	 * 
+	 *
 	 * @param function fn 循环处理方法, 传入参数为 [子组件, 位置索引]
-	 *  
+	 *
 	 */
 	each(fn){
 		for(let i = 0, len = this.components.length; i < len; i++){
@@ -78,8 +74,8 @@ class MenuInterface extends Component{
 
 	/**
 	 * 激活菜单
-	 * 
-	 * @param string controller 控制器,模板所在文件夹 
+	 *
+	 * @param string controller 控制器,模板所在文件夹
 	 * @param string action  	方法, 模板文件名
 	 */
 	active(controller, action){}
@@ -113,17 +109,19 @@ export default class Menu extends MenuInterface{
 
 	/**
 	 * 初始化菜单组件
-	 * 
-	 * @param array config 菜单配置 
+	 *
+	 * @param array config 菜单配置
 	 */
 	init(config){
 		config.forEach((item, index) =>{
-			if(! can_access(item.controller, item.action)){
+			if(! Util.checkPermission(item.controller, item.action, 'page')){
 				return;
 			}
 
 			let com = new MenuItem(item);
-			this.add(com);
+			if(com instanceof MenuInterface){
+				this.add(com);
+			}
 		});
 	}
 
@@ -222,7 +220,7 @@ class MenuItem extends MenuInterface{
 
 	constructor(config){
 		super();
-		
+
 		config.params = config.params || '';
 		this.config = {...config};
 		this.config.key = config.controller + '-' + config.action;
@@ -231,14 +229,22 @@ class MenuItem extends MenuInterface{
 		if(config.hasOwnProperty('children') && config.children.length > 0){
 			config.children.forEach((item, index) =>{
 
-				if(! can_access(item.controller, item.action)){
+				if(! Util.checkPermission(item.controller, item.action, 'page')){
 					return;
 				}
 
 				let com = new MenuItem(item);
 
-				this.add(com);
+				// 修改当有下级，下级菜单因无权限访问而导致异常的问题. 1
+				if(com instanceof MenuInterface){
+					this.add(com);
+				}
 			});
+
+			// 修改当有下级，下级菜单因无权限访问而导致异常的问题. 2
+			if(this.length() < 1){
+				return {};
+			}
 		}
 	}
 
@@ -250,7 +256,7 @@ class MenuItem extends MenuInterface{
 		if(this.length()){
 			let results = [];
 			this.config.is_open = false;
-			
+
 			this.each((item, index)=>{
 				let result = item.active(controller, action);
 				let first_result = result;
@@ -284,7 +290,7 @@ class MenuItem extends MenuInterface{
 			if(results.length < 1){
 				return false;
 			}else{
-				return results; 
+				return results;
 			}
 		}else{
 			if(controller == this.config.controller && action == this.config.action){
