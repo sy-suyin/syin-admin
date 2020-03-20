@@ -1,6 +1,9 @@
 import { Loading } from 'element-ui';
+import permission from '@/directive/permission/index.js' // 权限判断指令
 
 export const common = {
+	directives: { permission },
+
 	data(){
 		return {
 			is_loading: false,

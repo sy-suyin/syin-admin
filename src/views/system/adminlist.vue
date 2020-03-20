@@ -19,7 +19,7 @@
 				</div>
 
 				<div class="table-toolbar">
-					<el-button size="mini" type="primary" icon="el-icon-plus" @click="jump('add')">添加</el-button>
+					<el-button size="mini" type="primary" icon="el-icon-plus" @click="jump('add')" v-permission="['system', 'adminadd']">添加</el-button>
 					<el-button size="mini" type="warning" icon="el-icon-s-promotion" @click="jump('recycle')">回收站</el-button>
 					<el-button size="mini" type="danger" icon="el-icon-delete" @click="delAll">删除</el-button>
 				</div>

@@ -47,6 +47,8 @@ class Login extends Client{
 		}
 
 		$request->admin = $result;
+		$this->getForbidData();
+		die;
 
 		unset($result['password']);
 
@@ -55,5 +57,42 @@ class Login extends Client{
 		return show_success('登录成功', array(
 			'user' => $result
 		));
+	}
+	
+	/**
+	 * 获取权限黑名单
+	 */
+	protected function getForbidData(){
+		$admin_id = request()->admin['id'];
+
+		// 获取关联角色id;
+		$role_ids = db('admin_role_relation')->where('admin_id', $admin_id)->column('role_id');
+
+		// 禁止访问数据权限
+		$forbid = [
+			'data_forbid' => [],
+			'page_forbid' => [],
+		];
+
+		$forbid_data = db('admin_role_ban')->where('role_id', implode(',', $role_ids))->select();
+
+		// 计算规则, 整合成多个对象的数据组, 仅当各权限名单中都有的才算禁止
+		p($forbid_data);
+		die;
+		if(!empty($forbid_data)){
+			foreach($forbid_data as $val){
+				if($val['type'] == 1){
+					$forbid['data_forbid'][] = $val;
+				}elseif($val['type'] == 2){
+					$forbid['page_forbid'][] = $val;
+				}
+			}
+		}
+
+		return show_success('', [
+			'forbid' => $forbid,
+			'config' => $config,
+		]);
+
 	}
 }
