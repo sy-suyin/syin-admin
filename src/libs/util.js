@@ -51,7 +51,7 @@ export function strReplace() {
 /**
  * 判断对象中是否有某个方法
  */
-export function objectHas(obj, key) {
+export function isSet(obj, key) {
 	if(!obj){
 		return false;
 	}

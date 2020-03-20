@@ -17,7 +17,7 @@
 
 			<!-- 侧边导航栏 -->
 			<div class="nav">
-				<sy-menu-item></sy-menu-item>
+				<sy-menu></sy-menu>
 			</div>
 
 			<div class="background"></div>
@@ -76,12 +76,12 @@
 </template>
 
 <script>
-import syMenuItem from "@/components/layout/sy-menu-item.vue";
+import syMenu from "@/components/layout/sy-menu.vue";
 
 export default {
 	name: "app",
 	components: {
-		syMenuItem
+		syMenu
 	},
 	data(){
 		return {

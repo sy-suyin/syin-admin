@@ -72,7 +72,7 @@ const menus = [
 						name: '高级详情页',
 						icon: '',
 						controller: 'demo',
-						action: 'profile-basic',
+						action: 'profile-advanced',
 						is_hidden: 0,
 						children: []
 					}
@@ -157,7 +157,7 @@ const menus = [
 		is_hidden: 0,
 		children: [
 			{
-				name: '管理员列表',
+				name: '管理员管理',
 				icon: '',
 				controller: 'system',
 				action: 'adminman',
@@ -175,6 +175,7 @@ const menus = [
 						icon: '',
 						controller: 'system',
 						action: 'adminrecycle',
+						relation: 'system-adminlist',
 						is_hidden: 1
 					},
 					{
@@ -182,6 +183,7 @@ const menus = [
 						icon: '',
 						controller: 'system',
 						action: 'adminadd',
+						relation: 'system-adminlist',
 						is_hidden: 1
 					},
 					{
@@ -189,13 +191,14 @@ const menus = [
 						icon: '',
 						controller: 'system',
 						action: 'adminedit',
+						relation: 'system-adminlist',
 						params: '/:id',
 						is_hidden: 1
 					},
 				]
 			},
 			{
-				name: '角色列表',
+				name: '角色管理',
 				icon: '',
 				controller: 'system',
 				action: 'roleman',
@@ -206,6 +209,7 @@ const menus = [
 						icon: '',
 						controller: 'system',
 						action: 'rolelist',
+						relation: 'system-rolelist',
 						is_hidden: 0
 					},
 					{
@@ -213,6 +217,7 @@ const menus = [
 						icon: '',
 						controller: 'system',
 						action: 'rolerecycle',
+						relation: 'system-rolelist',
 						is_hidden: 1
 					},
 					{
@@ -220,6 +225,7 @@ const menus = [
 						icon: '',
 						controller: 'system',
 						action: 'roleadd',
+						relation: 'system-rolelist',
 						is_hidden: 1
 					},
 					{
@@ -228,6 +234,7 @@ const menus = [
 						controller: 'system',
 						action: 'roleedit',
 						params: '/:id',
+						relation: 'system-rolelist',
 						is_hidden: 1
 					},
 				]
