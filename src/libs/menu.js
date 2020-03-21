@@ -129,7 +129,14 @@ export default class Menu extends MenuInterface{
 		let results = [];
 		this.each((item, index)=>{
 			let result = item.active(controller, action);
-			if(result){
+			if(!result){
+				return;
+			}
+
+			// 使返回的数据始终为数组
+			if(Util.getType(result) != 'array'){
+				results.push(result);
+			}else{
 				results = result;
 			}
 		});
@@ -302,6 +309,11 @@ class MenuItem extends MenuInterface{
 		}
 	}
 
+	/**
+	 * 将关联的兄弟子菜单设置为选中激活状态
+	 * 
+	 * @param string key 
+	 */
 	relationActive(key){
 		if(key == this.config.key && this.config.is_hidden == 0){
 			this.config.is_active = true;

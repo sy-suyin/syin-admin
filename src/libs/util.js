@@ -44,10 +44,6 @@ export function checkPermission(controller, action, type='data'){
 		return true;
 	}
 
-	// console.log(forbid_list);
-	// console.log(controller);
-	// console.log(action);
-
 	return false;
 }
 

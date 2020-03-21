@@ -60,7 +60,7 @@ const mutations = {
 			state.page_forbid = page_forbid;
 		}
 
-		this.commit('access/calc');
+		this.dispatch('access/calc');
 	},
 
 	// 设置页面黑名单和数据黑名单
@@ -71,17 +71,20 @@ const mutations = {
 		localStorage.setItem('data_forbid',JSON.stringify(payload.data_forbid));
 		localStorage.setItem('page_forbid',JSON.stringify(payload.page_forbid));
 
-		this.commit('access/calc');
+		this.dispatch('access/calc');
 	},
+}
 
+const actions = {
 	// 根据菜单配置进行计算
-	calc(state){
-		if(state.is_calc){
+	async calc({state, rootGetters}){
+		let user = rootGetters['auth/user'];
+
+		if(!user || state.is_calc){
 			return;
 		}
 
 		MenuInstance.init(configs);
-		let blacklist = state.page_forbid;
 
 		state.is_calc = true;
 		state.routers = MenuInstance.routers();
@@ -93,5 +96,6 @@ export default {
 	namespaced: true,
     state:data,
     getters,
-    mutations
+	mutations,
+	actions
 }
