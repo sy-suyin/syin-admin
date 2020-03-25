@@ -20,7 +20,11 @@
 
 				<div class="table-toolbar">
 					<el-button size="mini" type="primary" icon="el-icon-plus" @click="jump('add')" v-permission:page="['system', 'adminadd']">添加</el-button>
+
+					<el-button size="mini" type="warning" icon="el-icon-s-promotion" @click="filter">筛选</el-button>
+
 					<el-button size="mini" type="warning" icon="el-icon-s-promotion" @click="jump('recycle')">回收站</el-button>
+
 					<el-button size="mini" type="danger" icon="el-icon-delete" @click="delAll">删除</el-button>
 				</div>
 			</div>
@@ -33,6 +37,12 @@
 				@selection-change="selectionChange"
 			>
 				<el-table-column type="selection" width="46" align="center"></el-table-column>
+
+				<el-table-column label="排序" width="86">
+					<template slot-scope="{row}">
+						<el-input v-model="row.sort" type="number" size="mini" max="99" min="0"/>
+					</template>
+				</el-table-column>
 
 				<el-table-column prop="id" label="编号" width="60"></el-table-column>
 
@@ -52,7 +62,6 @@
 						<el-tag class="role-tag" effect="plain" type="info" size="mini" v-for="item in scope.row.roles" :key="item.id">{{item.name}}</el-tag>
 					</template>
 				</el-table-column>
-
 
 				<el-table-column prop="add_time" label="添加时间" width="180"></el-table-column>
 
@@ -87,6 +96,7 @@
 
 <script>
 import Lyaout from "@/components/layout/base-layout.vue";
+import {page as pageMixin} from "@/components/mixins/page.js";
 import {table as tableMixin} from "@/components/mixins/table.js";
 import {common as commonMixin} from "@/components/mixins/common.js";
 import Table from '@/libs/Table.js';
@@ -98,7 +108,7 @@ export default {
 	components: {
 		Lyaout
 	},
-	mixins: [tableMixin, commonMixin],
+	mixins: [pageMixin, tableMixin, commonMixin],
   	data() {
       	return {
 
@@ -107,31 +117,9 @@ export default {
 				add: '/system/adminadd',
 				del: '/system/admindel',
 				dis: '/system/admindis',
-				edit: '/system/adminedit',
+				edit: '/system/adminedit/:id',
 				recycle: '/system/adminrecycle',
 			},
-
-			// 搜索参数
-			search_args: {
-				keyword: '',
-			},
-
-			// 筛选参数 
-			filter_args: {},
-
-			// 请求数据参数, 取值自 search_args 与 filter_args
-			request_args: {},
-
-			// 分页数据
-			pagination: {
-				current_page: 1,
-				page_max: 1,
-				page_num: 0,
-				total: 0,
-			},
-
-			// 表格数据
-			results: [],
 		}
 	},
 	mounted(){
@@ -141,76 +129,6 @@ export default {
 		Factory.get(Table, this);
 	},
 	methods: {
-
-		// 获取页面数据
-		getRequestData(page=1){
-			let args = {...this.request_args};
-
-			if(+page < 1){
-				page = 1;
-			}
-
-			if(page > this.pagination.page_max){
-				if(page == 1){
-					return this.message('暂无数据! ', 'warning');
-				}else{
-					return this.message('请求页面超过最大页码! ', 'warning');
-				}
-			}
-
-			args['page'] = page;
-
-			this.loading(true);
-			Util.post('/system/adminlist', args).then(res => {
-				this.loading(false);
-
-				if(res && typeof(res.status) != 'undefined' && res.status > 0){
-					let result = res.result;
-					let results = result.results;
-
-					if(!results || results.length < 1){
-						results = [];
-					}
-
-					this.results = results;
-					this.pagination = {
-						current_page: result.current_page * 1,
-						page_max: result.page_max,
-						page_num: result.page_num,
-						total: result.total,
-					};
-				}
-				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-					this.$message({
-						showClose: true,
-						message: res.msg,
-						type: 'warning'
-					});
-				}
-				else{
-					this.$message({
-						showClose: true,
-						message: '服务器未响应，请稍后重试',
-						type: 'warning'
-					});
-				}
-			}).catch(err => {
-				this.loading(false);
-
-				this.$message({
-					showClose: true,
-					message: '网络异常, 请稍后重试',
-					type: 'warning'
-				});
-			}); 
-		},
-
-		// 分页点击切换页码
-		pageSwitch(page){
-			page = +page || 1;
-
-			this.getRequestData(page);
-		},
 
 		// 选择框改变
 		selectionChange(selected){
