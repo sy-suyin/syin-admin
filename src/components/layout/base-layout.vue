@@ -69,19 +69,23 @@
 			</el-header>
 			<el-main class="content-box">
 				<slot></slot>
+
 			</el-main>
 			<!-- <el-footer><slot name="footer">Footer</slot></el-footer> -->
 		</el-container>
+
+		<right-panel></right-panel>
 	</el-container>
 </template>
 
 <script>
 import syMenu from "@/components/layout/sy-menu.vue";
+import rightPanel from "@/components/layout/right-panel.vue";
 
 export default {
 	name: "app",
 	components: {
-		syMenu
+		syMenu, rightPanel
 	},
 	data(){
 		return {
