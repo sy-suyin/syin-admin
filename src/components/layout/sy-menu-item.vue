@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<ul class="menu-item-group">
+		<ul class="menu-item-group" :class="'menu-group-level-'+level">
 			<li class="menu-item" 
 				v-for="(item, index) in menus" 
 				:key=" 'item' + index" :data-index="index"  
