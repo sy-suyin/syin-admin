@@ -210,7 +210,6 @@ export function dash2Camel(str){
  * 设为首页
  * 
  * @param string url 访问链接
- * 
  */
 export function setHomepage(url) {
 	if (document.all) {
@@ -283,6 +282,7 @@ export function debounce(delay, fn){
  * 节流函数
  * 规定在一个单位时间内，只能触发一次函数。如果这个单位时间内触发多次函数，只有一次生效。
  * 使用方法, 在 methdos添加代码:  你的方法名:throttle(延迟时间, function(你需要的参数){你的代码}),
+ * vue 示例: 	mouseleave: throttle(2000, function(){})
  *
  * @param int delay   延迟时间
  * @param function fn 函数 

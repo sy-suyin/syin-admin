@@ -1,5 +1,5 @@
 <template>
-	<div class="menu-mini">
+	<div>
 		<sy-menu-item :menus="menus" :lv="0"></sy-menu-item>
 	</div>
 </template>
@@ -92,9 +92,5 @@ export default {
 			}
 		}
 	}
-}
-
-.menu-mini{
-	
 }
 </style>

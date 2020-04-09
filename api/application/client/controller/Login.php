@@ -52,6 +52,7 @@ class Login extends Client{
 		$request->admin = $result;
 		$forbid = \app\client\library\AdminTool::getForbidData($result['id']);
 
+		$result['avatar'] = $request->domain().$result['avatar'];
 		unset($result['password']);
 
 		return show_success('登录成功', array(

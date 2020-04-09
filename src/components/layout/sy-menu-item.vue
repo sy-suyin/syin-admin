@@ -34,7 +34,6 @@ export default {
 	created(){
 		this.level = +this.lv || 0;
 	},
-
 	methods:{
 		menuClick(index){
 			// 此处需加一个当重复点击不生效的
@@ -53,6 +52,22 @@ export default {
 					// 此处待决定再重复点击之后是否刷新
 				}
 			}
+		},
+
+		/**
+		 * 关闭侧边栏展开的菜单, 考虑到性能, 仅关闭最开始展开的一层
+		 * 实现在侧边栏最小化, 以及最小化鼠标离开时关闭展开的侧边栏功能
+		 */
+		close(){
+			if(this.level != 0){
+				return false;
+			}
+
+			this.menus.forEach((item, index) => {
+				if(item.is_open){
+					this.menus[index].is_open = 0;
+				} 
+			});
 		}
 	}
 }
