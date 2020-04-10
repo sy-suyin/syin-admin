@@ -41,7 +41,9 @@ const mutations = {
 		localStorage.setItem('authToken',token);
 	},
 
-	// 重新加载, 从缓存中读取数据
+	/*
+	 *重新加载, 从缓存中读取数据
+	 */
 	reload(){
 		let token = localStorage.getItem('authToken');
 		let user = localStorage.getItem('currentUser');

@@ -56,6 +56,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
 	data(){
 		return {
@@ -71,10 +73,17 @@ export default {
 			background_images: [
 				'http://127.0.0.1:8000/static/api/sidebar/bg-1.jpg',
 				'http://127.0.0.1:8000/static/api/sidebar/bg-2.jpg',
-				'http://127.0.0.1:8000/static/api/sidebar/bg-3.jpg',
-				'http://127.0.0.1:8000/static/api/sidebar/bg-4.jpg',
+				// 'http://127.0.0.1:8000/static/api/sidebar/bg-3.jpg',
+				// 'http://127.0.0.1:8000/static/api/sidebar/bg-4.jpg',
 			]
 		}
+	},
+	mounted(){
+		console.log(this.sidebar_mini);
+		this.$store.dispatch('settings/changeSetting', {
+			key: 'sidebar_mini',
+			value: 'false'
+        }, 1)
 	},
 	methods:{
 		show(){
@@ -89,6 +98,11 @@ export default {
 		showc(){
 			console.log('showc');
 		},
+	},
+	computed: {
+		...mapState('settings', {
+			sidebar_mini: state =>state.sidebar_mini,
+		})
 	}
 }
 </script>

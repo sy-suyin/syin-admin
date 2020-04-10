@@ -8,7 +8,7 @@ import Vue from 'vue';
 // 菜单计算类实例
 let MenuInstance = new Menu;
 
-const data = {
+const state = {
 	// 数据访问黑名单
 	data_forbid: {},
 
@@ -39,7 +39,9 @@ const getters = {
 
 const mutations = {
 
-	// 激活菜单
+	/*
+	 * 激活菜单
+	 */
 	active(state, payload){
 		let breadcrumb = MenuInstance.active(payload.controller, payload.action);
 		let menus = MenuInstance.menus();
@@ -47,7 +49,9 @@ const mutations = {
 		state.breadcrumb = breadcrumb;
 	},
 
-	// 重新加载, 从缓存中读取数据
+	/*
+	 * 重新加载, 从缓存中读取数据
+	 */
 	reload(state){
 		let data_forbid = localStorage.getItem('data_forbid');
 		let page_forbid = localStorage.getItem('page_forbid');
@@ -63,7 +67,9 @@ const mutations = {
 		this.dispatch('access/calc');
 	},
 
-	// 设置页面黑名单和数据黑名单
+	/*
+	 * 设置页面黑名单和数据黑名单
+	 */
 	set(state, payload){
 		state.data_forbid = payload.data_forbid;
 		state.page_forbid = payload.page_forbid;
@@ -76,7 +82,10 @@ const mutations = {
 }
 
 const actions = {
-	// 根据菜单配置进行计算
+
+	/*
+	 * 根据菜单配置进行计算
+	 */
 	async calc({state, rootGetters}){
 		let user = rootGetters['auth/user'];
 
@@ -94,7 +103,7 @@ const actions = {
 
 export default {
 	namespaced: true,
-    state:data,
+    state,
     getters,
 	mutations,
 	actions
