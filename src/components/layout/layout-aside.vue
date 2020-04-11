@@ -1,5 +1,6 @@
 <template>
-	<div class="layout-aside" :class="{'layout-aside-mini' : is_mini}" @mouseleave="mouseleave" @mouseenter="mouseenter">
+	<div class="layout-aside" :class="asideClass" @mouseleave="mouseleave" @mouseenter="mouseenter">
+		{{this.sidebar_mini}}
 		<div class="slider">
 			<el-scrollbar class="layout-aside-scroll">
 				<router-link class="menu-logo" :to="{path:'/'}">
@@ -30,6 +31,7 @@
 import syMenu from "@/components/layout/sy-menu.vue";
 import {debounce} from '@/libs/util.js';
 import syMenuItem from "@/components/layout/sy-menu-item.vue";
+import { mapState } from 'vuex'
 
 export default {
 	name: "layout-aside",
@@ -62,10 +64,13 @@ export default {
 
 		this.user = user;
 		this.menus = this.$store.state.access.menus;
+		// console.log(this.sidebar_mini);
+	},
+
+	mounted(){
 	},
 
 	methods:{
-
 		mouseenter(){
 			this.is_leave = false;
 		},
@@ -75,13 +80,22 @@ export default {
 			this.closeMenu();
 		},
 
-		closeMenu: debounce(1000, function(){
-			console.log('e');
-			if(this.is_leave){
-				console.log('close');
+		closeMenu: debounce(300, function(){
+			if(this.sidebar_mini && this.is_leave){
 				this.$refs.menu_item.close()
 			}
 		})
+	},
+	computed: {
+		...mapState('settings', {
+			sidebar_mini: state =>state.sidebar_mini,
+		}),
+
+		asideClass(){
+			return {
+				'layout-aside-mini': this.sidebar_mini
+			}
+		}
 	}
 }
 </script>

@@ -3,7 +3,7 @@ import styleConfig from '@/config/style';
 const { sidebar_mini, sidebar_filters_color, sidebar_background_color, sidebar_background_img, sidebar_background_imgs, fixed_header } = styleConfig;
 
 const state = {
-	sidebar_mini,
+	sidebar_mini: sidebar_mini,
 	sidebar_filters_color,
 	sidebar_background_color,
 	sidebar_background_img,
@@ -21,8 +21,27 @@ const getters = {
 
 const mutations = {
 	settingEdit(state, {key, value}){
+		console.log('settingEdit');
 		if (state.hasOwnProperty(key)) {
 			state[key] = value;
+			this.commit('settings/archive');
+		}
+	},
+
+	archive(state){
+		localStorage.setItem('settings', JSON.stringify(state));
+	},
+
+	init(state){
+		let settings = localStorage.getItem('settings');
+		if(settings){
+			settings = JSON.parse(settings);
+
+			if(settings){
+				for(let key in settings){
+					state[key] = settings[key];
+				}
+			}
 		}
 	}
 }

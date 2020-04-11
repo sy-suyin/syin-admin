@@ -14,6 +14,9 @@ store.commit('auth/reload');
 // 重载路由数据
 store.commit('access/reload');
 
+// 读取本地缓存的用户配置
+store.commit('settings/init');
+
 new Vue({
   router,
   store,

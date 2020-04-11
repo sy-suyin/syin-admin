@@ -5,16 +5,11 @@
 				<i class="icon el-icon-setting"></i>
 			</div>
 
-			<div class="panel" @click.prevent="showb">
+			<div class="panel">
 				<h4 class="header-title">SIDEBAR FILTERS</h4>
 
 				<div class="sidebar-filter color-badge">
-					<span class="badge active" style="background-color: #9368e9"></span>
-					<span class="badge" style="background-color: #2ca8ff"></span>
-					<span class="badge" style="background-color: #0bf"></span>
-					<span class="badge" style="background-color: #18ce0f"></span>
-					<span class="badge" style="background-color: #f44336"></span>
-					<span class="badge" style="background-color: #e91e63"></span>
+					<span class="badge" :style="'background-color: '+ val" v-for="(val, index) in sidebar_filters" :key="index" :class="{active: index==selected_index.filter}" @click="filterClick(index)"></span>
 				</div>
 
 				<el-divider></el-divider>
@@ -22,9 +17,7 @@
 				<h4 class="header-title">SIDEBAR BACKGROUND</h4>
 
 				<div class="sidebar-filter color-badge">
-					<span class="badge active" style="background-color: #000"></span>
-					<span class="badge" style="background-color: hsla(0,0%,78%,.2)"></span>
-					<span class="badge" style="background-color: #f44336"></span>
+					<span class="badge" :style="'background-color: '+ val" v-for="(val, index) in background_colors" :key="index" :class="{active: index==selected_index.bg_color}" @click="bgColorClick(index)"></span>
 				</div>
 
 				<el-divider></el-divider>
@@ -33,7 +26,7 @@
 					Sidebar Mini
 
 					<el-switch
-						v-model="is_mini"
+						v-model="sidebarMini"
 						active-color="#13ce66"
 						inactive-color="#ff4949">
 					</el-switch>
@@ -44,7 +37,7 @@
 				<h4 class="header-title">IMAGES</h4>
 
 				<ul class="imgs">
-					<li v-for="(img, index) in background_images" :key="index" :class="{active: index==selected_index.bg_image}">
+					<li v-for="(img, index) in sidebar_background_imgs" :key="index" :class="{active: index==selected_index.bg_img}" @click="bgImgClick(index)">
 						<img :src="img">
 					</li>
 				</ul>
@@ -64,44 +57,102 @@ export default {
 			is_show: false,
 			is_mini: false,
 
-			selected_index: {
-				silder_filter: 0,
-				bg_color: 0,
-				bg_image: 0,
-			},
+			sidebar_filters: [
+				'#9368e9',
+				'#2ca8ff',
+				'#0bf',
+				'#18ce0f',
+				'#f44336',
+				'#e91e63',
+			],
 
-			background_images: [
-				'http://127.0.0.1:8000/static/api/sidebar/bg-1.jpg',
-				'http://127.0.0.1:8000/static/api/sidebar/bg-2.jpg',
-				// 'http://127.0.0.1:8000/static/api/sidebar/bg-3.jpg',
-				// 'http://127.0.0.1:8000/static/api/sidebar/bg-4.jpg',
-			]
+			background_colors: [
+				'#000',
+				'hsla(0,0%,78%,.2)',
+				'#f44336',
+			],
+
+			selected_index: {
+				filter: 0,
+				bg_color: 0,
+				bg_img: 0,
+			},
 		}
 	},
 	mounted(){
-		console.log(this.sidebar_mini);
-		this.$store.dispatch('settings/changeSetting', {
-			key: 'sidebar_mini',
-			value: 'false'
-        }, 1)
+		this.init();
 	},
 	methods:{
-		show(){
-			console.log('show');
+		init(){
+			if(this.sidebar_filters_color == ''){
+				this.filterClick(0);
+			}else{
+				this.sidebar_filters.forEach((color, index) => {
+					if(color == this.sidebar_filters_color){
+						this.selected_index.filter = index;
+					}
+				});
+			}
+
+			if(this.sidebar_background_color == ''){
+				this.bgColorClick(0);
+			}else{
+				this.background_colors.forEach((color, index) => {
+					if(color == this.sidebar_background_color){
+						this.selected_index.bg_color = index;
+					}
+				});
+			}
+			
+			if(this.sidebar_background_img == ''){
+				this.bgImgClick(0);
+			}else{
+				this.sidebar_background_imgs.forEach((color, index) => {
+					if(color == this.sidebar_background_img){
+						this.selected_index.bg_img = index;
+					}
+				});
+			}
 		},
-		showa(){
-			console.log('showa');
+		filterClick(index){
+			this.selected_index.filter = index;
+			this.$store.dispatch('settings/changeSetting', {
+				key: 'sidebar_filters_color',
+				value: this.sidebar_filters[index]
+			});
 		},
-		showb(){
-			console.log('showb');
+		bgColorClick(index){
+			this.selected_index.bg_color = index;
+			this.$store.dispatch('settings/changeSetting', {
+				key: 'sidebar_background_color',
+				value: this.background_colors[index]
+			});
 		},
-		showc(){
-			console.log('showc');
+		bgImgClick(index){
+			this.selected_index.bg_img = index;
+			this.$store.dispatch('settings/changeSetting', {
+				key: 'sidebar_background_img',
+				value: this.sidebar_background_imgs[index]
+			});
 		},
 	},
 	computed: {
+		sidebarMini: {
+			get() {
+				return this.$store.state.settings.sidebar_mini;
+			},
+			set(val) {
+				this.$store.dispatch('settings/changeSetting', {
+					key: 'sidebar_mini',
+					value: val
+				});
+			}
+		},
 		...mapState('settings', {
-			sidebar_mini: state =>state.sidebar_mini,
+			sidebar_filters_color: state =>state.sidebar_filters_color,
+			sidebar_background_color: state =>state.sidebar_background_color,
+			sidebar_background_img: state =>state.sidebar_background_img,
+			sidebar_background_imgs: state =>state.sidebar_background_imgs,
 		})
 	}
 }

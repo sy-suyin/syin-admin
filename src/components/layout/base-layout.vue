@@ -6,19 +6,21 @@
 			<div class="layout-container-header">
 				<!-- 此处为顶部导航栏内容 -->
 				<div class="navbar">
-					<i class="el-icon-s-unfold" @click="toggleSidebar"></i>
+					<i class="icon el-icon-s-unfold" @click="toggleSidebar" v-if="sidebar_mini"></i>
+					<i class="icon el-icon-s-fold" @click="toggleSidebar" v-else></i>
+
 					<div>
 						<ul class="navbar-right">
 							<li>
-								<i class="el-icon-s-unfold"></i>
+								<i class="icon el-icon-s-unfold"></i>
 							</li>
 							<li>
-								<i class="el-icon-s-unfold"></i>
+								<i class="icon el-icon-s-unfold"></i>
 							</li>
 							<li>
 								<el-dropdown @command="userCommand">
 									<span class="el-dropdown-link">
-										<i class="el-dropdown-icon el-icon-user-solid"></i>
+										<i class="icon el-dropdown-icon el-icon-user-solid"></i>
 									</span>
 									<el-dropdown-menu slot="dropdown">
 										<el-dropdown-item command="profile">个人中心</el-dropdown-item>
@@ -55,8 +57,8 @@
 
 <script>
 import layoutAside from "@/components/layout/layout-aside.vue";
-// import syMenu from "@/components/layout/sy-menu.vue";
 import settingPanel from "@/components/layout/setting-panel.vue";
+import { mapState } from 'vuex'
 
 export default {
 	name: "base-layout",
@@ -106,8 +108,16 @@ export default {
 		},
 
 		toggleSidebar(){
-			this.is_mini = !this.is_mini;
+			this.$store.dispatch('settings/changeSetting', {
+				key: 'sidebar_mini',
+				value: !this.sidebar_mini
+			})
 		}
+	},
+	computed: {
+		...mapState('settings', {
+			sidebar_mini: state =>state.sidebar_mini,
+		}),
 	}
 };
 </script>
@@ -303,6 +313,10 @@ export default {
 			background: #fff;
 			height: auto !important;
 
+			.icon{
+				font-size: 25px;
+			}
+
 			.navbar{
 				padding: 0 20px;
 				height: 64px;
@@ -311,7 +325,6 @@ export default {
 				justify-content: space-between;
 				align-items: center;
 				padding-right: 30px;
-				font-size: 18px;
 
 				.navbar-right{
 					display: flex;
@@ -322,7 +335,7 @@ export default {
 					}
 
 					.el-dropdown-icon{
-						font-size: 16px;
+						font-size: 20px;
 					}
 				}
 			}
