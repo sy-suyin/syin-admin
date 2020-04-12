@@ -94,7 +94,7 @@ export default {
 			};
 
 			// 激活路由
-			this.$store.commit('access/active',meta);
+			this.$store.commit('access/active', meta);
 
 			this.is_error = true;
 		}
@@ -130,135 +130,6 @@ export default {
 	.layout{
 		display: flex;
 		overflow: hidden;
-	}
-
-	.layout-aside{
-		background: #000;
-		position: relative;
-		height: 100vh;
-		flex-basis: 260px;
-		transition: all .3s ease;
-
-		.layout-aside-scroll{
-			height: 100%;
-			overflow: hidden;
-		}
-
-		.slider{
-			position: absolute;
-			top: 0;
-			bottom: 0;
-			width: 260px;
-			transition: width .3s ease;
-			z-index: 99;
-		}
-
-		.user-info{
-			position: relative;
-			z-index: 5;
-			color: #fff;
-			padding: 20px 0;
-			font-size: 14px;
-			display: flex;
-			align-items: center;
-
-			.user-avatar{
-				border-radius: 50%;
-				position: relative;
-				overflow: hidden;
-				height: 32px;
-				width: 32px;
-				min-width: 32px;
-				display: inline-block;
-				margin-left: 24px;
-				margin-right: 10px;
-
-				img{
-					width: 32px;
-					height: 32px;
-				}
-			}
-
-			&:after{
-				content: "";
-				position: absolute;
-				bottom: 0;
-				right: 15px;
-				height: 1px;
-				width: calc(100% - 30px);
-				background-color: hsla(0,0%,71%,.3);
-			}
-		}
-
-		.menu-logo{
-			position: relative;
-			z-index: 2;
-			display: flex;
-			align-items: center;
-			justify-content: left;
-			padding: 6px 24px;
-
-			.logo-img{
-				height: 32px;
-				display: inline-block;
-				margin-right: 12px;
-			}
-
-			.logo-title{
-				color: #fff;
-				display: inline-block;
-			}
-
-			&:after{
-				content: "";
-				position: absolute;
-				bottom: 0;
-				right: 15px;
-				height: 1px;
-				width: calc(100% - 30px);
-				background-color: hsla(0,0%,71%,.3);
-			}
-		}
-
-		.nav{
-			z-index: 999;
-			color: #fff;
-			position: relative;
-			font-size: 14px;
-		}
-
-		.background{
-			position: absolute;
-			background-image: url('http://127.0.0.1:8000/static/api/sidebar/bg-1.jpg');
-			z-index: 1;
-			height: 100%;
-			width: 100%;
-			display: block;
-			top: 0;
-			left: 0;
-			background-size: cover;
-			background-position: 50%;
-
-			/* .sidebar[data-background-color=black] .sidebar-background:after {
-				background: #000;
-				opacity: .8;
-			} */
-
-			&:after {
-				background: #000;
-
-				position: absolute;
-				z-index: 3;
-				width: 100%;
-				height: 100%;
-				content: "";
-				display: block;
-				// background: #fff;
-				// opacity: .93;
-				opacity: .7;
-
-			}
-		}
 	}
 
 	.logo-title, .user-name, .menu-name, .menu-switch-icon{

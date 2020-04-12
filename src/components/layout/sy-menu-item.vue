@@ -7,7 +7,7 @@
 				@click.stop="menuClick(index)"
 				:class="{active: item.is_active}"
 			>
-				<div class="menu-link">
+				<div class="menu-link" :style="{backgroundColor: item.is_active? filters_color : false}">
 					<i class="menu-item-icon el-icon-s-grid" v-if="level< 1"></i>
 					<span class="menu-name">
 						{{item.name}}
@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
 	name: 'sy-menu-item',
 	props: ['menus', 'lv'],
@@ -69,6 +71,12 @@ export default {
 				} 
 			});
 		}
+	},
+	computed: {
+		...mapState('settings', {
+			filters_color: state =>state.sidebar_filters_color,
+			background_color: state =>state.sidebar_background_color,
+		})
 	}
 }
 </script>

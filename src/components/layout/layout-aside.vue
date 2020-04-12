@@ -21,7 +21,7 @@
 					<sy-menu-item :menus="menus" :lv="0" ref="menu_item"></sy-menu-item>
 				</div>
 
-				<div class="background"></div>
+				<div class="background" :style="[backgroundStyle]"></div>
 			</el-scrollbar>
 		</div>
 	</div>
@@ -64,7 +64,14 @@ export default {
 
 		this.user = user;
 		this.menus = this.$store.state.access.menus;
-		// console.log(this.sidebar_mini);
+
+		// 在初次加载时, 如果侧边栏为最小化, 则关闭展开的
+		if(this.sidebar_mini){
+			this.is_leave = true;
+			this.closeMenu();
+		}
+
+		console.log(this.sidebar_background_img);
 	},
 
 	mounted(){
@@ -89,11 +96,21 @@ export default {
 	computed: {
 		...mapState('settings', {
 			sidebar_mini: state =>state.sidebar_mini,
+			filters_color: state =>state.sidebar_filters_color,
+			background_color: state =>state.sidebar_background_color,
+			background_img: state =>state.sidebar_background_img,
 		}),
 
 		asideClass(){
 			return {
 				'layout-aside-mini': this.sidebar_mini
+			}
+		},
+
+		backgroundStyle(){
+			return {
+				backgroundImage: 'url(' + this.background_img + ')',
+				'--bgcolor': this.background_color
 			}
 		}
 	}
@@ -101,14 +118,133 @@ export default {
 </script>
 
 <style lang="scss">
+.layout-aside{
+	background: #000;
+	position: relative;
+	height: 100vh;
+	flex-basis: 260px;
+	transition: all .3s ease;
+
+	.layout-aside-scroll{
+		height: 100%;
+		overflow: hidden;
+	}
+
+	.slider{
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		width: 260px;
+		transition: width .3s ease;
+		z-index: 99;
+	}
+
+	.user-info{
+		position: relative;
+		z-index: 5;
+		color: #fff;
+		padding: 20px 0;
+		font-size: 14px;
+		display: flex;
+		align-items: center;
+
+		.user-avatar{
+			border-radius: 50%;
+			position: relative;
+			overflow: hidden;
+			height: 32px;
+			width: 32px;
+			min-width: 32px;
+			display: inline-block;
+			margin-left: 24px;
+			margin-right: 10px;
+
+			img{
+				width: 32px;
+				height: 32px;
+			}
+		}
+
+		&:after{
+			content: "";
+			position: absolute;
+			bottom: 0;
+			right: 15px;
+			height: 1px;
+			width: calc(100% - 30px);
+			background-color: hsla(0,0%,71%,.3);
+		}
+	}
+
+	.menu-logo{
+		position: relative;
+		z-index: 2;
+		display: flex;
+		align-items: center;
+		justify-content: left;
+		padding: 6px 24px;
+
+		.logo-img{
+			height: 32px;
+			display: inline-block;
+			margin-right: 12px;
+		}
+
+		.logo-title{
+			color: #fff;
+			display: inline-block;
+		}
+
+		&:after{
+			content: "";
+			position: absolute;
+			bottom: 0;
+			right: 15px;
+			height: 1px;
+			width: calc(100% - 30px);
+			background-color: hsla(0,0%,71%,.3);
+		}
+	}
+
+	.nav{
+		z-index: 999;
+		color: #fff;
+		position: relative;
+		font-size: 14px;
+	}
+
+	.background{
+		position: absolute;
+		// background-image: url('');
+		z-index: 1;
+		height: 100%;
+		width: 100%;
+		display: block;
+		top: 0;
+		left: 0;
+		background-size: cover;
+		background-position: 50%;
+
+		&:after {
+			background: #{'var(--bgcolor)'};
+			position: absolute;
+			z-index: 3;
+			width: 100%;
+			height: 100%;
+			content: "";
+			display: block;
+			opacity: .7;
+		}
+	}
+}
+
 .menu-item-group{	
 	.menu-item{
 		margin: 10px 15px 0;
-		// height: 46px;
 
 		&.active{
 			&>.menu-link{
-				background-color: #e91e63;
+				// background-color: #e91e63;
 				box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(233,30,99,.4);
 			}
 
@@ -117,7 +253,6 @@ export default {
 			}
 		}
 		
-
 		.menu-link{
 			display: flex;
 			cursor: pointer;
@@ -138,7 +273,6 @@ export default {
 			.menu-switch-icon{
 				transition: transform .3s;
 				font-size: 16px;
-				// float: right;
 			}
 
 			.menu-show-icon{
@@ -146,13 +280,7 @@ export default {
 			}
 		}
 
-		/* .switch{
-			float: right;
-		} */
-
 		.menu-item-group{
-			// margin-top: 10px;
-
 			.menu-item{
 				margin: 0px 0 6px 16px;
 				padding-right: 0;
