@@ -1,5 +1,5 @@
 <template>
-	<lyaout>
+	<layout>
 		<el-card class="box-card">
 			<div slot="header" class="clearfix">
 				表单操作
@@ -67,17 +67,17 @@
 				</el-form-item>
 			</el-form>
 		</el-card>
-	</lyaout>
+	</layout>
 </template>
 
 <script>
 // @ is an alias to /src
-import Lyaout from "@/components/layout/base-layout.vue";
+import Layout from "@/components/layout/base-layout.vue";
 
 export default {
 	name: "databank-typeadd",
 	components: {
-		Lyaout
+		Layout
 	},
   	data() {
       	return {

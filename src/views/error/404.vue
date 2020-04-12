@@ -1,5 +1,5 @@
 <template>
-	<lyaout>
+	<layout>
 		<div class="error-page" id="error-404">
 			<div class="pag-container">
 				<div class="error-img"></div>
@@ -14,17 +14,17 @@
 				</div>
 			</div>
 		</div>
-	</lyaout>
+	</layout>
 </template>
 
 <script>
 // @ is an alias to /src
-import Lyaout from "@/components/layout/base-layout.vue";
+import Layout from "@/components/layout/base-layout.vue";
 
 export default {
 	name: "error-404",
 	components: {
-		Lyaout
+		Layout
 	},
   	data() {
 		return {

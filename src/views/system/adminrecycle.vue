@@ -1,5 +1,5 @@
 <template>
-	<lyaout class="table-base">
+	<layout class="table-base">
 		<template #breadcrumb-after>
 			<div>
 				<h2 class="page-title">管理员回收站</h2>
@@ -60,11 +60,11 @@
 				</el-pagination>
 			</div>
 		</el-card>
-	</lyaout>
+	</layout>
 </template>
 
 <script>
-import Lyaout from "@/components/layout/base-layout.vue";
+import Layout from "@/components/layout/base-layout.vue";
 import Table from '@/libs/Table.js';
 import Factory from '@/libs/Factory.js';
 import * as util from '@/libs/util.js';import { Loading } from 'element-ui';
@@ -72,7 +72,7 @@ import * as util from '@/libs/util.js';import { Loading } from 'element-ui';
 export default {
 	name: "system_rolelist",
 	components: {
-		Lyaout
+		Layout
 	},
   	data() {
       	return {

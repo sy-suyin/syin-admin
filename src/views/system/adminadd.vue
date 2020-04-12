@@ -1,5 +1,5 @@
 <template>
-	<lyaout>
+	<layout>
 		<el-card class="box-card">
 			<div slot="header" class="clearfix">
 				添加管理员
@@ -37,17 +37,17 @@
 				</el-form-item>
 			</el-form>
 		</el-card>
-	</lyaout>
+	</layout>
 </template>
 
 <script>
 // @ is an alias to /src
-import Lyaout from "@/components/layout/base-layout.vue";
+import Layout from "@/components/layout/base-layout.vue";
 import * as util from '@/libs/util.js';
 export default {
 	name: "system-adminadd",
 	components: {
-		Lyaout
+		Layout
 	},
   	data() {
       	return {

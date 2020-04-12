@@ -1,5 +1,5 @@
 <template>
-	<lyaout class="table-base">
+	<layout class="table-base">
 		<template #breadcrumb-after>
 			<div>
 				<h2 class="page-title">管理员列表</h2>
@@ -91,11 +91,11 @@
 				</el-pagination>
 			</div>
 		</el-card>
-	</lyaout>
+	</layout>
 </template>
 
 <script>
-import Lyaout from "@/components/layout/base-layout.vue";
+import Layout from "@/components/layout/base-layout.vue";
 import {page as pageMixin} from "@/components/mixins/page.js";
 import {table as tableMixin} from "@/components/mixins/table.js";
 import {common as commonMixin} from "@/components/mixins/common.js";
@@ -106,7 +106,7 @@ import * as Util from '@/libs/util.js';
 export default {
 	name: "system_rolelist",
 	components: {
-		Lyaout
+		Layout
 	},
 	mixins: [pageMixin, tableMixin, commonMixin],
   	data() {

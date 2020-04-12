@@ -1,5 +1,5 @@
 <template>
-	<lyaout>
+	<layout>
 		<el-card class="box-card">
 			<div>
 				<h4 class="detail-tilte">退款申请</h4>
@@ -133,16 +133,16 @@
 				</el-table>
 			</div>
 		</el-card>
-	</lyaout>
+	</layout>
 </template>
 
 <script>
-import Lyaout from "@/components/layout/base-layout.vue";
+import Layout from "@/components/layout/base-layout.vue";
 
 export default {
 	name: 'profile-basic',
 	components: {
-		Lyaout
+		Layout
 	},
 	data(){
 		return {

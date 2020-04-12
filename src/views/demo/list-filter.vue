@@ -1,5 +1,5 @@
 <template>
-	<lyaout class="table-filter">
+	<layout class="table-filter">
 		<template #breadcrumb-after>
 			<div>
 				<h2 class="page-title">筛选列表</h2>
@@ -118,17 +118,17 @@
 				</el-pagination>
 			</div>
 		</el-card>
-	</lyaout>
+	</layout>
 </template>
 
 <script>
 // @ is an alias to /src
-import Lyaout from "@/components/layout/base-layout.vue";
+import Layout from "@/components/layout/base-layout.vue";
 
 export default {
 	name: "list-filter",
 	components: {
-		Lyaout
+		Layout
 	},
   	data() {
       	return {

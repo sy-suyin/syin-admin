@@ -1,5 +1,5 @@
 <template>
-	<lyaout>
+	<layout>
 		<el-card class="box-card">
 			<div slot="header" class="clearfix">
 				修改角色
@@ -74,18 +74,18 @@
 			</div>
 
 		</el-dialog>
-	</lyaout>
+	</layout>
 </template>
 
 <script>
 // @ is an alias to /src
-import Lyaout from "@/components/layout/base-layout.vue";
+import Layout from "@/components/layout/base-layout.vue";
 import {menus} from '@/config/menu';
 import * as util from '@/libs/util.js';
 export default {
 	name: "system_roleedit",
 	components: {
-		Lyaout
+		Layout
 	},
   	data() {
       	return {
