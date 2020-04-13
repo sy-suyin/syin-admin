@@ -70,8 +70,6 @@ export default {
 			this.is_leave = true;
 			this.closeMenu();
 		}
-
-		console.log(this.sidebar_background_img);
 	},
 
 	mounted(){
@@ -111,6 +109,15 @@ export default {
 			return {
 				backgroundImage: 'url(' + this.background_img + ')',
 				'--bgcolor': this.background_color
+			}
+		}
+	},
+	watch: {
+		sidebar_mini(val){
+			if(true == val){
+				this.is_leave = val;
+
+				this.closeMenu();
 			}
 		}
 	}

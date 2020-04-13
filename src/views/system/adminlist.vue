@@ -1,13 +1,13 @@
 <template>
-	<layout class="table-base">
-		<template #breadcrumb-after>
+	<div class="table-base">
+		<!-- <template #breadcrumb-after>
 			<div>
 				<h2 class="page-title">管理员列表</h2>
 			</div>
-		</template>
+		</template> -->
 
 		<el-card>
-			<div slot="header" class="clearfix">
+			<!-- <div slot="header" class="clearfix">
 				<div class="table-search">
 					<el-input
 						placeholder="请输入搜索内容"
@@ -27,7 +27,7 @@
 
 					<el-button size="mini" type="danger" icon="el-icon-delete" @click="delAll">删除</el-button>
 				</div>
-			</div>
+			</div> -->
 
 			<el-table
 				ref="table"
@@ -66,7 +66,7 @@
 				<el-table-column prop="add_time" label="添加时间" width="180"></el-table-column>
 
 				<el-table-column align="right" label="操作">
-					<template slot-scope="scope">
+					<!-- <template slot-scope="scope">
 						<el-button
 						size="mini" type="text" 
 						@click="jump('edit', {id: scope.row.id})">修改</el-button>
@@ -74,7 +74,7 @@
 						<el-divider direction="vertical"></el-divider>
 
 						<el-button size="mini" type="text" @click="del(scope.row.id)">删除</el-button>
-					</template>
+					</template> -->
 				</el-table-column>
 			</el-table>
 
@@ -91,11 +91,10 @@
 				</el-pagination>
 			</div>
 		</el-card>
-	</layout>
+	</div>
 </template>
 
 <script>
-import Layout from "@/components/layout/base-layout.vue";
 import {page as pageMixin} from "@/components/mixins/page.js";
 import {table as tableMixin} from "@/components/mixins/table.js";
 import {common as commonMixin} from "@/components/mixins/common.js";
@@ -105,13 +104,9 @@ import * as Util from '@/libs/util.js';
 
 export default {
 	name: "system_rolelist",
-	components: {
-		Layout
-	},
 	mixins: [pageMixin, tableMixin, commonMixin],
   	data() {
       	return {
-
 			// 各跳转链接
 			urls: {
 				add: '/system/adminadd',
@@ -124,7 +119,6 @@ export default {
 	},
 	mounted(){
 		this.getRequestData();
-		this.init();
 
 		Factory.get(Table, this);
 	},

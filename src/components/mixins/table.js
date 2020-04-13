@@ -27,9 +27,6 @@ export const table = {
 	mounted() {
 	},
 	methods: {
-		init(){
-			// this.$router.push({path: `/system/adminedit/${row.id}`})
-		},
 
 		/** 
 		 * 获取跳转链接
@@ -41,7 +38,6 @@ export const table = {
 			}
 
 			if(url != '' && !Util.isEmpty(params)){
-
 				url = url.replace(/\/:[a-zA-Z0-0_+]+/g, (str)=>{
 					str = str.substring(2);
 

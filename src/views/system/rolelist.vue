@@ -1,13 +1,13 @@
 <template>
-	<layout class="table-base">
-		<template #breadcrumb-after>
+	<div class="table-base">
+		<!-- <template #breadcrumb-after>
 			<div>
 				<h2 class="page-title">角色列表</h2>
 			</div>
-		</template>
+		</template> -->
 
 		<el-card>
-			<div slot="header" class="clearfix">
+			<!-- <div slot="header" class="clearfix">
 				<div class="table-search">
 					<el-input
 						placeholder="请输入搜索内容"
@@ -23,7 +23,7 @@
 					<el-button size="mini" type="warning" icon="el-icon-s-promotion" @click="recycle">回收站</el-button>
 					<el-button size="mini" type="danger" icon="el-icon-delete" @click="delAll">删除</el-button>
 				</div>
-			</div>
+			</div> -->
 
 			<el-table
 				ref="table"
@@ -39,18 +39,18 @@
 				<el-table-column prop="name" label="角色名称" width="200"></el-table-column>
 
 				<el-table-column label="状态" width="120">
-					<template slot-scope="scope">
+					<!-- <template slot-scope="scope">
 
 						<el-tag class="disabled-btn" type="success" effect="dark" size="mini" @click="disabled(scope.row, 1)" v-if="scope.row.is_disabled < 1">启用</el-tag>
 						<el-tag class="disabled-btn" type="danger" effect="dark" size="mini" @click="disabled(scope.row, 0)" v-else>禁用</el-tag>
 
-					</template>
+					</template> -->
 				</el-table-column>
 
 				<el-table-column prop="add_time" label="添加时间" width="180"></el-table-column>
 
 				<el-table-column align="right" label="操作">
-					<template slot-scope="scope">
+					<!-- <template slot-scope="scope">
 						<el-button
 						size="mini" type="text" 
 						@click="edit(scope.$index, scope.row)">修改</el-button>
@@ -58,7 +58,7 @@
 						<el-divider direction="vertical"></el-divider>
 
 						<el-button size="mini" type="text" @click="del(scope.$index, scope.row)">删除</el-button>
-					</template>
+					</template> -->
 				</el-table-column>
 			</el-table>
 
@@ -75,11 +75,11 @@
 				</el-pagination>
 			</div>
 		</el-card>
-	</layout>
+	</div>
 </template>
 
 <script>
-import Layout from "@/components/layout/base-layout.vue";
+// import Layout from "@/components/layout/base-layout.vue";
 import Table from '@/libs/Table.js';
 import Factory from '@/libs/Factory.js';
 import * as util from '@/libs/util.js';
@@ -88,7 +88,7 @@ import { Loading } from 'element-ui';
 export default {
 	name: "system_rolelist",
 	components: {
-		Layout
+		// Layout
 	},
   	data() {
       	return {

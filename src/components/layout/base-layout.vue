@@ -22,11 +22,11 @@
 									<span class="el-dropdown-link">
 										<i class="icon el-dropdown-icon el-icon-user-solid"></i>
 									</span>
-									<el-dropdown-menu slot="dropdown">
+									<!-- <el-dropdown-menu slot="dropdown">
 										<el-dropdown-item command="profile">个人中心</el-dropdown-item>
 										<el-dropdown-item command="setting">系统设置</el-dropdown-item>
 										<el-dropdown-item command="logout">退出登录</el-dropdown-item>
-									</el-dropdown-menu>
+									</el-dropdown-menu> -->
 								</el-dropdown>
 							</li>
 						</ul>
@@ -34,7 +34,7 @@
 				</div>
 				<!-- 此处为顶部下面的面包屑 -->
 				<div class="expand" v-if="!is_error">
-					<slot name="breadcrumb">
+					<!-- <slot name="breadcrumb">
 						<el-breadcrumb class="breadcrumb" separator-class="el-icon-arrow-right">
 							<el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
 
@@ -43,12 +43,14 @@
 					</slot>
 
 					<slot name="breadcrumb-after">
-					</slot>
+					</slot> -->
 				</div>
 			</div>
 
 			<div class="layout-container-main">
-				<slot></slot>
+				<!-- <slot></slot> -->
+				<router-view/>
+
 			</div>
 		</div>
 		<setting-panel></setting-panel>

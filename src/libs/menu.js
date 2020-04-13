@@ -3,6 +3,7 @@
  */
 
 import * as Util from '@/libs/util.js';
+import Layout from "@/components/layout/base-layout.vue";
 
 /**
  * 组件基类
@@ -167,44 +168,53 @@ export default class Menu extends MenuInterface{
 			}
 		});
 
-		// 注: 返回的路由为二级路由, 需补零级路由和一级路由(需要传参数的仅可为二级路由)
+		// 重新整理路由
 		if(routers.length){
+			let new_routers = {};
 			let mapping = {};
 			let has_root = false;
 
 			routers.forEach(item => {
 				let controller = item.meta.controller;
 
-				if( item.meta.params == '' && !Util.isSet(mapping, controller)){
+				if(! new_routers.hasOwnProperty(controller)){
+					new_routers[controller] = {
+						path: `/${controller}`,
+						name: controller,
+						component: Layout,
+						children: []
+					};
+				}
+				
+				new_routers[controller].children.push(item); 
+
+				// params 为空. 即不能直接跳转到需要传参数的页面
+				if( !has_root && item.meta.params == ''){
 					let action = item.meta.action;
-					mapping[controller] = 1;
 
 					if(!has_root){
 						has_root = true;
 
 						// 添加零级路由导航
-						routers.push({
+						new_routers['/'] = {
 							path: `/`,
 							redirect: `/${controller}/${action}`,
-						});
+						};
 					}
-
-					// 添加一级路由导航
-					routers.push({
-						path: `/${controller}`,
-						redirect: `/${controller}/${action}`,
-					});
 				}
 			});
 
 			// 添加404页面
-			routers.push({
+			new_routers['/404'] = {
 				path: `/*`,
 				name: 'not_fonund',
 				component: () => import( `../views/error/404.vue`),
-			});
+			};
+
+			routers = Object.values(new_routers);
 		}
 
+		console.log(routers);
 
 		return routers;
 	}
