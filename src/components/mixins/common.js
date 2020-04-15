@@ -1,8 +1,11 @@
 import { Loading } from 'element-ui';
 import permission from '@/directive/permission/index.js' // 权限判断指令
+import pageHeader from "@/components/page-header";
 
 export const common = {
 	directives: { permission },
+
+	components: {pageHeader},
 
 	data(){
 		return {
@@ -18,13 +21,13 @@ export const common = {
 		 * @param bool is_loading 是否开启加载状态 
 		 */
 		loading(is_loading = true){
-			if(is_loading){
-				this.loading_handle = Loading.service({ fullscreen: true });
-			}else{
-				this.loading_handle && this.loading_handle.close();
-			}
+			// if(is_loading){
+			// 	this.loading_handle = Loading.service({ fullscreen: true });
+			// }else{
+			// 	this.loading_handle && this.loading_handle.close();
+			// }
 
-			this.is_loading = is_loading;
+			// this.is_loading = is_loading;
 		},
 
 		/** 

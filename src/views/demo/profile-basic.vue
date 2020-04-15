@@ -1,149 +1,151 @@
 <template>
-	<layout>
-		<el-card class="box-card">
-			<div>
-				<h4 class="detail-tilte">退款申请</h4>
+	<div>
+		<page-header></page-header>
 
-				<el-row class="detail-content" :gutter="20">
-					<el-col :span="8" class="detail-item">
-						<span class="detail-item-label">取货单号</span>
-						<span class="detail-item-content">1000000000</span>
-					</el-col>
+		<div class="content-container">
+			<el-card class="box-card">
+				<div>
+					<h4 class="detail-tilte">退款申请</h4>
 
-					<el-col :span="8" class="detail-item">
-						<span class="detail-item-label">状态</span>
-						<span class="detail-item-content">已取货</span>
-					</el-col>
+					<el-row class="detail-content" :gutter="20">
+						<el-col :span="8" class="detail-item">
+							<span class="detail-item-label">取货单号</span>
+							<span class="detail-item-content">1000000000</span>
+						</el-col>
 
-					<el-col :span="8" class="detail-item">
-						<span class="detail-item-label">销售单号</span>
-						<span class="detail-item-content">1234123421</span>
-					</el-col>
+						<el-col :span="8" class="detail-item">
+							<span class="detail-item-label">状态</span>
+							<span class="detail-item-content">已取货</span>
+						</el-col>
 
-					<el-col :span="8" class="detail-item">
-						<span class="detail-item-label">子订单</span>
-						<span class="detail-item-content">3214321432</span>
-					</el-col>
-				</el-row>
-			</div>
+						<el-col :span="8" class="detail-item">
+							<span class="detail-item-label">销售单号</span>
+							<span class="detail-item-content">1234123421</span>
+						</el-col>
 
-			<el-divider></el-divider>
+						<el-col :span="8" class="detail-item">
+							<span class="detail-item-label">子订单</span>
+							<span class="detail-item-content">3214321432</span>
+						</el-col>
+					</el-row>
+				</div>
 
-			<div>
-				<h4 class="detail-tilte">用户信息</h4>
+				<el-divider></el-divider>
 
-				<el-row class="detail-content" :gutter="20">
-					<el-col :span="8" class="detail-item">
-						<span class="detail-item-label">用户姓名</span>
-						<span class="detail-item-content">付小小</span>
-					</el-col>
+				<div>
+					<h4 class="detail-tilte">用户信息</h4>
 
-					<el-col :span="8" class="detail-item">
-						<span class="detail-item-label">联系电话</span>
-						<span class="detail-item-content">18100000000</span>
-					</el-col>
+					<el-row class="detail-content" :gutter="20">
+						<el-col :span="8" class="detail-item">
+							<span class="detail-item-label">用户姓名</span>
+							<span class="detail-item-content">付小小</span>
+						</el-col>
 
-					<el-col :span="8" class="detail-item">
-						<span class="detail-item-label">常用快递</span>
-						<span class="detail-item-content">菜鸟仓储</span>
-					</el-col>
+						<el-col :span="8" class="detail-item">
+							<span class="detail-item-label">联系电话</span>
+							<span class="detail-item-content">18100000000</span>
+						</el-col>
 
-					<el-col :span="8" class="detail-item">
-						<span class="detail-item-label">取货地址</span>
-						<span class="detail-item-content">浙江省杭州市西湖区万塘路18号</span>
-					</el-col>
+						<el-col :span="8" class="detail-item">
+							<span class="detail-item-label">常用快递</span>
+							<span class="detail-item-content">菜鸟仓储</span>
+						</el-col>
 
-					<el-col :span="8" class="detail-item">
-						<span class="detail-item-label">备注</span>
-						<span class="detail-item-content">无</span>
-					</el-col>
-				</el-row>
-			</div>
+						<el-col :span="8" class="detail-item">
+							<span class="detail-item-label">取货地址</span>
+							<span class="detail-item-content">浙江省杭州市西湖区万塘路18号</span>
+						</el-col>
 
-			<el-divider></el-divider>
+						<el-col :span="8" class="detail-item">
+							<span class="detail-item-label">备注</span>
+							<span class="detail-item-content">无</span>
+						</el-col>
+					</el-row>
+				</div>
 
-			<div class="table-box">
-				<h4 class="detail-tilte">退货商品</h4>
+				<el-divider></el-divider>
 
-				<el-table :data="return_goods" style="width: 100%" :header-cell-style="{color:'rgba(0,0,0,.85)'}">
-					<el-table-column
-						prop="id"
-						label="商品编号"
-						width="180">
-					</el-table-column>
+				<div class="table-box">
+					<h4 class="detail-tilte">退货商品</h4>
 
-					<el-table-column
-						prop="name"
-						label="商品名称">
-					</el-table-column>
+					<el-table :data="return_goods" style="width: 100%" :header-cell-style="{color:'rgba(0,0,0,.85)'}">
+						<el-table-column
+							prop="id"
+							label="商品编号"
+							width="180">
+						</el-table-column>
 
-					<el-table-column
-						prop="barcode"
-						label="商品条码">
-					</el-table-column>
+						<el-table-column
+							prop="name"
+							label="商品名称">
+						</el-table-column>
 
-					<el-table-column
-						prop="price"
-						label="单价"
-						:formatter="price_format">
-					</el-table-column>
+						<el-table-column
+							prop="barcode"
+							label="商品条码">
+						</el-table-column>
 
-					<el-table-column
-						prop="num"
-						label="数量（件）">
-					</el-table-column>
+						<el-table-column
+							prop="price"
+							label="单价"
+							:formatter="price_format">
+						</el-table-column>
 
-					<el-table-column
-						prop="amount"
-						label="金额"
-						:formatter="price_format">
-					</el-table-column>
-				</el-table>
-			</div>
-			
-			<div class="table-box">
-				<h4 class="detail-tilte">退货进度</h4>
+						<el-table-column
+							prop="num"
+							label="数量（件）">
+						</el-table-column>
 
-				<el-table :data="progress_data" style="width: 100%" :header-cell-style="{color:'rgba(0,0,0,.85)'}">
-					<el-table-column
-						prop="time"
-						label="时间">
-					</el-table-column>
+						<el-table-column
+							prop="amount"
+							label="金额"
+							:formatter="price_format">
+						</el-table-column>
+					</el-table>
+				</div>
+				
+				<div class="table-box">
+					<h4 class="detail-tilte">退货进度</h4>
 
-					<el-table-column
-						prop="progress"
-						label="当前进度"
-						width="180">
-					</el-table-column>
+					<el-table :data="progress_data" style="width: 100%" :header-cell-style="{color:'rgba(0,0,0,.85)'}">
+						<el-table-column
+							prop="time"
+							label="时间">
+						</el-table-column>
 
-					<el-table-column
-						prop="status"
-						label="状态">
-					</el-table-column>
+						<el-table-column
+							prop="progress"
+							label="当前进度"
+							width="180">
+						</el-table-column>
 
-					<el-table-column
-						prop="operator_id"
-						label="操作员ID">
-					</el-table-column>
+						<el-table-column
+							prop="status"
+							label="状态">
+						</el-table-column>
 
-					<el-table-column
-						prop="consuming"
-						label="耗时">
-					</el-table-column>
-				</el-table>
-			</div>
-		</el-card>
-	</layout>
+						<el-table-column
+							prop="operator_id"
+							label="操作员ID">
+						</el-table-column>
+
+						<el-table-column
+							prop="consuming"
+							label="耗时">
+						</el-table-column>
+					</el-table>
+				</div>
+			</el-card>
+		</div>
+	</div>
 </template>
 
 <script>
-import Layout from "@/components/layout/base-layout.vue";
+import {common as commonMixin} from "@/components/mixins/common.js";
 
 export default {
-	name: 'profile-basic',
-	components: {
-		Layout
-	},
+	name: 'profile_basic',
+	mixins: [commonMixin],
 	data(){
 		return {
 			return_goods: [

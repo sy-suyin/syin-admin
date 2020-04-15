@@ -6,7 +6,7 @@
 
 	- https://preview.pro.ant.design/
 
-	- https://lison16.github.io/iview-admin-doc/#/
+	- https://github.com/iview/iview-admin
 
 - 目录架构
 

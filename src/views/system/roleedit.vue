@@ -1,92 +1,94 @@
 <template>
-	<layout>
-		<el-card class="box-card">
-			<div slot="header" class="clearfix">
-				修改角色
-			</div>
+	<div>
+		<page-header></page-header>
 
-			<el-form ref="form" :model="form" label-width="80px">
-				<el-form-item label="角色名称">
-					<el-input v-model="form.name"></el-input>
-				</el-form-item>
+		<div class="content-container">
+			<el-card class="box-card">
+				<div slot="header" class="clearfix">
+					修改角色
+				</div>
 
-				<el-form-item label="数据权限">
-					<el-button size="small" @click="dialog.visible.data=true">设置权限</el-button>
-				</el-form-item>
+				<el-form ref="form" :model="form" label-width="80px">
+					<el-form-item label="角色名称">
+						<el-input v-model="form.name"></el-input>
+					</el-form-item>
 
-				<el-form-item label="访问权限">
-					<el-button size="small" @click="dialog.visible.page=true">设置权限</el-button>
-				</el-form-item>
+					<el-form-item label="数据权限">
+						<el-button size="small" @click="dialog.visible.data=true">设置权限</el-button>
+					</el-form-item>
 
-				<el-form-item label="备注说明">
-					<el-input type="textarea" v-model="form.desc"></el-input>
-				</el-form-item>
+					<el-form-item label="访问权限">
+						<el-button size="small" @click="dialog.visible.page=true">设置权限</el-button>
+					</el-form-item>
 
-				<el-form-item>
-					<el-button type="primary" @click="onSubmit" :loading="loading">提交修改</el-button>
-					<el-button>取消</el-button>
-				</el-form-item>
-			</el-form>
-		</el-card>
+					<el-form-item label="备注说明">
+						<el-input type="textarea" v-model="form.desc"></el-input>
+					</el-form-item>
 
-		<el-dialog
-  			title="页面权限"
-			:visible.sync="dialog.visible.page"
-			width="50%">
+					<el-form-item>
+						<el-button type="primary" @click="onSubmit" :loading="loading">提交修改</el-button>
+						<el-button>取消</el-button>
+					</el-form-item>
+				</el-form>
+			</el-card>
 
-			<el-tree
-				ref="page_tree"
-				:data="dialog.data.page"
-				:props="dialog.props.page"
-				show-checkbox
-				node-key="key"
-				class="permission-tree"
-				:default-checked-keys="dialog.default_checked.page"
-				label="name"
-			/>
+			<el-dialog
+				title="页面权限"
+				:visible.sync="dialog.visible.page"
+				width="50%">
 
-			<div slot="footer">
-				<el-button type="danger" size="small" @click="dialog.visible.page=false">取消</el-button>
-				<el-button type="primary" size="small" @click="pageConfirm">确认</el-button>
-			</div>
+				<el-tree
+					ref="page_tree"
+					:data="dialog.data.page"
+					:props="dialog.props.page"
+					show-checkbox
+					node-key="key"
+					class="permission-tree"
+					:default-checked-keys="dialog.default_checked.page"
+					label="name"
+				/>
 
-		</el-dialog>
+				<div slot="footer">
+					<el-button type="danger" size="small" @click="dialog.visible.page=false">取消</el-button>
+					<el-button type="primary" size="small" @click="pageConfirm">确认</el-button>
+				</div>
 
-		<el-dialog
-  			title="数据权限"
-			:visible.sync="dialog.visible.data"
-			width="50%">
+			</el-dialog>
 
-			<el-tree
-				ref="data_tree"
-				:data="dialog.data.data"
-				:props="dialog.props.data"
-				show-checkbox
-				node-key="key"
-				class="permission-tree"
-				:default-checked-keys="dialog.default_checked.data"
-				label="name"
-			/>
+			<el-dialog
+				title="数据权限"
+				:visible.sync="dialog.visible.data"
+				width="50%">
 
-			<div slot="footer">
-				<el-button type="danger" size="small" @click="dialog.visible.data=false">取消</el-button>
-				<el-button type="primary" size="small" @click="dataConfirm">确认</el-button>
-			</div>
+				<el-tree
+					ref="data_tree"
+					:data="dialog.data.data"
+					:props="dialog.props.data"
+					show-checkbox
+					node-key="key"
+					class="permission-tree"
+					:default-checked-keys="dialog.default_checked.data"
+					label="name"
+				/>
 
-		</el-dialog>
-	</layout>
+				<div slot="footer">
+					<el-button type="danger" size="small" @click="dialog.visible.data=false">取消</el-button>
+					<el-button type="primary" size="small" @click="dataConfirm">确认</el-button>
+				</div>
+
+			</el-dialog>
+		</div>
+	</div>
 </template>
 
 <script>
 // @ is an alias to /src
-import Layout from "@/components/layout/base-layout.vue";
+import {common as commonMixin} from "@/components/mixins/common.js";
 import {menus} from '@/config/menu';
 import * as util from '@/libs/util.js';
 export default {
 	name: "system_roleedit",
-	components: {
-		Layout
-	},
+	mixins: [commonMixin],
   	data() {
       	return {
 			id: 0,

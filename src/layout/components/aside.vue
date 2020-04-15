@@ -28,9 +28,8 @@
 </template>
 
 <script>
-import syMenu from "@/components/layout/sy-menu.vue";
-import {debounce} from '@/libs/util.js';
-import syMenuItem from "@/components/layout/sy-menu-item.vue";
+import syMenuItem from "./sy-menu-item.vue";
+import { debounce } from '@/libs/util.js';
 import { mapState } from 'vuex'
 
 export default {

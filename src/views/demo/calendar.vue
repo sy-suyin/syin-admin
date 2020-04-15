@@ -1,452 +1,454 @@
 <template>
-  	<layout>
-		<el-card class="box-card calendar">
-			<table class="calendar-table table-bordered table-line">
-				<thead>
-					<tr>
-						<th>一</th>
-						<th>二</th>
-						<th>三</th>
-						<th>四</th>
-						<th>五</th>
-						<th>六</th>
-						<th>日</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td class="other-month">
-							<div class="time">
-								<div class="day">
-									<span>24</span>
-								</div>
-								<div class="info">
-								</div>
-							</div>
-						</td>
-						<td class="other-month">
-							<div class="time">
-								<div class="day">
-									<span>25</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td class="other-month">
-							<div class="time">
-								<div class="day">
-									<span>26</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td class="other-month">
-							<div class="time">
-								<div class="day">
-									<span>27</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td class="other-month">
-							<div class="time">
-								<div class="day">
-									<span>28</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td class="active">
-							<div class="time">
-								<div class="day">
-									<span>1</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td>
-							<div class="time">
-								<div class="day">
-									<span>2</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td class="active">
-							<div class="time">
-								<div class="day">
-									<span>03</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td>
-							<div class="time">
-								<div class="day">
-									<span>04</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
+	<div>
+		<page-header></page-header>
 
-						<td>
-							<div class="time">
-								<div class="day">
-									<span>05</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td class="active">
-							<div class="time">
-								<div class="day">
-									<span>06</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td>
-							<div class="time">
-								<div class="day">
-									<span>07</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td>
-							<div class="time">
-								<div class="day">
-									<span>08</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td class="active">
-							<div class="time">
-								<div class="day">
-									<span>09</span>
-								</div>
-								<div class="info">
-								</div>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td class="active">
-							<div class="time">
-								<div class="day">
-									<span>10</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td class="active">
-							<div class="time">
-								<div class="day">
-									<span>11</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td class="active">
-							<div class="time">
-								<div class="day">
-									<span>12</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td class="active">
-							<div class="time">
-								<div class="day">
-									<span>13</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td class="active">
-							<div class="time">
-								<div class="day">
-									<span>14</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td class="active">
-							<div class="time">
-								<div class="day">
-									<span>15</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td>
-							<div class="time">
-								<div class="day">
-									<span>16</span>
-								</div>
-								<div class="info">
-								</div>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<div class="time">
-								<div class="day">
-									<span>17</span>
-								</div>
-								<div class="info">
-								</div>
-							</div>
-						</td>
-						<td>
-							<div class="time">
-								<div class="day">
-									<span>18</span>
-								</div>
-								<div class="info">
-								</div>
-							</div>
-						</td>
-						<td class="active">
-							<div class="time">
-								<div class="day">
-									<span>19</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td class="active">
-							<div class="time">
-								<div class="day">
-									<span>20</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td class="active">
-							<div class="time">
-								<div class="day">
-									<span>21</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td>
-							<div class="time">
-								<div class="day">
-									<span>22</span>
-								</div>
-								<div class="info">
-								</div>
-							</div>
-						</td>
-						<td>
-							<div class="time">
-								<div class="day">
-									<span>23</span>
-								</div>
-								<div class="info">
-								</div>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td class="active">
-							<div class="time">
-								<div class="day">
-									<span>24</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td class="active">
-							<div class="time">
-								<div class="day">
-									<span>25</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td>
-							<div class="time">
-								<div class="day">
-									<span>26</span>
-								</div>
-								<div class="info">
-								</div>
-							</div>
-						</td>
-						<td>
-							<div class="time">
-								<div class="day">
-									<span>27</span>
-								</div>
-								<div class="info">
-								</div>
-							</div>
-						</td>
-						<td>
-							<div class="time">
-								<div class="day">
-									<span>28</span>
-								</div>
-								<div class="info">
-								</div>
-							</div>
-						</td>
-						<td class="active">
-							<div class="time">
-								<div class="day">
-									<span>29</span>
-								</div>
-								<div class="info">
-									3人/12次提交
-								</div>
-							</div>
-						</td>
-						<td>
-							<div class="time">
-								<div class="day">
-									<span>30</span>
-								</div>
-								<div class="info">
-								</div>
-							</div>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<div class="time">
-								<div class="day">
-									<span>31</span>
-								</div>
-								<div class="info">
-								</div>
-							</div>
-						</td>
-						<td class="other-month">
-							<div class="time">
-								<div class="day">
-									<span>1</span>
-								</div>
-								<div class="info">
-								</div>
-							</div>
-						</td>
-						<td class="other-month">
-							<div class="time">
-								<div class="day">
-									<span>2</span>
-								</div>
-								<div class="info">
-								</div>
-							</div>
-						</td>
-						<td class="other-month">
-							<div class="time">
-								<div class="day">
-									<span>3</span>
-								</div>
-								<div class="info">
-								</div>
-							</div>
-						</td>
-						<td class="other-month">
-							<div class="time">
-								<div class="day">
-									<span>4</span>
-								</div>
-								<div class="info">
-								</div>
-							</div>
-						</td>
-						<td class="other-month">
-							<div class="time">
-								<div class="day">
-									<span>5</span>
-								</div>
-								<div class="info">
-								</div>
-							</div>
-						</td>
-						<td class="other-month">
-							<div class="time">
-								<div class="day">
-									<span>6</span>
-								</div>
-								<div class="info">
-								</div>
-							</div>
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</el-card>
-	</layout>
+		<div class="content-container">
+			<el-card class="box-card calendar">
+				<table class="calendar-table table-bordered table-line">
+					<thead>
+						<tr>
+							<th>一</th>
+							<th>二</th>
+							<th>三</th>
+							<th>四</th>
+							<th>五</th>
+							<th>六</th>
+							<th>日</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="other-month">
+								<div class="time">
+									<div class="day">
+										<span>24</span>
+									</div>
+									<div class="info">
+									</div>
+								</div>
+							</td>
+							<td class="other-month">
+								<div class="time">
+									<div class="day">
+										<span>25</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td class="other-month">
+								<div class="time">
+									<div class="day">
+										<span>26</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td class="other-month">
+								<div class="time">
+									<div class="day">
+										<span>27</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td class="other-month">
+								<div class="time">
+									<div class="day">
+										<span>28</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td class="active">
+								<div class="time">
+									<div class="day">
+										<span>1</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="time">
+									<div class="day">
+										<span>2</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td class="active">
+								<div class="time">
+									<div class="day">
+										<span>03</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="time">
+									<div class="day">
+										<span>04</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+
+							<td>
+								<div class="time">
+									<div class="day">
+										<span>05</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td class="active">
+								<div class="time">
+									<div class="day">
+										<span>06</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="time">
+									<div class="day">
+										<span>07</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="time">
+									<div class="day">
+										<span>08</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td class="active">
+								<div class="time">
+									<div class="day">
+										<span>09</span>
+									</div>
+									<div class="info">
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td class="active">
+								<div class="time">
+									<div class="day">
+										<span>10</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td class="active">
+								<div class="time">
+									<div class="day">
+										<span>11</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td class="active">
+								<div class="time">
+									<div class="day">
+										<span>12</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td class="active">
+								<div class="time">
+									<div class="day">
+										<span>13</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td class="active">
+								<div class="time">
+									<div class="day">
+										<span>14</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td class="active">
+								<div class="time">
+									<div class="day">
+										<span>15</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="time">
+									<div class="day">
+										<span>16</span>
+									</div>
+									<div class="info">
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="time">
+									<div class="day">
+										<span>17</span>
+									</div>
+									<div class="info">
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="time">
+									<div class="day">
+										<span>18</span>
+									</div>
+									<div class="info">
+									</div>
+								</div>
+							</td>
+							<td class="active">
+								<div class="time">
+									<div class="day">
+										<span>19</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td class="active">
+								<div class="time">
+									<div class="day">
+										<span>20</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td class="active">
+								<div class="time">
+									<div class="day">
+										<span>21</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="time">
+									<div class="day">
+										<span>22</span>
+									</div>
+									<div class="info">
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="time">
+									<div class="day">
+										<span>23</span>
+									</div>
+									<div class="info">
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td class="active">
+								<div class="time">
+									<div class="day">
+										<span>24</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td class="active">
+								<div class="time">
+									<div class="day">
+										<span>25</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="time">
+									<div class="day">
+										<span>26</span>
+									</div>
+									<div class="info">
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="time">
+									<div class="day">
+										<span>27</span>
+									</div>
+									<div class="info">
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="time">
+									<div class="day">
+										<span>28</span>
+									</div>
+									<div class="info">
+									</div>
+								</div>
+							</td>
+							<td class="active">
+								<div class="time">
+									<div class="day">
+										<span>29</span>
+									</div>
+									<div class="info">
+										3人/12次提交
+									</div>
+								</div>
+							</td>
+							<td>
+								<div class="time">
+									<div class="day">
+										<span>30</span>
+									</div>
+									<div class="info">
+									</div>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="time">
+									<div class="day">
+										<span>31</span>
+									</div>
+									<div class="info">
+									</div>
+								</div>
+							</td>
+							<td class="other-month">
+								<div class="time">
+									<div class="day">
+										<span>1</span>
+									</div>
+									<div class="info">
+									</div>
+								</div>
+							</td>
+							<td class="other-month">
+								<div class="time">
+									<div class="day">
+										<span>2</span>
+									</div>
+									<div class="info">
+									</div>
+								</div>
+							</td>
+							<td class="other-month">
+								<div class="time">
+									<div class="day">
+										<span>3</span>
+									</div>
+									<div class="info">
+									</div>
+								</div>
+							</td>
+							<td class="other-month">
+								<div class="time">
+									<div class="day">
+										<span>4</span>
+									</div>
+									<div class="info">
+									</div>
+								</div>
+							</td>
+							<td class="other-month">
+								<div class="time">
+									<div class="day">
+										<span>5</span>
+									</div>
+									<div class="info">
+									</div>
+								</div>
+							</td>
+							<td class="other-month">
+								<div class="time">
+									<div class="day">
+										<span>6</span>
+									</div>
+									<div class="info">
+									</div>
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</el-card>
+		</div>
+	</div>
 </template>
 
 <script>
-import Layout from "@/components/layout/base-layout.vue";
+import {common as commonMixin} from "@/components/mixins/common.js";
 
 export default {
 	name: "calendar",
-	components: {
-		Layout
-	},
+	mixins: [commonMixin],
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .calendar{
 
 	.calendar-table {

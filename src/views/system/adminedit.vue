@@ -1,56 +1,57 @@
 <template>
-	<layout>
-		<el-card class="box-card">
-			<div slot="header" class="clearfix">
-				修改管理员
-			</div>
+	<div>
+		<page-header></page-header>
 
-			<el-form ref="form" :model="form" label-width="80px">
-				<el-form-item label="登录账号">
-					<el-input v-model="form.login"></el-input>
-				</el-form-item>
+		<div class="content-container">
+			<el-card class="box-card">
+				<div slot="header" class="clearfix">
+					修改管理员
+				</div>
 
-				<el-form-item label="用户名称">
-					<el-input v-model="form.name"></el-input>
-				</el-form-item>
+				<el-form ref="form" :model="form" label-width="80px">
+					<el-form-item label="登录账号">
+						<el-input v-model="form.login"></el-input>
+					</el-form-item>
 
-				<el-form-item label="权限角色">
-					<el-select v-model="form.roles" placeholder="请选择活动区域" multiple>
+					<el-form-item label="用户名称">
+						<el-input v-model="form.name"></el-input>
+					</el-form-item>
 
-						<el-option
-							v-for="item in roles"
-							:key="item.id"
-							:label="item.name"
-							:value="item.id">
-						</el-option>
+					<el-form-item label="权限角色">
+						<el-select v-model="form.roles" placeholder="请选择活动区域" multiple>
 
-					</el-select>
-				</el-form-item>
+							<el-option
+								v-for="item in roles"
+								:key="item.id"
+								:label="item.name"
+								:value="item.id">
+							</el-option>
 
-			    <el-divider content-position="left">如果不修改密码, 下面留空</el-divider>
+						</el-select>
+					</el-form-item>
 
-				<el-form-item label="登录密码">
-					<el-input v-model="form.password" show-password></el-input>
-				</el-form-item>
+					<el-divider content-position="left">如果不修改密码, 下面留空</el-divider>
 
-				<el-form-item>
-					<el-button type="primary" @click="onSubmit" :loading="loading">提交修改</el-button>
-					<el-button>取消</el-button>
-				</el-form-item>
-			</el-form>
-		</el-card>
-	</layout>
+					<el-form-item label="登录密码">
+						<el-input v-model="form.password" show-password></el-input>
+					</el-form-item>
+
+					<el-form-item>
+						<el-button type="primary" @click="onSubmit" :loading="loading">提交修改</el-button>
+						<el-button>取消</el-button>
+					</el-form-item>
+				</el-form>
+			</el-card>
+		</div>
+	</div>
 </template>
 
 <script>
-// @ is an alias to /src
-import Layout from "@/components/layout/base-layout.vue";
+import {common as commonMixin} from "@/components/mixins/common.js";
 import * as util from '@/libs/util.js';
 export default {
-	name: "system-adminadd",
-	components: {
-		Layout
-	},
+	name: "system_adminadd",
+	mixins: [commonMixin],
   	data() {
       	return {
 			id: 0,

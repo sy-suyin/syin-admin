@@ -49,6 +49,8 @@ export default {
 				let current = this.$route.meta;
 
 				if(current.controller != menu.controller || current.action != menu.action){
+					// 激活路由
+					this.$store.commit('access/active',current);
 					this.$router.push(`/${menu.controller}/${menu.action}`);
 				}else{
 					// 此处待决定再重复点击之后是否刷新

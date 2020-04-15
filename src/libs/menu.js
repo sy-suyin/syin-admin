@@ -3,7 +3,7 @@
  */
 
 import * as Util from '@/libs/util.js';
-import Layout from "@/components/layout/base-layout.vue";
+import Layout from "@/layout";
 
 /**
  * 组件基类
@@ -182,6 +182,7 @@ export default class Menu extends MenuInterface{
 						path: `/${controller}`,
 						name: controller,
 						component: Layout,
+						redirect: '',
 						children: []
 					};
 				}
@@ -189,18 +190,23 @@ export default class Menu extends MenuInterface{
 				new_routers[controller].children.push(item); 
 
 				// params 为空. 即不能直接跳转到需要传参数的页面
-				if( !has_root && item.meta.params == ''){
+				if(item.meta.params == ''){
 					let action = item.meta.action;
 
-					if(!has_root){
+					// 完善一级路由
+					if(new_routers[controller].redirect == ''){
+						new_routers[controller].redirect = `/${controller}/${action}`;
+					}
+
+					// 添加零级路由导航
+					if( !has_root){
 						has_root = true;
 
-						// 添加零级路由导航
 						new_routers['/'] = {
 							path: `/`,
 							redirect: `/${controller}/${action}`,
 						};
-					}
+					} 
 				}
 			});
 
@@ -213,8 +219,6 @@ export default class Menu extends MenuInterface{
 
 			routers = Object.values(new_routers);
 		}
-
-		console.log(routers);
 
 		return routers;
 	}
@@ -299,8 +303,6 @@ class MenuItem extends MenuInterface{
 					}else{
 						results.push(result);
 					}
-
-					// return false;
 				}
 			});
 
