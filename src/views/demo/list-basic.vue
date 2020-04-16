@@ -1,5 +1,5 @@
 <template>
-	<div>
+	<div class="table-base">
 		<page-header>
 			<template #breadcrumb-after>
 				<div>

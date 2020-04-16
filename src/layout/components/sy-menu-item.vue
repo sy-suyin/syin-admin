@@ -3,11 +3,14 @@
 		<ul class="menu-item-group" :class="'menu-group-level-'+level">
 			<li class="menu-item" 
 				v-for="(item, index) in menus" 
-				:key=" 'item' + index" :data-index="index"  
-				@click.stop="menuClick(index)"
+				:key=" item.key " :data-index="index"  
 				:class="{active: item.is_active}"
 			>
-				<div class="menu-link" :style="{backgroundColor: item.is_active? filters_color : false}">
+				<div 
+					class="menu-link" 
+					:style="{backgroundColor: (item.is_active ? filters_color : 'transparent')}"
+					@click.stop="menuClick(index)"
+				>
 					<i class="menu-item-icon el-icon-s-grid" v-if="level< 1"></i>
 					<span class="menu-name">
 						{{item.name}}
@@ -37,6 +40,9 @@ export default {
 		this.level = +this.lv || 0;
 	},
 	methods:{
+		/**
+		 * 菜单栏点击事件
+		 */
 		menuClick(index){
 			// 此处需加一个当重复点击不生效的
 			let menu = this.menus[index];
@@ -50,7 +56,7 @@ export default {
 
 				if(current.controller != menu.controller || current.action != menu.action){
 					// 激活路由
-					this.$store.commit('access/active',current);
+					this.$store.commit('access/active', menu);
 					this.$router.push(`/${menu.controller}/${menu.action}`);
 				}else{
 					// 此处待决定再重复点击之后是否刷新
@@ -59,14 +65,9 @@ export default {
 		},
 
 		/**
-		 * 关闭侧边栏展开的菜单, 考虑到性能, 仅关闭最开始展开的一层
-		 * 实现在侧边栏最小化, 以及最小化鼠标离开时关闭展开的侧边栏功能
+		 * 关闭打开的菜单栏
 		 */
 		close(){
-			if(this.level != 0){
-				return false;
-			}
-
 			this.menus.forEach((item, index) => {
 				if(item.is_open){
 					this.menus[index].is_open = 0;
@@ -79,6 +80,6 @@ export default {
 			filters_color: state =>state.sidebar_filters_color,
 			background_color: state =>state.sidebar_background_color,
 		})
-	}
+	},
 }
 </script>

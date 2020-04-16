@@ -43,7 +43,7 @@ export default {
 
 			is_leave: false,
 
-			menus: [],
+			// menus: [],
 
 			user: {
 				name: '',
@@ -62,7 +62,7 @@ export default {
 		}
 
 		this.user = user;
-		this.menus = this.$store.state.access.menus;
+		// this.menus = this.$store.state.access.menus;
 
 		// 在初次加载时, 如果侧边栏为最小化, 则关闭展开的
 		if(this.sidebar_mini){
@@ -91,6 +91,13 @@ export default {
 		})
 	},
 	computed: {
+		menus: {
+			get() {
+				// console.log(this.$store.state.access.menus);
+				return this.$store.state.access.menus;
+			}
+		},
+
 		...mapState('settings', {
 			sidebar_mini: state =>state.sidebar_mini,
 			filters_color: state =>state.sidebar_filters_color,
@@ -248,14 +255,14 @@ export default {
 	.menu-item{
 		margin: 10px 15px 0;
 
+		&>.menu-link{
+			margin-top: 10px;
+		}
+
 		&.active{
 			&>.menu-link{
 				// background-color: #e91e63;
 				box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(233,30,99,.4);
-			}
-
-			.active>.menu-link{
-				margin-top: 10px;
 			}
 		}
 		
