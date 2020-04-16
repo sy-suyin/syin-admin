@@ -5,7 +5,7 @@
 import * as Util from '@/libs/util.js';
 import Table from '@/libs/Table.js';
 
-let Instance = null; 
+let TableInstance = null; 
 export const table = {
 	data(){
 		return {
@@ -28,7 +28,7 @@ export const table = {
 		}
 	},
 	mounted() {
-		Instance = new Table(this);
+		TableInstance = new Table(this);
 	},
 	methods: {
 
@@ -95,10 +95,10 @@ export const table = {
 		// 删除
 		del(id = -1){
 			let url = this.getUrl('del');
-			Instance.newPost(url, id, {operate: 1}).then(res => {
-				console.log(res);
-			});
-			// Factory.get(Table).delete(id, deleted, this.getUrl('del'));
+			TableInstance.newPost(url, id, {operate: 1}).then(res => {
+				// 重新加载数据，如果没有该请求方法，则应在相应页面实现或者替换成对应的数据加载方法
+				this.getRequestData(1, {}, true);
+			}).catch();
 		},
 
 		// 批量删除
@@ -106,12 +106,22 @@ export const table = {
 			let deleted = 1;
 			Factory.get(Table).delete(-1, deleted, this.getUrl('del'));
 		},
+		
+		// 禁用
+		disabled(id){
+			let url = this.getUrl('dis');
+			TableInstance.newPost(url, id, {operate: 1}).then(res => {
+				this.message('操作成功', 'success');
+			});
+		},
 
 		// 排序
 		sort(){
 			let data = this.extract('id, sort');
-			let url = this.getUrl();
-			newPost(url, data);
+			let url = this.getUrl('sort');
+			TableInstance.newPost(url, data).then(res => {
+				this.message('操作成功', 'success');
+			});
 		},
 
 		/**
@@ -137,6 +147,7 @@ export const table = {
 
 					let data = {};
 					fields.forEach(field => {
+						field = field.trim();
 						if(item.hasOwnProperty(field)){
 							data[field] = item[field];
 						}
@@ -145,6 +156,8 @@ export const table = {
 					results.push(data);
 				}
 			});
+
+			return results;
 		},
 
 		/**
@@ -159,10 +172,5 @@ export const table = {
 
 			// Factory.get(Table).setIds(ids);
 		}),
-
-		// 禁用
-		disabled(row, disabled){
-			Factory.get(Table).disabled(row.id, disabled, this.getUrl('dis'));
-		},
 	},
 }

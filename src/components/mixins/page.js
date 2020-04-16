@@ -7,7 +7,6 @@ import * as Util from '@/libs/util.js';
 
 export const page = {
 	data(){
-
 		return {
 
 			// 页面请求地址

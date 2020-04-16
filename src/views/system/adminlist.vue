@@ -24,7 +24,7 @@
 					<div class="table-toolbar">
 						<el-button size="mini" type="primary" icon="el-icon-plus" @click="jump('add')" v-permission:page="['system', 'adminadd']">添加</el-button>
 
-						<el-button size="mini" type="warning" icon="el-icon-s-promotion" @click="filter">筛选</el-button>
+						<el-button size="mini" type="success" icon="el-icon-sort" @click="sort">排序</el-button>
 
 						<el-button size="mini" type="warning" icon="el-icon-s-promotion" @click="jump('recycle')" v-permission:page="['system', 'adminrecycle']">回收站</el-button>
 
