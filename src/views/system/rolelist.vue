@@ -102,6 +102,7 @@ export default {
 				del: '/system/roledel',
 				dis: '/system/roledis',
 				edit: '/system/roleedit/:id',
+				list: '/system/rolelist',
 				recycle: '/system/rolerecycle',
 			},
 		}

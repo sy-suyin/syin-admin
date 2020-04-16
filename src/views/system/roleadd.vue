@@ -26,7 +26,7 @@
 					</el-form-item>
 
 					<el-form-item>
-						<el-button type="primary" @click="onSubmit" :loading="loading">立即创建</el-button>
+						<el-button type="primary" @click="onSubmit">立即创建</el-button>
 						<el-button>取消</el-button>
 					</el-form-item>
 				</el-form>
@@ -88,8 +88,6 @@ export default {
 	mixins: [commonMixin],
   	data() {
       	return {
-			loading: false,
-
         	form: {
           		name: '',
 				desc: ''
@@ -227,27 +225,6 @@ export default {
 			}while(next.length > 0);
 
 			return unselected;
-		},
-
-		/** 
-		 * 提示消息
-		 * 
-		 * @param msg  消息内容
-		 * @param type 消息类型
-		 * @param duration 消息显示时间, 单位: 毫秒
-		 * @param path 消息关闭后跳转路径, 为空不跳转
-		 */
-		message(msg, type='warning', duration=3000, path=''){
-			return this.$message({
-				showClose: true,
-				message: msg,
-				type: type,
-				onClose: ()=>{
-					if(path != ''){
-						this.$router.push({path});
-					}
-				}
-			});
 		},
     }
 };

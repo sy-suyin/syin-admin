@@ -37,7 +37,7 @@
 					</el-form-item>
 
 					<el-form-item>
-						<el-button type="primary" @click="onSubmit" :loading="loading">提交修改</el-button>
+						<el-button type="primary" @click="onSubmit">提交修改</el-button>
 						<el-button>取消</el-button>
 					</el-form-item>
 				</el-form>
@@ -55,11 +55,7 @@ export default {
   	data() {
       	return {
 			id: 0,
-
 			roles: [],
-
-			loading: false,
-
         	form: {
 				login: '',
           		name:  '',
@@ -79,9 +75,9 @@ export default {
 				return this.message('未找到相关数据, 请检查后重试', 'warning', 3000, '/system/adminlist');
 			}
 
-			this.loading = true;
+			this.loading(true);
 			util.get('/system/admindetail/id/'+id).then(res => {
-				this.loading = false;
+				this.loading(false);
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
 					this.id = id;
 
@@ -101,8 +97,7 @@ export default {
 					this.message('服务器未响应，请稍后重试', 'warning', 3000, '/system/adminlist');
 				}
 			}).catch(err => {
-				this.loading = false;
-
+				this.loading(false);
 				this.message('网络异常, 请稍后重试', 'warning', 3000, '/system/adminlist');
 			});
 		},
@@ -137,9 +132,9 @@ export default {
 				return this.message('请先选择角色权限');
 			}
 
-			this.loading = true;
+			this.loading(true);
 			util.post('/system/adminedit', args).then(res => {
-				this.loading = false;
+				this.loading(false);
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
 					this.$router.push({path: '/system/adminlist'})
 				}
@@ -150,34 +145,13 @@ export default {
 					this.message('服务器未响应，请稍后重试');
 				}
 			}).catch(err => {
-				this.loading = false;
+				this.loading(false);
 				this.message('网络异常, 请稍后重试');
 			});
 		},
 
 		resetForm(formName) {
 			this.$refs[formName].resetFields();
-		},
-
-		/** 
-		 * 提示消息
-		 * 
-		 * @param msg  消息内容
-		 * @param type 消息类型
-		 * @param duration 消息显示时间, 单位: 毫秒
-		 * @param path 消息关闭后跳转路径, 为空不跳转
-		 */
-		message(msg, type='warning', duration=3000, path=''){
-			return this.$message({
-				showClose: true,
-				message: msg,
-				type: type,
-				onClose: ()=>{
-					if(path != ''){
-						this.$router.push({path});
-					}
-				}
-			});
 		},
     }
 };

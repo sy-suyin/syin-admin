@@ -117,26 +117,18 @@ export default {
 				del: '/system/admindel',
 				dis: '/system/admindis',
 				edit: '/system/adminedit/:id',
+				list: '/system/adminlist',
 				recycle: '/system/adminrecycle',
 			},
 		}
 	},
 	mounted(){
+		this.page_url = this.urls.list;
 		this.getRequestData();
 
 		Factory.get(Table, this);
 	},
 	methods: {
-
-		// 选择框改变
-		selectionChange(selected){
-			let ids = [];
-			selected.forEach(val => {
-				ids.push(val.id);
-			});
-
-			Factory.get(Table).setIds(ids);
-		}
     }
 };
 </script>

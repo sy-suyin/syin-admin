@@ -35,7 +35,7 @@
 					</el-form-item>
 
 					<el-form-item>
-						<el-button type="primary" @click="onSubmit" :loading="loading">立即创建</el-button>
+						<el-button type="primary" @click="onSubmit">立即创建</el-button>
 						<el-button>取消</el-button>
 					</el-form-item>
 				</el-form>
@@ -53,8 +53,6 @@ export default {
   	data() {
       	return {
 			roles: [],
-
-			loading: false,
 
         	form: {
 				login: '',
@@ -105,9 +103,9 @@ export default {
 				return this.message('请先选择角色权限');
 			}
 
-			this.loading = true;
+			this.loading(true);
 			util.post('/system/adminadd', args).then(res => {
-				this.loading = false;
+				this.loading(false);
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
 					this.$router.push({path: '/system/adminlist'})
 				}
@@ -118,7 +116,7 @@ export default {
 					this.message('服务器未响应，请稍后重试');
 				}
 			}).catch(err => {
-				this.loading = false;
+				this.loading(false);
 				this.message('网络异常, 请稍后重试');
 			});
 		},

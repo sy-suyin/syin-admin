@@ -1,6 +1,6 @@
 import * as util from '@/libs/util.js';
-class Table{
 
+class Table{
 	target = null;
 	ids = [];
 
@@ -33,6 +33,62 @@ class Table{
 			if(! +args.id){
 				this.target.message('请选择需要操作的项目');
 				return Promise.reject('请选择需要操作的项目');
+			}
+		}
+
+		return util.post(url, args).then((res)=>{
+			return this.success(res);
+		}).catch((e)=>{
+			let msg = e.message || e;
+			this.error(msg);
+			return Promise.reject(msg);
+		});
+	}
+
+	/** 
+	 * 新post提交方法
+	 * @param {string} url 	提交链接
+	 * @param {mixed}  data 提交的数据
+	 * @param {mixed}  mark 操作标示, 可传入两种数据, 字符串或对象. 为字符串时会转换为对象, 转化后键为 mark 
+	 */
+	newPost(url, data = null, mark = ''){
+		let args = {
+			data: data === null ? this.ids : data
+		};
+
+		// 当不传数据时, 直接使用表格所有选中项的id
+		if(data === null){
+			if(this.ids.length < 1){
+				this.target.message('请选择需要操作的项目');
+				return Promise.reject('请选择需要操作的项目');
+			}
+
+			args.id = this.ids;
+		}else{
+			let data_type = util.getType(data);
+
+			// 当为数字时, 即可判断是单项删除之类的操作
+			if(data_type == 'number'){
+				if(+data < 1){
+					this.target.message('请选择需要操作的项目');
+					return Promise.reject('请选择需要操作的项目');
+				}
+
+				args.id = data;
+			}else{
+				args.data = data;
+			}
+		}
+		
+		// 整理操作标示数据
+		if(util.getType(mark) != 'object'){
+			if(!!mark){
+				args.mark = mark; 
+			}
+		}else{
+			let mark_keys = Object.keys(mark);
+			if(mark_keys.length > 0){
+				args[mark_keys[0]] = Object.values(mark)[0];
 			}
 		}
 

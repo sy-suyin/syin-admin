@@ -7,7 +7,11 @@ import * as Util from '@/libs/util.js';
 
 export const page = {
 	data(){
+
 		return {
+
+			// 页面请求地址
+			page_url: '',
 
 			// 表格数据
 			results: [],
@@ -34,6 +38,8 @@ export const page = {
 		 * 
 		 */
 		getRequestData(page=1, args={}, reset=false){
+			let url = this.page_url;
+
 			if(reset){
 				this.pagination.args = {};
 				this.pagination.page_max = 1;
@@ -56,7 +62,7 @@ export const page = {
 			args['page'] = page;
 			this.loading(true);
 
-			Util.post('/system/adminlist', args).then(res => {
+			Util.post(url, args).then(res => {
 				this.loading(false);
 
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){

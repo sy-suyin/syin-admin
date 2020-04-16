@@ -26,7 +26,7 @@
 					</el-form-item>
 
 					<el-form-item>
-						<el-button type="primary" @click="onSubmit" :loading="loading">提交修改</el-button>
+						<el-button type="primary" @click="onSubmit">提交修改</el-button>
 						<el-button>取消</el-button>
 					</el-form-item>
 				</el-form>
@@ -93,8 +93,6 @@ export default {
       	return {
 			id: 0,
 
-			loading: false,
-
         	form: {
           		name: '',
 				desc: '',
@@ -149,9 +147,9 @@ export default {
 				return this.message('未找到相关数据, 请检查后重试', 'warning', 3000, '/system/rolelist');
 			}
 
-			this.loading = true;
+			this.loading(true);
 			util.get('/system/roledetail/id/'+id).then(res => {
-				this.loading = false;
+				this.loading(false);
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
 					this.id = id;
 					this.form.name = res.result.name;
@@ -165,14 +163,14 @@ export default {
 					this.message('服务器未响应，请稍后重试', 'warning', 3000, '/system/rolelist');
 				}
 			}).catch(err => {
-				this.loading = false;
+				this.loading(false);
 				this.message('网络异常, 请稍后重试', 'warning', 3000, '/system/rolelist');
 			});
 		},
 
 		// 获取权限数据
 		getAccessData(){
-			this.loading = true;
+			this.loading(true);
 
 			util.get('/system/getaccessdata/id/'+this.id).then(res => {
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
@@ -185,9 +183,9 @@ export default {
 				else{
 					this.message('服务器未响应，请稍后重试', 'warning', 3000, '/system/rolelist');
 				}
-				this.loading = false;
+				this.loading(false);
 			}).catch(err => {
-				this.loading = false;
+				this.loading(false);
 				this.message('网络异常, 请稍后重试', 'warning', 3000, '/system/rolelist');
 			});
 		},
@@ -210,9 +208,9 @@ export default {
 				return this.message('角色名称不能为空');
 			}
 
-			this.loading = true;
+			this.loading(true);
 			util.post('/system/roleedit', args).then(res => {
-				this.loading = false;
+				this.loading(false);
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
 					this.$router.push({path: '/system/rolelist'})
 				}
@@ -223,7 +221,7 @@ export default {
 					this.message('服务器未响应，请稍后重试');
 				}
 			}).catch(err => {
-				this.loading = false;
+				this.loading(false);
 				this.message('网络异常, 请稍后重试');
 			});
 		},
@@ -310,27 +308,6 @@ export default {
 			}while(next.length > 0);
 
 			return unselected;
-		},
-
-		/** 
-		 * 提示消息
-		 * 
-		 * @param msg  消息内容
-		 * @param type 消息类型
-		 * @param duration 消息显示时间, 单位: 毫秒
-		 * @param path 消息关闭后跳转路径, 为空不跳转
-		 */
-		message(msg, type='warning', duration=3000, path=''){
-			return this.$message({
-				showClose: true,
-				message: msg,
-				type: type,
-				onClose: ()=>{
-					if(path != ''){
-						this.$router.push({path});
-					}
-				}
-			});
 		},
 
 		// 检查tree数据key

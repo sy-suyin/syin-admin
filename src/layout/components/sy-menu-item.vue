@@ -46,8 +46,6 @@ export default {
 				this.opens[val.key] = true;
 			}
 		});
-
-		console.log(this.menus);
 	},
 	methods:{
 		/**
