@@ -34,10 +34,20 @@ export default {
 	data(){
 		return {
 			level: 0,
+			// 此处记录渲染数据中打开项, 以供在每次点击切换页面后, 重新渲染时能保持上次的打开状态
+			opens: {}
 		}
 	},
 	created(){
 		this.level = +this.lv || 0;
+
+		this.menus.forEach(val=>{
+			if(val.hasOwnProperty('is_open') && !!val.is_open){
+				this.opens[val.key] = true;
+			}
+		});
+
+		console.log(this.menus);
 	},
 	methods:{
 		/**
@@ -49,6 +59,7 @@ export default {
 
 			if(menu.children.length){
 				menu.is_open = !menu.is_open;
+				this.opens[menu.key] = menu.is_open;
 
 				this.$set(this.menus, index, menu);
 			}else{
@@ -56,6 +67,7 @@ export default {
 
 				if(current.controller != menu.controller || current.action != menu.action){
 					// 激活路由
+					this.opens[menu.key] = true;
 					this.$store.commit('access/active', menu);
 					this.$router.push(`/${menu.controller}/${menu.action}`);
 				}else{
@@ -81,5 +93,29 @@ export default {
 			background_color: state =>state.sidebar_background_color,
 		})
 	},
+	watch: {
+		menus(data){
+			let flag = true;
+
+			// 如果需要每次点击切换时, 关闭其他已打开的, 只需注释下面代码即可
+
+			data.forEach((val, key) => {
+				// 如果新记录中是未打开, 而旧记录是已打开, 则修改为已打开
+				if( !val.is_open 
+					&&this.opens.hasOwnProperty(val.key)
+					&& this.opens[val.key] 
+				){
+					flag = true;
+					data[key].is_open = true; 
+				}
+
+				// 在手动切换的情况下不存在子项已打开, 而上级菜单未打开的情况. 故仅在菜单点击时添加新打开记录, 而不在此处有无新上级打开记录
+			});
+
+			if(flag){
+				this.menus = data;
+			}
+		}
+	}
 }
 </script>
