@@ -84,6 +84,22 @@ class System extends Client {
 		// $request->log = '管理员'.($request->admin->name).', 共'.$operation_type.$result.'个管理员';
 		return show_success('操作成功, 共'.$operation_type.$result.'个管理员');
 	}
+	
+	/**
+	 * 管理员管理 - 排序
+	 */
+	public function adminsortAction(Request $request){
+		$data  = input('data/a');
+
+		$result = \app\client\model\Admin::sortItem($data);
+
+		if(is_error($result)){
+			return show_error($result->getErrorMsg());
+		}
+
+		// $request->log = '管理员'.($request->admin->name).', 对'.$result.'个管理员进行了排序';
+		return show_success('操作成功, 共对'.$result.'个管理员进行了排序');
+	}
 
 	/**
 	 * 管理员 - 添加

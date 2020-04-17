@@ -119,6 +119,7 @@ export default {
 				edit: '/system/adminedit/:id',
 				list: '/system/adminlist',
 				recycle: '/system/adminrecycle',
+				sort: '/system/adminsort'
 			},
 		}
 	},

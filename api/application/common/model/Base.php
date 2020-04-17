@@ -80,80 +80,34 @@ class Base extends Model
 
 	/**
 	 * 项目自定义排序
+	 * 传入数据示例 [ {id: 1, sort: 5}, {id: 2, sort: 12} ]
+	 * 
+	 * @param array $data	排序数据
+	 * 
 	 */
-	public static function orderItem($id, $num){
+	public static function sortItem($data){
 		$count = 0;
 
-		if(empty($id) || empty($num)){
-			return new RuntimeError('排序数据异常');
-		}
-
-		if(!is_array($id)){
-			$id = array($id);
-		}
-
-		if(!is_array($num)){
-			$num = array($num);
-		}
-
-		$id = array_filter(array_map('absint', $id));
-		$num = array_map('absint', $num);
-
-		if(empty($id)){
+		if(empty($data) || !is_array($data)){
 			return new RuntimeError('没有要操作的项目');
 		}
 
-
-		foreach($id as $k => $i){
-			if(!$i || !isset($num[$k])) continue;
-
-			$sort = $num[$k];
+		foreach($data as $val){
+			$id = absint($val['id']);
+			$sort = absint($val['sort']);
 			$sort < 1 && $sort = 99;
 
-			$update = self::where('id', $i)->update(['sort' => $sort]);
+			if($id < 1){
+				continue;
+			}
 
-			$update !== false && $count += 1;
+			$update = self::where('id', $id)->update(['sort' => $sort]);
+			if($update !== false){
+				$count += 1;
+			}
 		}
 
 		return $count;
-	}
-
-	/**
-	 * 审核项目
-	 *
-	 * @param mixed		$id,			项目ID
-	 * @param int		$delete,		0恢复；1删除
-	 * @param int		$where,			审核时附加条件
-	 */
-	public static function verifyItem($id, $audit, $where = array(), $fail_reason = ''){
-		$db = null;
-		$args = array(
-			'status' => $audit,
-			'update_time' => time(),
-			'fail_reason' => $fail_reason
-		);
-
-		if(is_array($id)){
-			$id = array_filter(array_map('absint', $id));
-
-			$db = self::where('id', 'in', $id);
-		}else{
-			$id = absint($id);
-
-			$db = self::where('id', $id);
-		}
-
-		if(empty($id)){
-			return new RuntimeError('没有要操作的项目');
-		}
-
-		if(!empty($where)){
-			$db -> where($where);
-		}
-
-		$update = $db->update($args);
-
-		return $update;
 	}
 
 	/**
