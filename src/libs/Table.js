@@ -9,55 +9,16 @@ class Table{
 	}
 
 	/** 
-	 * 表单常用提交操作封装
-	 * 
-	 * @param int id			操作项目id, 当为-1时表示为批量操作
-	 * @param int operate		操作类型
-	 * @param string url	 	提交链接
-	 */
-	post(id, operate, url){
-		var args = {
-			operate
-		};
-
-		if(id == -1){
-			args.id = this.ids;
-
-			if(args.id.length < 1){
-				this.target.message('请选择需要操作的项目');
-				return Promise.reject('请选择需要操作的项目');
-			}
-		}else{
-			args.id = id;
-
-			if(! +args.id){
-				this.target.message('请选择需要操作的项目');
-				return Promise.reject('请选择需要操作的项目');
-			}
-		}
-
-		return util.post(url, args).then((res)=>{
-			return this.success(res);
-		}).catch((e)=>{
-			let msg = e.message || e;
-			this.error(msg);
-			return Promise.reject(msg);
-		});
-	}
-
-	/** 
-	 * 新post提交方法
+	 * 执行相应表单操作并使用POST提交数据
 	 * @param {string} url 	提交链接
-	 * @param {mixed}  data 提交的数据
+	 * @param {mixed}  data 提交的数据, 当为-1时使用表格选中栏的id数组
 	 * @param {mixed}  mark 操作标示, 可传入两种数据, 字符串或对象. 为字符串时会转换为对象, 转化后键为 mark 
 	 */
-	newPost(url, data = null, mark = ''){
-		let args = {
-			data: data === null ? this.ids : data
-		};
+	execute(url, data = -1, mark = ''){
+		let args = {};
 
 		// 当不传数据时, 直接使用表格所有选中项的id
-		if(data === null){
+		if(data === -1){
 			if(this.ids.length < 1){
 				this.target.message('请选择需要操作的项目');
 				return Promise.reject('请选择需要操作的项目');
@@ -92,24 +53,43 @@ class Table{
 			}
 		}
 
+		this.target.loading(true);
 		return util.post(url, args).then((res)=>{
+			this.target.loading(false);
+			res.resquset = args;
 			return this.success(res);
 		}).catch((e)=>{
-			let msg = e.message || e;
-			this.error(msg);
-			return Promise.reject(msg);
+			this.target.loading(false);
+			return this.error(e);
 		});
 	}
 
 	/**
 	 * 对消息进行提示
-	 * @param string msg 	提示次数组, 以 | 分隔
+	 * @param {string} msg 		提示消息
+	 * @param {object} config 	
+	 * 
 	 */
-	tip(msg){
+	tip(msg, config){
 		return this.target.$confirm(msg, '操作提示', {
 			confirmButtonText: '确定',
 			cancelButtonText: '取消',
 			type: 'warning'
+		}).then(res => {
+			var {
+				url = '',
+				data = -1,
+				mark = '',
+			} = config
+
+			return this.execute(url, data, mark).then(res=>{
+				return Promise.resolve(res);
+			}).catch(e => {
+				// 此处抛出错误, 下面的错误捕捉如不继续抛出错误, 将会导致错误信息传入调用该方法后的then方法中
+				return Promise.reject(e);
+			});
+		}).catch(e => {
+			return Promise.reject(e);
 		});
 	}
 
@@ -131,56 +111,14 @@ class Table{
 	/**
 	 * 请求失败时回调方法
 	 */
-	error(msg){
+	error(e){
+		let msg = e.message || e;
 		this.target.message(msg, 'warning');
-	}
-
-	/**
-	 * 异步请求 删除/恢复 数据方法
-	 *
-	 * @param int id			操作项目id, 当为-1时表示为批量操作
-	 * @param int operate		操作类型
-	 * @param string url	 	提交链接
-	 */
-	delete(id, operate, url){
-		let msg_words = ['还原', '删除'];
-		let msg = '您确定要执行'+(msg_words[operate] || msg_words[0])+'操作吗?';
-
-		return this.tip(msg).then(()=>{
-			this.post(id, operate, url).then((res)=>{
-				history.go(0);
-			}).catch(e => {
-			});
-		});
-	}
-
-	/**
-	 * 异步请求 删除/恢复 数据方法
-	 *
-	 * @param int id			操作项目id, 当为-1时表示为批量操作
-	 * @param int operate		操作类型
-	 * @param string url	 	提交链接
-	 */
-	disabled(id, operate, url){
-		let msg_words = ['启用', '禁用'];
-		let msg = '您确定要执行'+(msg_words[operate] || msg_words[0])+'操作吗?';
-
-		return this.tip(msg).then(()=>{
-			this.post(id, operate, url).then((res)=>{
-				history.go(0);
-			}).catch(e => {
-			});
-		});
+		return Promise.reject(e);
 	}
 
 	setIds(ids){
 		this.ids = ids;
-	}
-
-	// 代理方法
-	proxy(target, handler){
-		const proxy = new Proxy(target, handler);
-		return proxy;
 	}
 }
 

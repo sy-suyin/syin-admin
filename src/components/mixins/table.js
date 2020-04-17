@@ -92,36 +92,56 @@ export const table = {
 		// 封装表格的基础操作功能
 		///////////////////////////////////////////////////////////
 
-		// 删除
-		del(id = -1){
+		/**
+		 * 恢复/删除数据
+		 * 
+		 * @param {int} id 			需要 恢复/删除 数据的ID. 如果为-1, 则选取表格所有被选中项的id
+		 * @param {int} operate		操作标识, 0: 恢复, 1: 删除
+		 */
+		del(id = -1, operate = 1){
 			let url = this.getUrl('del');
-			TableInstance.newPost(url, id, {operate: 1}).then(res => {
+			let msg = '你确认要' + 
+				(id == -1 ? '批量' : '') + ['恢复', '删除'][operate] +
+				'数据吗?';
+
+			TableInstance.tip(msg, {
+				url,
+				data: id,
+				mark: {operate}
+			}).then(res => {
 				// 重新加载数据，如果没有该请求方法，则应在相应页面实现或者替换成对应的数据加载方法
+				// 此处采用的的是重新加载页面数据, 当获取当前页面数据失败时, 则重新加载数据
 				this.getRequestData(1, {}, true);
-			}).catch();
+			}).catch((e)=>{});
 		},
 
-		// 批量删除
-		delAll(){
-			let deleted = 1;
-			Factory.get(Table).delete(-1, deleted, this.getUrl('del'));
-		},
-		
-		// 禁用
-		disabled(id){
+		/**
+		 * 启用/禁用数据
+		 * 
+		 * @param {int} id 			需要 启用/禁用 数据的ID. 如果为-1, 则选取表格所有被选中项的id
+		 * @param {int} operate		操作标识, 0: 启用, 1: 禁用
+		 */
+		disabled(id = -1, operate = 1){
 			let url = this.getUrl('dis');
-			TableInstance.newPost(url, id, {operate: 1}).then(res => {
-				this.message('操作成功', 'success');
-			});
+			TableInstance.execute(url, id, {operate}).then(res => {
+				id = (id == -1 ? res.resquset.id : [res.resquset.id]);
+				this.results.forEach((item, key)=>{
+					if(id.indexOf(item.id) != -1){
+						this.results[key].is_disabled = operate;
+					}
+				});
+			}).catch((e)=>{});
 		},
 
-		// 排序
+		/**
+		 * 排序, 需表格数据中有sort与id字段
+		 */
 		sort(){
-			let data = this.extract('id, sort');
 			let url = this.getUrl('sort');
-			TableInstance.newPost(url, data).then(res => {
+			let data = this.extract('id, sort');
+			TableInstance.execute(url, data).then(res => {
 				this.message('操作成功', 'success');
-			});
+			}).catch((e)=>{});
 		},
 
 		/**
@@ -164,13 +184,12 @@ export const table = {
 		 * 表格复选框改变
 		 */
 		selectionChange: Util.debounce(500, function(selected){
-			console.log(selected);
 			let ids = [];
 			selected.forEach(val => {
 				ids.push(val.id);
 			});
 
-			// Factory.get(Table).setIds(ids);
+			TableInstance.setIds(ids);
 		}),
 	},
 }

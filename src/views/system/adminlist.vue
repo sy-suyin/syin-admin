@@ -28,7 +28,7 @@
 
 						<el-button size="mini" type="warning" icon="el-icon-s-promotion" @click="jump('recycle')" v-permission:page="['system', 'adminrecycle']">回收站</el-button>
 
-						<el-button size="mini" type="danger" icon="el-icon-delete" @click="delAll">删除</el-button>
+						<el-button size="mini" type="danger" icon="el-icon-delete" @click="del(-1, 1)">删除</el-button>
 					</div>
 				</div>
 
@@ -54,8 +54,8 @@
 					<el-table-column label="状态" width="120">
 						<template slot-scope="scope">
 
-							<el-tag class="disabled-btn" type="success" effect="dark" size="mini" @click="disabled(scope.row, 1)" v-if="scope.row.is_disabled < 1">启用</el-tag>
-							<el-tag class="disabled-btn" type="danger" effect="dark" size="mini" @click="disabled(scope.row, 0)" v-else>禁用</el-tag>
+							<el-tag class="disabled-btn" type="success" effect="dark" size="mini" @click="disabled(scope.row.id, 1)" v-if="scope.row.is_disabled < 1">启用</el-tag>
+							<el-tag class="disabled-btn" type="danger" effect="dark" size="mini" @click="disabled(scope.row.id, 0)" v-else>禁用</el-tag>
 
 						</template>
 					</el-table-column>
@@ -76,7 +76,7 @@
 
 							<el-divider direction="vertical"></el-divider>
 
-							<el-button size="mini" type="text" @click="del(scope.row.id)">删除</el-button>
+							<el-button size="mini" type="text" @click="del(scope.row.id, 1)">删除</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
@@ -126,8 +126,6 @@ export default {
 	mounted(){
 		this.page_url = this.urls.list;
 		this.getRequestData();
-
-		Factory.get(Table, this);
 	},
 	methods: {
     }
