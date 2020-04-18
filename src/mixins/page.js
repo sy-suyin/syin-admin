@@ -59,11 +59,8 @@ export const page = {
 
 			this.pagination.args = args;
 			args['page'] = page;
-			this.loading(true);
 
 			Util.post(url, args).then(res => {
-				this.loading(false);
-
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
 					let result = res.result;
 					let results = result.results;
@@ -88,7 +85,6 @@ export const page = {
 					this.message('服务器未响应，请稍后重试', 'warning');
 				}
 			}).catch(err => {
-				this.loading(false);
 				this.$message('网络异常, 请稍后重试', 'warning');
 			}); 
 		},

@@ -83,9 +83,9 @@
 </template>
 
 <script>
-import {page as pageMixin} from "@/components/mixins/page.js";
-import {table as tableMixin} from "@/components/mixins/table.js";
-import {common as commonMixin} from "@/components/mixins/common.js";
+import {page as pageMixin} from "@/mixins/page.js";
+import {table as tableMixin} from "@/mixins/table.js";
+import {common as commonMixin} from "@/mixins/common.js";
 import Table from '@/libs/Table.js';
 import Factory from '@/libs/Factory.js';
 import * as util from '@/libs/util.js';

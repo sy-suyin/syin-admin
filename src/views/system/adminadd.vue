@@ -45,7 +45,7 @@
 </template>
 
 <script>
-import {common as commonMixin} from "@/components/mixins/common.js";
+import {common as commonMixin} from "@/mixins/common.js";
 import * as util from '@/libs/util.js';
 export default {
 	name: "system_adminadd",

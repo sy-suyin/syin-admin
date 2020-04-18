@@ -1,0 +1,278 @@
+.layout{
+	display: flex;
+	overflow: hidden;
+
+	.logo-title, .user-name, .menu-name, .menu-switch-icon{
+		transition: all .3s ease;
+		white-space: nowrap;
+	}
+	
+	// 侧边栏最小宽度
+	$aside-min-width: 80px;
+	// 侧边栏最大宽度
+	$aside-max-width: 260px;
+
+	// 侧边栏样式
+	.layout-aside{
+		background: #000;
+		position: relative;
+		height: 100vh;
+		flex-basis: $aside-max-width;
+		transition: all .3s ease;
+	
+		.layout-aside-scroll{
+			height: 100%;
+			overflow: hidden;
+		}
+	
+		.slider{
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			width: $aside-max-width;
+			transition: width .3s ease;
+			z-index: 99;
+		}
+	
+		.user-info{
+			position: relative;
+			z-index: 5;
+			color: #fff;
+			padding: 20px 0;
+			font-size: 14px;
+			display: flex;
+			align-items: center;
+
+			.user-avatar{
+				border-radius: 50%;
+				position: relative;
+				overflow: hidden;
+				height: 32px;
+				width: 32px;
+				min-width: 32px;
+				display: inline-block;
+				margin-left: 24px;
+				margin-right: 10px;
+
+				img{
+					width: 32px;
+					height: 32px;
+				}
+			}
+
+			&:after{
+				content: "";
+				position: absolute;
+				bottom: 0;
+				right: 15px;
+				height: 1px;
+				width: calc(100% - 30px);
+				background-color: hsla(0,0%,71%,.3);
+			}
+		}
+
+		.menu-logo{
+			position: relative;
+			z-index: 2;
+			display: flex;
+			align-items: center;
+			justify-content: left;
+			padding: 6px 24px;
+
+			.logo-img{
+				height: 32px;
+				display: inline-block;
+				margin-right: 12px;
+			}
+
+			.logo-title{
+				color: #fff;
+				display: inline-block;
+			}
+
+			&:after{
+				content: "";
+				position: absolute;
+				bottom: 0;
+				right: 15px;
+				height: 1px;
+				width: calc(100% - 30px);
+				background-color: hsla(0,0%,71%,.3);
+			}
+		}
+
+		.nav{
+			z-index: 999;
+			color: #fff;
+			position: relative;
+			font-size: 14px;
+		}
+
+		.background{
+			position: absolute;
+			// background-image: url('');
+			z-index: 1;
+			height: 100%;
+			width: 100%;
+			display: block;
+			top: 0;
+			left: 0;
+			background-size: cover;
+			background-position: 50%;
+	
+			&:after {
+				background: #{'var(--bgcolor)'};
+				position: absolute;
+				z-index: 3;
+				width: 100%;
+				height: 100%;
+				content: "";
+				display: block;
+				opacity: .7;
+			}
+		}
+
+		// 菜单栏选项样式
+		.menu-item-group{	
+			.menu-item{
+				margin: 10px 15px 0;
+
+				&>.menu-link{
+					margin-top: 10px;
+				}
+
+				&.active{
+					&>.menu-link{
+						box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(233,30,99,.4);
+					}
+				}
+				
+				.menu-link{
+					display: flex;
+					cursor: pointer;
+					align-items: center;
+					height: 46px;
+					padding: 0 10px;
+					border-radius: 4px;
+
+					.menu-item-icon{
+						font-size: 20px;
+						margin-right: 12px;
+					}
+
+					.menu-name{
+						flex-grow: 1;
+					}
+
+					.menu-switch-icon{
+						transition: transform .3s;
+						font-size: 16px;
+					}
+
+					.menu-show-icon{
+						transform: rotate(180deg);
+					}
+				}
+
+				.menu-item-group{
+					.menu-item{
+						margin: 0px 0 6px 16px;
+						padding-right: 0;
+
+						&:last-child{
+							padding-bottom: 0;
+						}
+
+						.menu-link{
+							height: 36px;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	// 侧边栏最小化时的样式
+	.layout-aside-mini{
+		flex-basis: $aside-min-width;
+	
+		.slider{
+			width: $aside-min-width;
+		}
+	
+		.logo-title, .user-name, .menu-name, .menu-switch-icon{
+			opacity: 0;
+			transform: translate3d(-20px,0,0);
+		}
+	
+		.menu-item-icon{
+			margin-left: 6px;
+			margin-right: 6px;
+		}
+	
+		&:hover{
+			.slider{
+				width: $aside-max-width;
+			}
+	
+			.logo-title, .user-name, .menu-name, .menu-switch-icon{
+				opacity: 1;
+				transform: translate3d(0,0,0);
+			}
+	
+			.menu-item-icon{
+				margin-left: 0;
+				margin-right: 12px;
+			}
+		}
+	}
+
+	// 右侧主要布局样式
+	.layout-container{
+		flex-grow: 1;
+		position: relative;
+		height: 100vh;
+		background: #eee;
+		height: 100vh;
+		overflow-y: auto;
+
+		.layout-container-header{
+			padding: 0 !important;
+			background: #fff;
+			height: auto !important;
+	
+			.icon{
+				font-size: 25px;
+			}
+	
+			.navbar{
+				padding: 0 20px;
+				height: 64px;
+				box-shadow: 0 1px 4px rgba(0,21,41,.08);
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding-right: 30px;
+	
+				.navbar-right{
+					display: flex;
+					align-items: center;
+	
+					li{
+						padding: 0 4px;
+					}
+	
+					.el-dropdown-icon{
+						font-size: 20px;
+					}
+				}
+			}
+		}
+	
+		.layout-container-main{
+			.content-container{
+				padding: 20px;
+			}
+		}
+	}
+}

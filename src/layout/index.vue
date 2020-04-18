@@ -45,8 +45,8 @@
 </template>
 
 <script>
-import layoutAside from "./components/aside.vue";
-import settingPanel from "./components/setting-panel.vue";
+import layoutAside from "./components/aside";
+import settingPanel from "./components/setting-panel";
 import { mapState } from 'vuex'
 
 export default {
@@ -61,7 +61,6 @@ export default {
 		}
 	},
 	created(){
-		console.log('create');
 		if(this.$route.name != 'not_fonund'){
 
 			let meta = this.$route.meta;
@@ -110,99 +109,5 @@ export default {
 </script>
 
 <style lang="scss">
-	html, body{
-		margin: 0;
-	}
-
-	.layout{
-		display: flex;
-		overflow: hidden;
-	}
-
-	.logo-title, .user-name, .menu-name, .menu-switch-icon{
-		transition: all .3s ease;
-		white-space: nowrap;
-	}
-
-	.layout-aside-mini{
-		flex-basis: 80px;
-
-		.slider{
-			width: 80px;
-		}
-
-		.logo-title, .user-name, .menu-name, .menu-switch-icon{
-			opacity: 0;
-			transform: translate3d(-20px,0,0);
-		}
-
-		.menu-item-icon{
-			margin-left: 6px;
-			margin-right: 6px;
-		}
-
-		&:hover{
-			.slider{
-				width: 260px;
-			}
-
-			.logo-title, .user-name, .menu-name, .menu-switch-icon{
-				opacity: 1;
-				transform: translate3d(0,0,0);
-			}
-
-			.menu-item-icon{
-				margin-left: 0;
-				margin-right: 12px;
-			}
-		}
-	}
-
-	.layout-container{
-		flex-grow: 1;
-		position: relative;
-		height: 100vh;
-		background: #eee;
-		height: 100vh;
-		overflow-y: auto;
-
-		.layout-container-header{
-			padding: 0 !important;
-			background: #fff;
-			height: auto !important;
-
-			.icon{
-				font-size: 25px;
-			}
-
-			.navbar{
-				padding: 0 20px;
-				height: 64px;
-				box-shadow: 0 1px 4px rgba(0,21,41,.08);
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-				padding-right: 30px;
-
-				.navbar-right{
-					display: flex;
-					align-items: center;
-
-					li{
-						padding: 0 4px;
-					}
-
-					.el-dropdown-icon{
-						font-size: 20px;
-					}
-				}
-			}
-		}
-
-		.layout-container-main{
-			.content-container{
-				padding: 20px;
-			}
-		}
-	}
+@import "@/assets/style/layout.scss";
 </style>

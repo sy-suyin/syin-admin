@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div class="right-panel" :class="{show: is_show}">
+		<div class="setting-panel" :class="{show: is_show}">
 			<div class="show-panel" @click="is_show=!is_show">
 				<i class="icon el-icon-setting"></i>
 			</div>
@@ -159,7 +159,7 @@ export default {
 </script>
 
 <style lang="scss">
-.right-panel{
+.setting-panel{
 	position: fixed;
 	right: -294px;
 	top: 0;

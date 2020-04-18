@@ -19,7 +19,7 @@
 					<i class="menu-switch-icon el-icon-arrow-up" v-if="item.children.length" :class="{'menu-show-icon': item.is_open}"></i>
 				</div>
 
-				<sy-menu-item v-if="item.children.length" :menus="item.children" v-show="item.is_open" :lv="level+1"></sy-menu-item>
+				<menu-item v-if="item.children.length" :menus="item.children" v-show="item.is_open" :lv="level+1"></menu-item>
 			</li>
 		</ul>
 	</div>
@@ -29,7 +29,7 @@
 import { mapState } from 'vuex'
 
 export default {
-	name: 'sy-menu-item',
+	name: 'menu-item',
 	props: ['menus', 'lv'],
 	data(){
 		return {

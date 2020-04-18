@@ -71,7 +71,7 @@
 
 <script>
 import * as util from '@/libs/util.js';
-import {common as commonMixin} from "@/components/mixins/common.js";
+import {common as commonMixin} from "@/mixins/common.js";
 export default {
 	name: "home",
 	mixins: [commonMixin],

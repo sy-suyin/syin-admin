@@ -82,7 +82,7 @@
 </template>
 
 <script>
-import {common as commonMixin} from "@/components/mixins/common.js";
+import {common as commonMixin} from "@/mixins/common.js";
 
 export default {
 	name: "list_basic",

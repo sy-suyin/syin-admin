@@ -18,7 +18,7 @@
 
 				<!-- 侧边导航栏 -->
 				<div class="nav">
-					<sy-menu-item :menus="menus" :lv="0" ref="menu_item"></sy-menu-item>
+					<menu-item :menus="menus" :lv="0" ref="menu_item"></menu-item>
 				</div>
 
 				<div class="background" :style="[backgroundStyle]"></div>
@@ -28,14 +28,14 @@
 </template>
 
 <script>
-import syMenuItem from "./sy-menu-item.vue";
+import MenuItem from "./menu-item.vue";
 import { debounce } from '@/libs/util.js';
 import { mapState } from 'vuex'
 
 export default {
 	name: "layout-aside",
 	components: {
-		syMenuItem,
+		MenuItem,
 	},
 	data(){
 		return {
@@ -131,182 +131,4 @@ export default {
 </script>
 
 <style lang="scss">
-.layout-aside{
-	background: #000;
-	position: relative;
-	height: 100vh;
-	flex-basis: 260px;
-	transition: all .3s ease;
-
-	.layout-aside-scroll{
-		height: 100%;
-		overflow: hidden;
-	}
-
-	.slider{
-		position: absolute;
-		top: 0;
-		bottom: 0;
-		width: 260px;
-		transition: width .3s ease;
-		z-index: 99;
-	}
-
-	.user-info{
-		position: relative;
-		z-index: 5;
-		color: #fff;
-		padding: 20px 0;
-		font-size: 14px;
-		display: flex;
-		align-items: center;
-
-		.user-avatar{
-			border-radius: 50%;
-			position: relative;
-			overflow: hidden;
-			height: 32px;
-			width: 32px;
-			min-width: 32px;
-			display: inline-block;
-			margin-left: 24px;
-			margin-right: 10px;
-
-			img{
-				width: 32px;
-				height: 32px;
-			}
-		}
-
-		&:after{
-			content: "";
-			position: absolute;
-			bottom: 0;
-			right: 15px;
-			height: 1px;
-			width: calc(100% - 30px);
-			background-color: hsla(0,0%,71%,.3);
-		}
-	}
-
-	.menu-logo{
-		position: relative;
-		z-index: 2;
-		display: flex;
-		align-items: center;
-		justify-content: left;
-		padding: 6px 24px;
-
-		.logo-img{
-			height: 32px;
-			display: inline-block;
-			margin-right: 12px;
-		}
-
-		.logo-title{
-			color: #fff;
-			display: inline-block;
-		}
-
-		&:after{
-			content: "";
-			position: absolute;
-			bottom: 0;
-			right: 15px;
-			height: 1px;
-			width: calc(100% - 30px);
-			background-color: hsla(0,0%,71%,.3);
-		}
-	}
-
-	.nav{
-		z-index: 999;
-		color: #fff;
-		position: relative;
-		font-size: 14px;
-	}
-
-	.background{
-		position: absolute;
-		// background-image: url('');
-		z-index: 1;
-		height: 100%;
-		width: 100%;
-		display: block;
-		top: 0;
-		left: 0;
-		background-size: cover;
-		background-position: 50%;
-
-		&:after {
-			background: #{'var(--bgcolor)'};
-			position: absolute;
-			z-index: 3;
-			width: 100%;
-			height: 100%;
-			content: "";
-			display: block;
-			opacity: .7;
-		}
-	}
-}
-
-.menu-item-group{	
-	.menu-item{
-		margin: 10px 15px 0;
-
-		&>.menu-link{
-			margin-top: 10px;
-		}
-
-		&.active{
-			&>.menu-link{
-				// background-color: #e91e63;
-				box-shadow: 0 4px 20px 0 rgba(0,0,0,.14), 0 7px 10px -5px rgba(233,30,99,.4);
-			}
-		}
-		
-		.menu-link{
-			display: flex;
-			cursor: pointer;
-			align-items: center;
-			height: 46px;
-			padding: 0 10px;
-			border-radius: 4px;
-
-			.menu-item-icon{
-				font-size: 20px;
-				margin-right: 12px;
-			}
-
-			.menu-name{
-				flex-grow: 1;
-			}
-
-			.menu-switch-icon{
-				transition: transform .3s;
-				font-size: 16px;
-			}
-
-			.menu-show-icon{
-				transform: rotate(180deg);
-			}
-		}
-
-		.menu-item-group{
-			.menu-item{
-				margin: 0px 0 6px 16px;
-				padding-right: 0;
-
-				&:last-child{
-					padding-bottom: 0;
-				}
-
-				.menu-link{
-					height: 36px;
-				}
-			}
-		}
-	}
-}
 </style>
