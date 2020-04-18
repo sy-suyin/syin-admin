@@ -22,9 +22,29 @@
 					</div>
 
 					<div class="table-toolbar">
-						<el-button size="mini" type="primary" icon="el-icon-plus" @click="jump('add')" v-permission:page="['system', 'roleadd']">添加</el-button>
-						<el-button size="mini" type="warning" icon="el-icon-s-promotion" @click="jump('recycle')" v-permission:page="['system', 'rolerecycle']">回收站</el-button>
-						<el-button size="mini" type="danger" icon="el-icon-delete" @click="delAll">删除</el-button>
+						<el-button
+							size="mini" 
+							type="primary" 
+							icon="el-icon-plus"
+							@click="jump('add')"
+							v-permission:page="['system', 'roleadd']"
+						>添加</el-button>
+
+						<el-button 
+							size="mini"
+							type="warning" 
+							icon="el-icon-s-promotion" 
+							@click="jump('recycle')" 
+							v-permission:page="['system', 'adminrecycle']"
+						>回收站</el-button>
+
+						<el-button 
+							size="mini" 
+							type="danger" 
+							icon="el-icon-delete" 
+							@click="del(-1, 1)"
+							v-permission:page="['system', 'admindel']"
+						>删除</el-button>
 					</div>
 				</div>
 
@@ -44,9 +64,46 @@
 					<el-table-column label="状态" width="120">
 						<template slot-scope="scope">
 
-							<el-tag class="disabled-btn" type="success" effect="dark" size="mini" @click="disabled(scope.row, 1)" v-if="scope.row.is_disabled < 1">启用</el-tag>
-							<el-tag class="disabled-btn" type="danger" effect="dark" size="mini" @click="disabled(scope.row, 0)" v-else>禁用</el-tag>
+							<div v-if="checkPermission('system', 'roledis', 'data')">
 
+								<el-tag 
+									class="disabled-btn" 
+									type="success" 
+									effect="dark" 
+									size="mini" 
+									@click="disabled(scope.row.id, 1)" 
+									v-if="scope.row.is_disabled < 1"
+								>启用</el-tag>
+
+								<el-tag 
+									class="disabled-btn" 
+									type="danger" 
+									effect="dark" 
+									size="mini" 
+									@click="disabled(scope.row.id, 0)" 
+									v-else
+								>禁用</el-tag>
+
+							</div>
+							<div v-else>
+								
+								<el-tag 
+									class="disabled-btn" 
+									type="success" 
+									effect="dark" 
+									size="mini" 
+									v-if="scope.row.is_disabled < 1"
+								>启用</el-tag>
+
+								<el-tag 
+									class="disabled-btn" 
+									type="danger" 
+									effect="dark" 
+									size="mini" 
+									v-else
+								>禁用</el-tag>
+
+							</div>
 						</template>
 					</el-table-column>
 
@@ -55,12 +112,19 @@
 					<el-table-column align="right" label="操作">
 						<template slot-scope="scope">
 							<el-button
-							size="mini" type="text" 
-							@click="jump('edit', {id: scope.row.id})">修改</el-button>
+								size="mini" type="text" 
+								@click="jump('edit', {id: scope.row.id})"
+								v-permission:page="['system', 'roleedit']"
+							>修改</el-button>
 
 							<el-divider direction="vertical"></el-divider>
 
-							<el-button size="mini" type="text" @click="del(scope.row.id)">删除</el-button>
+							<el-button
+								size="mini"
+								type="text" 
+								@click="del(scope.row.id, 1)"
+								v-permission:page="['system', 'roledel']"
+							>删除</el-button>
 						</template>
 					</el-table-column>
 				</el-table>
@@ -86,14 +150,10 @@
 import {page as pageMixin} from "@/mixins/page.js";
 import {table as tableMixin} from "@/mixins/table.js";
 import {common as commonMixin} from "@/mixins/common.js";
-import Table from '@/libs/Table.js';
-import Factory from '@/libs/Factory.js';
-import * as util from '@/libs/util.js';
-import { Loading } from 'element-ui';
 
 export default {
 	name: "system_rolelist",
-	mixins: [pageMixin, tableMixin, commonMixin],
+	mixins: [commonMixin, pageMixin, tableMixin],
   	data() {
       	return {
 			// 各跳转链接
@@ -108,21 +168,11 @@ export default {
 		}
 	},
 	mounted(){
+		this.page_url = this.urls.list;
 		this.getRequestData();
-
-		Factory.get(Table, this);
 	},
 	methods: {
-
-		// 选择框改变
-		selectionChange(selected){
-			let ids = [];
-			selected.forEach(val => {
-				ids.push(val.id);
-			});
-
-			Factory.get(Table).setIds(ids);
-		}
+		
     }
 };
 </script>

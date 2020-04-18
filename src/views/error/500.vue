@@ -7,7 +7,7 @@
 					<div class="error-info">
 						<h1 class="error-title">500</h1>
 						<p class="error-desc">
-							未找到相关页面
+							抱歉，服务器出错了
 						</p>
 
 						<el-button type="primary" @click="getback">返回主页</el-button>

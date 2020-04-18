@@ -35,9 +35,8 @@
 			</div>
 
 			<div class="layout-container-main">
-				<router-view>
-					<slot name="breadcrumb-after"></slot>
-				</router-view>
+				<error-page v-if="is_error"></error-page>
+				<router-view v-else></router-view>
 			</div>
 		</div>
 		<setting-panel></setting-panel>
@@ -47,12 +46,13 @@
 <script>
 import layoutAside from "./components/aside";
 import settingPanel from "./components/setting-panel";
+import errorPage from "./components/error-page";
 import { mapState } from 'vuex'
 
 export default {
 	name: "base-layout",
 	components: {
-		layoutAside, settingPanel
+		layoutAside, settingPanel, errorPage
 	},
 	data(){
 		return {

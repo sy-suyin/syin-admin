@@ -48,10 +48,11 @@
 
 <script>
 import {common as commonMixin} from "@/mixins/common.js";
-import * as util from '@/libs/util.js';
+import {detail as detailMixin} from "@/mixins/detail.js";
+import * as Util from '@/libs/util.js';
 export default {
 	name: "system_adminadd",
-	mixins: [commonMixin],
+	mixins: [commonMixin, detailMixin],
   	data() {
       	return {
 			id: 0,
@@ -69,40 +70,24 @@ export default {
 	},
 	methods: {
 		init(){
-			let id = +this.$route.params.id || 0;
+			let id = this.$route.params.id;
+			let url = '/system/admindetail';
+			let error_url = '/system/adminlist';
 
-			if(id < 1){
-				return this.message('未找到相关数据, 请检查后重试', 'warning', 3000, '/system/adminlist');
-			}
+			this.detail(id, url, error_url).then(result => {
+				this.form.login = result.login_name;
+				this.form.name = result.name;
 
-			this.loading(true);
-			util.get('/system/admindetail/id/'+id).then(res => {
-				this.loading(false);
-				if(res && typeof(res.status) != 'undefined' && res.status > 0){
-					this.id = id;
+				result.roles.forEach(val => {
+					this.form.roles.push(val.id);
+				});
 
-					this.form.login = res.result.login_name;
-					this.form.name = res.result.name;
-
-					res.result.roles.forEach(val => {
-						this.form.roles.push(val.id);
-					});
-
-					this.getRoles();
-				}
-				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-					this.message(res.msg, 'warning', 3000, '/system/adminlist');
-				}
-				else{
-					this.message('服务器未响应，请稍后重试', 'warning', 3000, '/system/adminlist');
-				}
-			}).catch(err => {
-				this.loading(false);
-				this.message('网络异常, 请稍后重试', 'warning', 3000, '/system/adminlist');
+				this.getRoles();
+			}).catch(e => {
 			});
 		},
 		getRoles(){
-			util.get('/system/getallroles').then(res => {
+			Util.get('/system/getallroles').then(res => {
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
 					this.roles = res.result;
 				}
@@ -133,7 +118,7 @@ export default {
 			}
 
 			this.loading(true);
-			util.post('/system/adminedit', args).then(res => {
+			Util.post('/system/adminedit', args).then(res => {
 				this.loading(false);
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
 					this.$router.push({path: '/system/adminlist'})

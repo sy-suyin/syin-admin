@@ -71,9 +71,6 @@ import {page as pageMixin} from "@/mixins/page.js";
 import {table as tableMixin} from "@/mixins/table.js";
 import {common as commonMixin} from "@/mixins/common.js";
 import pageHeader from "@/components/page-header";
-import Table from '@/libs/Table.js';
-import Factory from '@/libs/Factory.js';
-import * as util from '@/libs/util.js';import { Loading } from 'element-ui';
 
 export default {
 	name: "system_adminrecycle",

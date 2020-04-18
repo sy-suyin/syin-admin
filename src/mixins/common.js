@@ -1,6 +1,7 @@
 import { Loading } from 'element-ui';
 import permission from '@/directive/permission/index.js' // 权限判断指令
 import pageHeader from "@/components/page-header";
+import {checkPermission} from '@/libs/util.js';
 
 export const common = {
 	directives: { permission },
@@ -50,5 +51,16 @@ export const common = {
 				}
 			});
 		},
+
+		/**
+		 * 判断是否有访问权限
+		 * 
+		 * @param string controller 请求的控制
+		 * @param string action		请求的方法
+		 * @param string type		page/data 权限类型，默认为data 
+		 */
+		checkPermission(controller, action, type='data'){
+			checkPermission(controller, action, 'data');
+		}
 	},
 }

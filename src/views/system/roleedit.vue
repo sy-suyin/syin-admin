@@ -141,30 +141,15 @@ export default {
 
 		// 初始化
 		init(){
-			let id = +this.$route.params.id || 0;
+			let id = this.$route.params.id;
+			let url = '/system/roledetail';
+			let error_url = '/system/rolelist';
 
-			if(id < 1){
-				return this.message('未找到相关数据, 请检查后重试', 'warning', 3000, '/system/rolelist');
-			}
-
-			this.loading(true);
-			util.get('/system/roledetail/id/'+id).then(res => {
-				this.loading(false);
-				if(res && typeof(res.status) != 'undefined' && res.status > 0){
-					this.id = id;
-					this.form.name = res.result.name;
-					this.form.desc = res.result.description;
-					this.getAccessData();
-				}
-				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-					this.message(res.msg, 'warning', 3000, '/system/rolelist');
-				}
-				else{
-					this.message('服务器未响应，请稍后重试', 'warning', 3000, '/system/rolelist');
-				}
-			}).catch(err => {
-				this.loading(false);
-				this.message('网络异常, 请稍后重试', 'warning', 3000, '/system/rolelist');
+			this.detail(id, url, error_url).then(result => {
+				this.form.name = result.name;
+				this.form.desc = result.description;
+				this.getAccessData();
+			}).catch(e => {
 			});
 		},
 

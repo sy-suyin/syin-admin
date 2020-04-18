@@ -214,7 +214,7 @@ export default class Menu extends MenuInterface{
 			new_routers['/404'] = {
 				path: `/*`,
 				name: 'not_fonund',
-				component: () => import( `../views/error/404.vue`),
+				component: Layout,
 			};
 
 			routers = Object.values(new_routers);
@@ -270,7 +270,6 @@ class MenuItem extends MenuInterface{
 	}
 
 	active(controller, action){
-
 		// 初始化
 		this.config.is_active = false;
 
