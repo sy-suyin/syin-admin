@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<error_404 v-if="can_access"></error_404>
-		<error_403></error_403>
+		<error_403 v-else></error_403>
 	</div>
 </template>
 
