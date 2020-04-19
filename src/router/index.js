@@ -23,7 +23,10 @@ const router = new VueRouter({
 	routes
 })
 
+// 是否已添加动态路由
 let is_router_add = false;
+// 
+const NOT_LOGGED_PAGES = ['login', 'register'];
 
 router.beforeEach((to, from, next) => {
 	let is_logged = !!localStorage.getItem('currentUser');
@@ -46,7 +49,8 @@ router.beforeEach((to, from, next) => {
 			is_router_add = is_calc = true;
 		}
 
-		if(['login','register'].findIndex((value)=>{return value==path}) !== -1){
+		// 在已登录的情况下, 访问登录注册页面时, 跳转到后台首页 
+		if(NOT_LOGGED_PAGES.findIndex((value)=>{return value==path}) !== -1){
 			next({
 				replace: true,
 				path: router_configs[0].path
@@ -59,7 +63,8 @@ router.beforeEach((to, from, next) => {
 				next();
 			}
 		}
-	}else if(['login','register'].findIndex((value)=>{return value==path}) == -1){
+	}else if(NOT_LOGGED_PAGES.findIndex((value)=>{return value==path}) == -1){
+		// 在未登录的情况下, 访问非登录允许访问的页面时, 跳转回登录页面
 		next({
 			replace: true,
 			name: 'login'

@@ -27,7 +27,6 @@ export function buildUrl(url){
  */
 export function request(url='', method='', params={}, responseType='json', before=null) {
 	return new Promise((resolve, reject) => {
-
 		if(typeof(url) === 'undefined' || url === ''){
 			if(window.location.hash != ''){
 				url = '/' + window.location.hash.substr(1, window.location.hash.length);

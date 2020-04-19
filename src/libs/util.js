@@ -102,14 +102,43 @@ export function now() {
 	return time;
 }
 
+/** 
+ * 请求之前进行检查
+ * 
+ * @param url            请求URL
+ * @param method         请求类型，取值post|get
+ * @param params         发送数据，对象格式：如{id: 1, ...}；字符串形式：如'id=1&cid=0...'
+ */
+function request_check(url='', method='', params={}){
+	let can_access = true;
+
+	if(url[0] == '/'){
+		// 检查权限
+		let urls = url.split('/');
+		if(urls.length > 3){
+			let controller = urls[1].trim();
+			let action = urls[2].trim();
+			if(! checkPermission(controller, action, 'data')){
+				can_access = false;
+			}
+		}
+	}
+
+	if(!can_access){
+		return Promise.reject('很抱歉, 你没有执行该操作的权限');
+	}else{
+		return request(url, method, params);
+	}
+}
+
 /**
  * post提交数据
  * 
- * @param url            请求URL
- * @param params         发送数据，对象格式：如{id: 1, ...}；字符串形式：如'id=1&cid=0...'
+ * @param {string} url            请求URL
+ * @param {object} params         发送数据，对象格式：如{id: 1, ...}；字符串形式：如'id=1&cid=0...'
  */
 export function post(url='', params={}){
-	return request(url, 'post', params);
+	return request_check(url, 'post', params);
 }
 
 /**
@@ -118,7 +147,7 @@ export function post(url='', params={}){
  * 
  */
 export function get(url=''){
-	return request(url, 'get');
+	return request_check(url, 'get');
 }
 
 /**

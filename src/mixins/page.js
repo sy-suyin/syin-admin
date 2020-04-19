@@ -68,7 +68,7 @@ export const page = {
 					if(!results || results.length < 1){
 						results = [];
 					}
-
+					throw "太大";
 					// 保存返回的数据
 					this.saveResults(results);
 					this.pagination = {
@@ -85,7 +85,8 @@ export const page = {
 					this.message('服务器未响应，请稍后重试', 'warning');
 				}
 			}).catch(err => {
-				this.$message('网络异常, 请稍后重试', 'warning');
+				let msg = (err instanceof Error) ? '网络异常, 请稍后重试' : err;
+				this.$message(msg, 'warning');
 			}); 
 		},
 

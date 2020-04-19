@@ -174,7 +174,8 @@ export default {
 				}
 			}).catch(err => {
 				this.loading = false;
-				this.message('网络异常, 请稍后重试');
+				let msg = (err instanceof Error) ? '网络异常, 请稍后重试' : err;
+				this.$message(msg, 'warning');
 			});
 		},
 
