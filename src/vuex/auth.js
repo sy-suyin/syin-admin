@@ -17,7 +17,7 @@ const mutations = {
 	 */
 	setLogin(state, user){
 		state.currentUser = user;
-		localStorage.setItem('currentUser',JSON.stringify(user));
+		localStorage.setItem('currentUser', JSON.stringify(user));
 	},
 
 	/*
@@ -38,7 +38,7 @@ const mutations = {
 	updateToken(state,token){
 		state.token = token;
 
-		localStorage.setItem('authToken',token);
+		localStorage.setItem('authToken', token);
 	},
 
 	/*
@@ -49,9 +49,29 @@ const mutations = {
 		let user = localStorage.getItem('currentUser');
 		if(token && user){
 			user = JSON.parse(user);
-			user && this.commit('auth/setLogin',user);
-			this.commit('auth/updateToken',token);
+			user && this.commit('auth/setLogin', user);
+			this.commit('auth/updateToken', token);
 		}
+	},
+
+	/**
+	 * 锁屏
+	 */
+	lock(state, pwd){
+		let user = state.currentUser;
+		user.is_lock = true;
+		user.lock_pwd = pwd;
+		this.commit('auth/setLogin', user);
+	},
+
+	/**
+	 * 锁屏接触 
+	 */
+	unlock(state){
+		let user = state.currentUser;
+		user.is_lock = false;
+		user.lock_pwd = '';
+		this.commit('auth/setLogin', user);
 	}
 }
 
