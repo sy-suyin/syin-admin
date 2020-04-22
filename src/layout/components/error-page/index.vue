@@ -45,6 +45,7 @@ export default {
 
 		// 设置浏览器标题
 		window.document.title = can_access ? 404 : 403;
+		console.log(window.document.title);
 	}
 }
 </script>

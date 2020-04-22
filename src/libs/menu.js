@@ -119,6 +119,7 @@ export default class Menu extends MenuInterface{
 				return;
 			}
 
+			item.title = item.name;
 			let com = new MenuItem(item);
 			if(com instanceof MenuInterface){
 				this.add(com);
@@ -249,11 +250,12 @@ class MenuItem extends MenuInterface{
 
 		if(config.hasOwnProperty('children') && config.children.length > 0){
 			config.children.forEach((item, index) =>{
-
 				if(! Util.checkPermission(item.controller, item.action, 'page')){
 					return;
 				}
 
+				// 页面完整标题
+				item.title = config.name + ' - ' + item.name; 
 				let com = new MenuItem(item);
 
 				// 修改当有下级，下级菜单因无权限访问而导致异常的问题. 1
@@ -400,7 +402,7 @@ class MenuItem extends MenuInterface{
 					controller: controller,
 					action: action,
 					params: params,
-					title: this.config.name
+					title: this.config.title
 				}
 			}
 

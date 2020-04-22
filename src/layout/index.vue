@@ -62,7 +62,6 @@ export default {
 	},
 	created(){
 		if(this.$route.name != 'not_fonund'){
-
 			let meta = this.$route.meta;
 
 			// 设置浏览器标题
@@ -70,11 +69,14 @@ export default {
 	
 			// 激活路由
 			this.$store.commit('access/active',meta);
+
+			this.is_error = false;
 		}else{
 			// 设置浏览器标题
 			window.document.title = 404;
 
 			let meta = {
+				name: this.$route.name,
 				controller: 'errorpage',
 				action: 404
 			};
@@ -104,6 +106,23 @@ export default {
 		...mapState('settings', {
 			sidebar_mini: state =>state.sidebar_mini,
 		}),
+		page_title: {
+			get() {
+				return this.$store.state.access.page_title;
+			}
+		},
+	},
+	watch: {
+		page_title(val){
+			if(this.page_title && this.page_title != 'not_fonund'){
+				// 设置浏览器标题
+				window.document.title = this.page_title;
+
+				this.is_error = false;
+			}else{
+				this.is_error = true;
+			}
+		}
 	}
 };
 </script>

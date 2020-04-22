@@ -8,7 +8,6 @@ import * as Util from '@/libs/util.js';
 export const page = {
 	data(){
 		return {
-
 			// 页面请求地址
 			page_url: '',
 
@@ -68,7 +67,6 @@ export const page = {
 					if(!results || results.length < 1){
 						results = [];
 					}
-					throw "太大";
 					// 保存返回的数据
 					this.saveResults(results);
 					this.pagination = {

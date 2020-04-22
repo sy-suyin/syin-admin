@@ -93,7 +93,6 @@ export default {
 	computed: {
 		menus: {
 			get() {
-				// console.log(this.$store.state.access.menus);
 				return this.$store.state.access.menus;
 			}
 		},
