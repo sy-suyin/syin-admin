@@ -45,7 +45,7 @@ export function request(url='', method='', params={}, responseType='json') {
 		params = (typeof(params) === 'undefined' || params === '') ? {} : params;
 		config.responseType = (typeof(responseType) === 'undefined' || responseType === '') ? 'json' : responseType;
 		config.headers = {
-			'token': store.getters.token,
+			'token': store.getters['auth/token'],
 			'key': Config.key
 		};
 

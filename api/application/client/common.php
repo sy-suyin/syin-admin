@@ -37,8 +37,6 @@ function message($return_data, $code = 200){
 		$token = generate_login_token(request()->admin, 'admin');
 		header('token: '.$token);
 	}
-	header('token: flIsYS2DYbm4uqu4S1zvZsQS5ArESKKk44w6e6PXVYx4AuH2thySqNZ5bD+XE3ZES87MBBFVADo=');
-
 
 	return json($return_data, $code);
 }

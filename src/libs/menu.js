@@ -211,18 +211,6 @@ export default class Menu extends MenuInterface{
 				}
 			});
 
-			// 2020-04-22 添加锁屏页面路由
-			new_routers['/lock'] = {
-				path: `/lock`,
-				name: 'lock',
-				component: () => import( `../views/pages/lock.vue`),
-				meta: {
-					controller: 'pages',
-					action: 'lock',
-					title: '锁屏'
-				}
-			};
-
 			// 添加404页面
 			new_routers['/404'] = {
 				path: `/*`,

@@ -13,8 +13,13 @@ const routes = [
 	{
 		path: '/login',
 		name: 'login',
-		component: () => import('../views/login.vue')
+		component: () => import('../views/pages/login.vue')
 	},
+	{
+		path: `/lock`,
+		name: 'lock',
+		component: () => import( `../views/pages/lock.vue`),
+	}
 ]
 
 const router = new VueRouter({

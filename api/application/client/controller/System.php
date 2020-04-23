@@ -3,7 +3,6 @@ namespace app\client\controller;
 
 use app\common\controller\Client;
 use app\client\library\SystemTool;
-use app\common\library\BaseTool;
 use think\Request;
 
 class System extends Client {

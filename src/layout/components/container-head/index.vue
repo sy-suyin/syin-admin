@@ -78,6 +78,8 @@ export default {
 			// 退出登录
 			if(command == 'logout'){
 				this.$store.commit('auth/logout');
+			}else if(command == 'profile'){
+				this.$router.replace({path: '/index/profile'})
 			}
 		},
 	},
