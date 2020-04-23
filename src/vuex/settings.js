@@ -21,7 +21,6 @@ const getters = {
 
 const mutations = {
 	settingEdit(state, {key, value}){
-		console.log('settingEdit');
 		if (state.hasOwnProperty(key)) {
 			state[key] = value;
 			this.commit('settings/archive');

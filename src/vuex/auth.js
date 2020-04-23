@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import Storage from '@/libs/Storage.js';
 
 const state = {
 	token:'',
@@ -17,7 +17,8 @@ const mutations = {
 	 */
 	setLogin(state, user){
 		state.currentUser = user;
-		localStorage.setItem('currentUser', JSON.stringify(user));
+
+		Storage.set('currentUser', user)
 	},
 
 	/*
@@ -26,8 +27,10 @@ const mutations = {
 	logout(state){
 		state.hash = '';
 		state.currentUser = null;
-		localStorage.removeItem('currentUser');
-		localStorage.removeItem('authToken');
+
+		// 清除所有存储, 以免与新登录账号部分数据重叠融合
+		Storage.clear();
+
 		// 直接刷新: 重置动态添加的路由
 		history.go(0);
 	},
@@ -38,17 +41,17 @@ const mutations = {
 	updateToken(state,token){
 		state.token = token;
 
-		localStorage.setItem('authToken', token);
+		Storage.set('authToken', token)
 	},
 
 	/*
 	 *重新加载, 从缓存中读取数据
 	 */
 	reload(){
-		let token = localStorage.getItem('authToken');
-		let user = localStorage.getItem('currentUser');
+		let token = Storage.get('authToken');
+		let user = Storage.get('currentUser', {json: true});
+
 		if(token && user){
-			user = JSON.parse(user);
 			user && this.commit('auth/setLogin', user);
 			this.commit('auth/updateToken', token);
 		}

@@ -68,7 +68,7 @@ export default {
 				inputPattern: /^[0-9a-zA-Z]{3,16}$/,
 				inputErrorMessage: '解锁密码应为3-16位数字, 英文字母的组合'
 			}).then(({ value }) => {
-				this.$store.commit('auth/lock', value);
+				this.$store.commit('auth/lock', value+'');
 				this.$router.push({path: '/lock'});
 			}).catch(() => {
 			});

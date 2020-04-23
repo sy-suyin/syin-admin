@@ -1,6 +1,6 @@
 import {menus as configs} from '@/config/menu';
+import Storage from '@/libs/Storage.js';
 import Menu from '@/libs/menu';
-import Vue from 'vue';
 
 // let MenuClass = new Menu(configs);
 // MenuClass.active('system', 'adminadd');
@@ -58,13 +58,10 @@ const mutations = {
 	 * 重新加载, 从缓存中读取数据
 	 */
 	reload(state){
-		let data_forbid = localStorage.getItem('data_forbid');
-		let page_forbid = localStorage.getItem('page_forbid');
+		let data_forbid = Storage.get('data_forbid', {json: true});
+		let page_forbid = Storage.get('page_forbid', {json: true});
 
 		if(data_forbid && page_forbid){
-			data_forbid = JSON.parse(data_forbid);
-			page_forbid = JSON.parse(page_forbid);
-
 			state.data_forbid = data_forbid;
 			state.page_forbid = page_forbid;
 		}
@@ -79,15 +76,14 @@ const mutations = {
 		state.data_forbid = payload.data_forbid;
 		state.page_forbid = payload.page_forbid;
 
-		localStorage.setItem('data_forbid',JSON.stringify(payload.data_forbid));
-		localStorage.setItem('page_forbid',JSON.stringify(payload.page_forbid));
+		Storage.set('data_forbid', payload.data_forbid);
+		Storage.set('page_forbid', payload.page_forbid);
 
 		this.dispatch('access/calc');
 	},
 }
 
 const actions = {
-
 	/*
 	 * 根据菜单配置进行计算
 	 */
