@@ -1,31 +1,14 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from '../vuex/store'
+import routers from './router';
 
 Vue.use(VueRouter)
-
-const routes = [
-	{
-		path: '/',
-		name: 'root',
-		redirect: '/login',
-	},
-	{
-		path: '/login',
-		name: 'login',
-		component: () => import('../views/pages/login.vue')
-	},
-	{
-		path: `/lock`,
-		name: 'lock',
-		component: () => import( `../views/pages/lock.vue`),
-	}
-]
 
 const router = new VueRouter({
 	mode: 'history',
 	base: process.env.BASE_URL,
-	routes
+	routes: routers
 })
 
 // 是否已添加动态路由
@@ -34,7 +17,7 @@ let is_router_add = false;
 const NOT_LOGGED_PAGES = ['login', 'register'];
 
 router.beforeEach((to, from, next) => {
-	let is_logged = !!localStorage.getItem('currentUser');
+	let is_logged = !!store.state.auth.currentUser;
 	let path = to.path;
 
 	path = path ? path.substr(1) : '';
@@ -69,6 +52,7 @@ router.beforeEach((to, from, next) => {
 			}
 		}
 	}else if(NOT_LOGGED_PAGES.findIndex((value)=>{return value==path}) == -1){
+		console.log(path);
 		// 在未登录的情况下, 访问非登录允许访问的页面时, 跳转回登录页面
 		next({
 			replace: true,
