@@ -53,12 +53,12 @@
 					<el-pagination
 						@size-change="pageSwitch"
 						@current-change="pageSwitch"
-						:current-page="pagination.current_page"
+						:current-page="page_default.current_page"
 						:page-sizes="[10, 20, 30, 50]"
-						:page-size="pagination.page_num"
+						:page-size="page_default.page_num"
 						layout="total, sizes, prev, pager, next, jumper"
 						:hide-on-single-page="true"
-						:total="pagination.total">
+						:total="page_default.total">
 					</el-pagination>
 				</div>
 			</el-card>
@@ -90,7 +90,7 @@ export default {
 		}
 	},
 	mounted(){
-		this.page_url = this.urls.recycle;
+		this.setRequestUrl(this.urls.recycle);
 		this.getRequestData();
 	},
 	methods: {

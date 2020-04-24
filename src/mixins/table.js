@@ -75,7 +75,7 @@ export const table = {
 			this.search_args = {};
 			this.filter_args = {};
 			this.request_args = {};
-			this.getRequestData(1, {}, true);
+			this.getRequestData(1, {}, {reset: true});
 		},
 
 		// 搜索
@@ -111,7 +111,7 @@ export const table = {
 			}).then(res => {
 				// 重新加载数据，如果没有该请求方法，则应在相应页面实现或者替换成对应的数据加载方法
 				// 此处采用的的是重新加载页面数据, 当获取当前页面数据失败时, 则重新加载数据
-				this.getRequestData(1, {}, true);
+				this.getRequestData(1, {}, {reset: true});
 			}).catch((e)=>{});
 		},
 

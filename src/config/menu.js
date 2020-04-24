@@ -238,6 +238,13 @@ const menus = [
 						is_hidden: 1
 					},
 				]
+			},
+			{
+				name: '数据字典',
+				icon: '',
+				controller: 'system',
+				action: 'dict',
+				is_hidden: 0
 			}
 		]
 	},

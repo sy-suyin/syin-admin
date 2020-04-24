@@ -143,7 +143,7 @@ export function post(url='', params={}){
 
 /**
  * get方式获取数据
- * @param url            请求URL
+ * @param {string} url            请求URL
  * 
  */
 export function get(url=''){
@@ -151,10 +151,15 @@ export function get(url=''){
 }
 
 /**
- * 调试方法 - 断言
+ * 调试方法 - 断言 by vuex
+ * @param {bool} 	condition 调试语句, 执行后返回的结果
+ * @param {string}	msg		  断言不成功时的提示消息
+ * 
  */
-export function assert() {
-
+export function assert(condition, msg) {
+	if (!condition) {
+		throw new Error(("[assert] " + msg)) 
+	}
 }
 
 /**
