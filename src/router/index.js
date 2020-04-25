@@ -22,7 +22,7 @@ router.beforeEach((to, from, next) => {
 
 	path = path ? path.substr(1) : '';
 
-	if(is_logged ){
+	if(is_logged){
 		// 在此处动态添加路由
 		// is_calc 用于next修正路由后, 解决第二次路由加载时又会修正的问题
 		let is_calc = false;
