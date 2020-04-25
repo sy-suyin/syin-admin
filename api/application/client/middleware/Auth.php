@@ -9,7 +9,6 @@ use think\Response;
 class Auth{
 
 	public function handle($request, \Closure $next, $name){
-		
 		// 允许跨域
 		header('Access-Control-Allow-Origin: *');
 		header('Access-Control-Allow-Headers:x-requested-with,content-type,key,token');  

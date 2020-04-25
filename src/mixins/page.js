@@ -24,7 +24,7 @@ export const page = {
 			/**
 			 * 当 use_scene 为 true 时, 应给每个分页各设置一个场景名, 第一个值为默认场景
 			 * 进行各种请求操作应先切换场景, 切换方法此处设两种,
-			 * 1. 在调用方法的html元素上设置属性 scene="场景名" 
+			 * 1. 在调用方法的html元素上设置属性 scene="场景名"
 			 * 2. 调用方法 , 切换默认场景
 			 */
 			scenes: [],
@@ -39,10 +39,10 @@ export const page = {
 
 				// 表格数据存储映射
 				mapping: 'results',
-	
+
 				// 表格数据, 如果 mapping 不为空, 数据将不存于此处, 而是外层映射对应名称的变量
 				results: [],
-	
+
 				// 当前分页
 				current: 1,
 
@@ -64,7 +64,7 @@ export const page = {
 
 		 /**
 		  * 设置请求链接
-		  * 
+		  *
 		  * @param {string} url 	场景数据请求地址
 		  * @param {string} sence 	场景名称
 		  */
@@ -95,7 +95,7 @@ export const page = {
 
 		/**
 		 * 获取请求参数
-		 * 
+		 *
 		 * @param {bool}   reset 是否重置请求
 		 */
 		getRequestParam(reset){
@@ -104,6 +104,11 @@ export const page = {
 			if(! this.use_scene){
 				target = this.page_default;
 			}else{
+				// 设置默认场景
+				if(this.current_scene == ''){
+					this.current_scene = this.scenes[0];
+				}
+
 				target = this[`page_${this.current_scene}`];
 			}
 
@@ -112,6 +117,9 @@ export const page = {
 				target.args = {};
 				target.page_max = 1;
 			}
+
+			console.log(target);
+			console.log(this.current_scene);
 
 			return target;
 		},
@@ -124,7 +132,7 @@ export const page = {
 		 * @param {object} args  请求参数
 		 * @param {bool}   reset 是否重置请求
 		 * @param {bool}   retry 是否在请求失败之后, 重新请求首页数据
-		 * 
+		 *
 		 */
 		getRequestData(page = 1, args = {}, {reset = false, retry = false} = {}){
 			let param = this.getRequestParam(reset);
@@ -166,13 +174,13 @@ export const page = {
 			}).catch(err => {
 				let msg = (err instanceof Error) ? '网络异常, 请稍后重试' : err;
 				this.$message(msg, 'warning');
-			}); 
+			});
 		},
 
 		/**
 		 * 处理分页数据请求成功之后的数据
-		 * 
-		 * @param {object} 	result	后端返回的数据 
+		 *
+		 * @param {object} 	result	后端返回的数据
 		 * @param {object} 	args 	提交请求时的参数
 		 */
 		saveRequestResult(result, args){
@@ -209,5 +217,14 @@ export const page = {
 
 			this.getRequestData(page);
 		},
+
+		 /**
+		  * 切换场景
+		  * 
+		  * @param {string} name 场景名称 
+		  */
+		sceneSwitch(name){
+			this.current_scene = scene;
+		}
 	}
 }

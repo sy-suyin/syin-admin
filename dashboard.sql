@@ -72,3 +72,26 @@ CREATE TABLE `sy_admin_role_relation` (
   KEY `role_id` (`role_id`),
   KEY `admin_id` (`admin_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='管理员与角色绑定表';
+
+-- 数据字典目录
+CREATE TABLE `sy_dict` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增id',
+  `name` varchar(64) NOT NULL DEFAULT '' COMMENT '名称',
+  `key` varchar(64) NOT NULL DEFAULT '' COMMENT '索引',
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除; 0: 否, 1: 是',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='数据字典目录';
+
+-- 数据字典数据
+CREATE TABLE `sy_dict_data` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增id',
+  `dict_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '字典目录id',
+  `data` varchar(128) NOT NULL DEFAULT '' COMMENT '数据名称',
+  `description` varchar(255) NOT NULL DEFAULT '' COMMENT '备注说明',
+  `sort` mediumint(8) unsigned NOT NULL DEFAULT '0' COMMENT '排序',
+  `is_system` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否系统数据(为系统数据时, 不可删除); 0: 否, 1: 是',
+  `add_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
+  `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='数据字典数据';
