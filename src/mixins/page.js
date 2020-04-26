@@ -118,9 +118,6 @@ export const page = {
 				target.page_max = 1;
 			}
 
-			console.log(target);
-			console.log(this.current_scene);
-
 			return target;
 		},
 
@@ -134,11 +131,12 @@ export const page = {
 		 * @param {bool}   retry 是否在请求失败之后, 重新请求首页数据
 		 *
 		 */
-		getRequestData(page = 1, args = {}, {reset = false, retry = false} = {}){
+		getRequestData(page = 1, args = false, {reset = false, retry = false} = {}){
 			let param = this.getRequestParam(reset);
 			let url = param.url;
 
 			args = args || {...param.args};
+
 			if(+page < 1){
 				page = 1;
 			}
@@ -162,10 +160,10 @@ export const page = {
 				}
 				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
 					if(retry){
-						this.$message(res.msg, 'warning');
-					}else{
 						// 重新加载首页数据, 服务器异常等问题不会重新加载
 						this.getRequestData(1, args, {reset: 1});
+					}else{
+						this.$message(res.msg, 'warning');
 					}
 				}
 				else{
@@ -211,8 +209,17 @@ export const page = {
 			target.total = result.total * 1;
 		},
 
+		// 每页加载数改变
+		sizeChange(size){
+			size = +size || 1;
+			let param = this.getRequestParam(false);
+			param.args.num = size;
+
+			this.getRequestData(1, param.args, {reset: true});
+		},
+
 		// 分页点击切换页码
-		pageSwitch(page){
+		pageChange(page){
 			page = +page || 1;
 
 			this.getRequestData(page);
@@ -224,7 +231,7 @@ export const page = {
 		  * @param {string} name 场景名称 
 		  */
 		sceneSwitch(name){
-			this.current_scene = scene;
+			this.current_scene = name;
 		}
 	}
 }

@@ -51,8 +51,8 @@
 
 				<div id="pagination">
 					<el-pagination
-						@size-change="pageSwitch"
-						@current-change="pageSwitch"
+						@size-change="sizeChange"
+						@current-change="pageChange"
 						:current-page="page_default.current_page"
 						:page-sizes="[10, 20, 30, 50]"
 						:page-size="page_default.page_num"

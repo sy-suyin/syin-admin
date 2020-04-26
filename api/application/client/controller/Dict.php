@@ -12,7 +12,7 @@ class Dict extends Client {
 	 */
 	public function listAction(){
 		$result	= DictTool::getDictResultsArgs();
-		$num = 10;
+		$num = input('num/d', 5);
 		$results = $result['model']->paginate($num, false, ['query'=>$result['args']]);
 		$results = $results->toArray();
 
@@ -23,6 +23,32 @@ class Dict extends Client {
 			'page_num' => $num,
 			'results'  => $results['data'],
 		]);
+	}
+
+	/** 
+	 * 获取字典内容
+	 */
+	public function dictdataAction(){
+		$id = absint(input('id'));
+
+		if(!$id){
+			return show_error('未找到相关数据');
+		}
+
+		$result	= DictTool::getDictDataResultsArgs($id);
+		$num = 5;
+		$results = $result['model']->paginate($num, false, ['query'=>$result['args']]);
+		$results = $results->toArray();
+
+		return show_success('', [
+			'total' => $results['total'],
+			'current_page' => $results['current_page'],
+			'page_max' => ceil($results['total'] / $num),
+			'page_num' => $num,
+			'results'  => $results['data'],
+		]);
+
+		return show_success('', $results ? $results : []);
 	}
 
 	/**
@@ -78,32 +104,6 @@ class Dict extends Client {
 		$request->log = '管理员'.($request->admin->name).', 添加了数据字典内容';
 
 		return show_success('已成功新建数据字典内容');
-	}
-
-	/** 
-	 * 获取字典内容
-	 */
-	public function dictdataAction(){
-		$id = absint(input('id'));
-
-		if(!$id){
-			return show_error('未找到相关数据');
-		}
-
-		$result	= DictTool::getDictResultsArgs();
-		$num = 10;
-		$results = $result['model']->where('dict_id', $id)->paginate($num, false, ['query'=>$result['args']]);
-		$results = $results->toArray();
-
-		return show_success('', [
-			'total' => $results['total'],
-			'current_page' => $results['current_page'],
-			'page_max' => ceil($results['total'] / $num),
-			'page_num' => $num,
-			'results'  => $results['data'],
-		]);
-
-		return show_success('', $results ? $results : []);
 	}
 
 	/** 

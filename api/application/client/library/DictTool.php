@@ -26,13 +26,14 @@ class DictTool extends BaseTool{
 	/**
 	 * 获取字典数据列表参数
 	 *
-	 * @param bool 	$is_deleted		是否查询被删除的数据
+	 * @param int 	$id		对应字典id
+	 * 
 	 */
-	public static function getDictDataResultsArgs($is_deleted = false){
+	public static function getDictDataResultsArgs($id){
 		$model = new \app\client\model\DictData();
 		$args = array();
 
-		$model = $model->where('is_deleted', 0)->order('sort asc, id desc');
+		$model = $model->where('dict_id', $id)->order('sort asc, id desc');
 
 		return array(
 			'model' => $model,
