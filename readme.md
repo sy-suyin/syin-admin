@@ -17,7 +17,7 @@ Admin Dashboard
 
 ```bash
 # 克隆项目
-git clone https://github.com/PanJiaChen/vue-element-admin.git
+git clone https://sysyin.coding.net/p/admin-dashboard/d/admin-dashboard/git
 
 # 进入项目目录
 cd vue-element-admin
