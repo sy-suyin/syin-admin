@@ -168,7 +168,7 @@ export default {
 		}
 	},
 	mounted(){
-		this.setRequestUrl(this.urls.list);
+		this.addScene(this.urls.list);
 		this.getRequestData();
 	},
 	methods: {

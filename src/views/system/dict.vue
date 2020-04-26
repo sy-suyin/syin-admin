@@ -124,47 +124,20 @@ export default {
 	mixins: [commonMixin, pageMixin, tableMixin],
   	data() {
 		return {
-			use_scene: true,
-
-			scenes: ['default', 'data'],
-
-			page_data: {
-
-				// 页面请求地址
-				url: '',
-
-				// 表格数据存储映射
-				mapping: '',
-	
-				// 表格数据, 如果 mapping 不为空, 数据将不存于此处, 而是外层映射对应名称的变量
-				results: [],
-	
-				// 当前分页
-				current: 1,
-
-				// 最大页码
-				page_max: 1,
-
-				// 每页显示消息数
-				page_num: 0,
-
-				// 总记录数
-				total: 0,
-
-				// 请求参数
-				args: {},
-			}
+			page_data: null
 		}
 	},
+	created(){
+		this.addScene('/dict/list');
+		this.addScene('/dict/dictdata', '', 'data');
+	},
 	mounted(){
-		this.setRequestUrl('/dict/list');
-		this.setRequestUrl('/dict/dictdata', 'data');
 		this.getRequestData();
 	},
 	methods: {
 		show(row){
 			let args = {id: row.id};
-			this.sceneSwitch('data');
+			this.changeScene('data');
 			this.getRequestData(1, args, {reset: true});
 		},
 

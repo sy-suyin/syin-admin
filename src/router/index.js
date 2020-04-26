@@ -52,7 +52,6 @@ router.beforeEach((to, from, next) => {
 			}
 		}
 	}else if(NOT_LOGGED_PAGES.findIndex((value)=>{return value==path}) == -1){
-		console.log(path);
 		// 在未登录的情况下, 访问非登录允许访问的页面时, 跳转回登录页面
 		next({
 			replace: true,

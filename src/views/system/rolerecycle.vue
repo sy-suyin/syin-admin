@@ -88,7 +88,7 @@ export default {
 		}
 	},
 	mounted(){
-		this.setRequestUrl(this.urls.recycle);
+		this.addScene(this.urls.recycle);
 		this.getRequestData();
 	},
 	methods: {

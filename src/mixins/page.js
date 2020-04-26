@@ -16,7 +16,7 @@ export const page = {
 			use_scene: false,
 
 			// 当前场景, 当 use_scene 为 true 时才会用到
-			current_scene: '',
+			current_scene: ['default'],
 
 			// 表格数据, 通过程序映射后存至此处
 			results: [],
@@ -62,18 +62,57 @@ export const page = {
 	},
 	methods: {
 
-		 /**
-		  * 设置请求链接
-		  *
-		  * @param {string} url 	场景数据请求地址
-		  * @param {string} sence 	场景名称
-		  */
-		setRequestUrl(url, sence = 'default'){
-			if(! this.use_scene){
-				sence = 'default';
-			}
+		/**
+		 * 变更场景
+		 *
+		 * @param {string} name 场景名称
+		 */
+		changeScene(name){
+			this.current_scene = name;
+		},
 
-			this['page_'+sence].url = url;
+		/**
+		 *
+		 * 添加场景, 当添加多个场景时会开启多场景模式
+		 * (除默认场景外, 添加其他场景均会开启多场景模式)
+		 * 除默认场景外, 添加其他场景前需在调用该mixin的组件中添加属性 page_场景名
+		 *
+		 * @param {string} url 		请求地址
+		 * @param {string} mapping  存储返回列表数据的根级响应式属性
+		 * @param {string} scene    场景名称
+		 */
+		addScene(url, mapping = '', scene = 'default'){
+			if(scene == 'default'){
+				this.page_default.url = url;
+
+				if(mapping != ''){
+					this.page_default.mapping = mapping;
+				}
+			}else{
+				let key = `page_${scene}`;
+				this.use_scene = true;
+
+				// 添加场景
+				if(this.scenes.indexOf(scene) == -1){
+					this.scenes.push(scene);
+					this[key]= {
+						url: url,
+						mapping: mapping,
+						results: [],
+						current: 1,
+						page_max: 1,
+						page_num: 0,
+						total: 0,
+						args: {},
+					};
+				}else{
+					this[key].url = url;
+
+					if(mapping != ''){
+						this[key].mapping = mapping;
+					}
+				}
+			}
 		},
 
 		/**
@@ -224,14 +263,5 @@ export const page = {
 
 			this.getRequestData(page);
 		},
-
-		 /**
-		  * 切换场景
-		  * 
-		  * @param {string} name 场景名称 
-		  */
-		sceneSwitch(name){
-			this.current_scene = name;
-		}
 	}
 }

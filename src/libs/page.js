@@ -12,7 +12,7 @@ export function sence(name){
 		const func_name = args.shift();
 
 		// 切换场景
-		this.sceneSwitch(name);
+		this.changeScene(name);
 
 		// 调用方法
 		this[func_name].apply(this, args);
