@@ -2,7 +2,7 @@
 	<div>
 		<page-header></page-header>
 
-		<div class="content-container">		
+		<div class="content-container" v-loading="is_loading">		
 			<el-card class="box-card">
 				<div slot="header" class="clearfix">
 					添加管理员

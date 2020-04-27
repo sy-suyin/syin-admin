@@ -116,23 +116,6 @@ export const page = {
 		},
 
 		/**
-		 * 获取分页请求需要的链接
-		 */
-		getRequestUrl(){
-			if(! this.use_scene){
-				return this.page_url;
-			}else{
-				// 设置默认场景
-				if(this.current_scene == ''){
-					this.current_scene = this.scenes[0];
-				}
-
-				let url = this[`${this.current_scene}_url`];
-				return url;
-			}
-		},
-
-		/**
 		 * 获取请求参数
 		 *
 		 * @param {bool}   reset 是否重置请求
@@ -190,7 +173,9 @@ export const page = {
 
 			args['page'] = page;
 
+			this.loading(true);
 			Util.post(url, args).then(res => {
+				this.loading(false);
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
 					let result = res.result;
 
@@ -209,6 +194,7 @@ export const page = {
 					this.message('服务器未响应，请稍后重试', 'warning');
 				}
 			}).catch(err => {
+				this.loading(false);
 				let msg = (err instanceof Error) ? '网络异常, 请稍后重试' : err;
 				this.$message(msg, 'warning');
 			});

@@ -12,6 +12,7 @@ export const common = {
 		return {
 			is_loading: false,
 			loading_handle: null,
+			loading_close: null,
 		}
 	},
 
@@ -19,16 +20,35 @@ export const common = {
 
 		/**
 		 * 设置加载状态
-		 * @param bool is_loading 是否开启加载状态 
+		 * 如果不使用全屏加载, 则需在在使用加载区域的根元素上添加 v-loading="is_loading"
+		 * 
+		 * @param bool loading 	  是否开启加载状态 
+		 * @param bool fullscreen 是否全屏显示加载中
+		 * @param int  duration   加载中状态关闭时间, 单位秒, -1表示不自动关闭, is_loading为true时此值才会被用到
 		 */
-		loading(is_loading = true){
-			if(is_loading){
-				this.loading_handle = Loading.service({ fullscreen: true });
-			}else{
-				this.loading_handle && this.loading_handle.close();
+		loading(loading = true, fullscreen = false, duration = -1){
+			if(this.loading_close){
+				clearTimeout(this.loading_close);
 			}
 
-			this.is_loading = is_loading;
+			if(fullscreen){
+				if(loading){
+					this.loading_handle = Loading.service({ fullscreen: true });
+				}else{
+					if(this.loading_handle){
+						this.loading_handle.close();
+						this.loading_handle = null;
+					}
+				}
+			}else{
+				this.is_loading = loading;
+			}
+			
+			if(loading && duration > -1){
+				this.loading_close = setTimeout(() => {
+					this.loading(false, fullscreen);
+				}, duration * 1000);
+			}
 		},
 
 		/** 

@@ -1,5 +1,5 @@
 <template>
-	<div class="content-container">
+	<div class="content-container" v-loading="is_loading">
 		<!-- 数据字典 主要用于测试 pageMixin 多分页效果 -->
 		<el-row>
 			<el-col :span="8">

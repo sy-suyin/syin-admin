@@ -8,7 +8,7 @@
 			</template>
 		</page-header>
 
-		<div class="content-container">
+		<div class="content-container" v-loading="is_loading">
 			<el-card>
 				<div slot="header" class="clearfix">
 					<div class="table-search">
