@@ -46,7 +46,7 @@ const mutations = {
 }
 
 const actions = {
-	changeSetting({ commit }, data, data1){
+	changeSetting({ commit }, data){
 		commit('settingEdit', data);
 	}
 }

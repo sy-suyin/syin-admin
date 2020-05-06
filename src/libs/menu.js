@@ -214,7 +214,7 @@ export default class Menu extends MenuInterface{
 			// 添加404页面
 			new_routers['/404'] = {
 				path: `/*`,
-				name: 'not_fonund',
+				name: 'miss_page',
 				component: Layout,
 			};
 

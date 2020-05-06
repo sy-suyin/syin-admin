@@ -26,9 +26,6 @@ const state = {
 
 	// 导航栏面包屑数据
 	breadcrumb: [],
-
-	// 页面标题
-	page_title: '',
 }
 
 const getters = {
@@ -38,7 +35,6 @@ const getters = {
 	routers: state=>state.routers,
 	menus: state=>state.menus,
 	breadcrumb: state=>state.breadcrumb,
-	page_title: state=>state.page_title,
 }
 
 const mutations = {
@@ -51,7 +47,6 @@ const mutations = {
 		let menus = MenuInstance.menus();
 		state.menus = menus;
 		state.breadcrumb = breadcrumb;
-		state.page_title = payload.title;
 	},
 
 	/*

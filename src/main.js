@@ -4,8 +4,10 @@ import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import store from './vuex/store'
+import Observer from '@/libs/Observer.js';
 
 Vue.config.productionTip = false
+Vue.prototype.$event = Observer;
 Vue.use(ElementUI);
 
 // 重载用户数据

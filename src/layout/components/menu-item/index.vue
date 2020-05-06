@@ -66,7 +66,9 @@ export default {
 				if(current.controller != menu.controller || current.action != menu.action){
 					// 激活路由
 					this.opens[menu.key] = true;
-					this.$store.commit('access/active', menu);
+					// 触发路由改变
+					this.$event.emit('routeChange', menu.name, menu);
+					// 跳转到相应页面
 					this.$router.push(`/${menu.controller}/${menu.action}`);
 				}else{
 					// 此处待决定再重复点击之后是否刷新
@@ -107,7 +109,7 @@ export default {
 					data[key].is_open = true; 
 				}
 
-				// 在手动切换的情况下不存在子项已打开, 而上级菜单未打开的情况. 故仅在菜单点击时添加新打开记录, 而不在此处有无新上级打开记录
+				// 在手动切换的情况下不存在子项已打开, 而上级菜单未打开的情况. 故仅在菜单点击时添加新打开记录, 而不在此处判断有无新上级打开记录
 			});
 
 			if(flag){

@@ -76,11 +76,11 @@ class Table{
 			cancelButtonText: '取消',
 			type: 'warning'
 		}).then(res => {
-			var {
+			let {
 				url = '',
 				data = -1,
 				mark = '',
-			} = config
+			} = config;
 
 			return this.execute(url, data, mark).then(res=>{
 				return Promise.resolve(res);

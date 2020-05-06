@@ -7,7 +7,7 @@
 					<div class="error-info">
 						<h1 class="error-title">500</h1>
 						<p class="error-desc">
-							抱歉，服务器出错了
+							{{tipMsg}}
 						</p>
 
 						<el-button type="primary" @click="getback">返回主页</el-button>
@@ -24,61 +24,53 @@ import {common as commonMixin} from "@/mixins/common.js";
 export default {
 	name: "error_500",
 	mixins: [commonMixin],
+	props: {
+		msg: {
+			type: String,
+		}
+	},
   	data() {
 		return {
-			
+			def_msg: '抱歉，服务器出错了',
+			tip_msg: '',
 		}
 	},
 	methods: {
 		getback(){
-			this.$router.push({path: '/'})
+			// 返回首页, 此处须知首页的信息
+			let router = this.$store.getters['access/routers'][0];
+
+			if(router.hasOwnProperty('children') && router.children.length){
+				router = router.children[0];
+			}
+
+			// 触发路由改变事件, 关闭异常页面显示
+			this.$event.emit('routeChange', router.name, router.meta);
+
+			// 跳转到首页
+			this.$router.push({path: router.path})
 		}
-    }
+	},
+	computed: {
+		tipMsg(){
+			let tip_msg = this.msg;
+
+			if(!tip_msg){
+				tip_msg = this.def_msg;
+			}
+
+			return tip_msg;
+		},
+	}
 };
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/style/error-page.scss";
+
 #error-500{
-	padding: 48px 32px;
-	font-family: Chinese Quote,-apple-system,BlinkMacSystemFont,Segoe UI,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Helvetica Neue,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol;
-
-	.pag-container{
-		margin: auto;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-
-		.error-img{
-			background-image: url("../../assets/img/500.svg");
-			height: 360px;
-			width: 500px;
-			margin-right: 82px;
-			background-repeat: no-repeat;
-			background-position: 50% 50%;
-			background-size: contain;
-			display: inline-block;
-		}
-
-		.error-info{
-			display: inline-block;
-			margin-right: 200px;
-
-			.error-title{
-				color: #434e59;
-				font-size: 72px;
-				font-weight: 600;
-				line-height: 72px;
-				margin-bottom: 24px;
-			}
-
-			.error-desc{
-				color: rgba(0,0,0,.45);
-				font-size: 20px;
-				line-height: 28px;
-				margin-bottom: 20px;
-			}
-		}
+	.error-img{
+		background-image: url("../../assets/img/500.svg");
 	}
-
 }
 </style>
