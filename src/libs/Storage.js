@@ -4,7 +4,7 @@
 
 import * as Crypto from '@/libs/crypto.js';
 
-export default class Storage {
+class Storage {
 
 	/**
 	 * 存储数据
@@ -91,3 +91,5 @@ export default class Storage {
 		localStorage.clear();
 	}
 }
+
+export default Storage;

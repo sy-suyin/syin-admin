@@ -9,15 +9,15 @@
 				</div>
 
 				<el-form ref="form" :model="form" label-width="80px">
-					<el-form-item label="登录账号">
+					<el-form-item label="登录账号" prop="login">
 						<el-input v-model="form.login"></el-input>
 					</el-form-item>
 
-					<el-form-item label="用户名称">
+					<el-form-item label="用户名称" prop="name">
 						<el-input v-model="form.name"></el-input>
 					</el-form-item>
 
-					<el-form-item label="权限角色">
+					<el-form-item label="权限角色" prop="roles">
 						<el-select v-model="form.roles" placeholder="请选择活动区域" multiple>
 
 							<el-option
@@ -32,7 +32,7 @@
 
 					<el-divider content-position="left">如果不修改密码, 下面留空</el-divider>
 
-					<el-form-item label="登录密码">
+					<el-form-item label="登录密码" prop="password">
 						<el-input v-model="form.password" show-password></el-input>
 					</el-form-item>
 
@@ -50,6 +50,8 @@
 import {common as commonMixin} from "@/mixins/common.js";
 import {detail as detailMixin} from "@/mixins/detail.js";
 import * as Util from '@/libs/util.js';
+import {get, post} from '@/libs/api';
+
 export default {
 	name: "system_adminadd",
 	mixins: [commonMixin, detailMixin],
@@ -62,7 +64,18 @@ export default {
           		name:  '',
 				password: '',
 				roles: []
-			}
+			},
+			rules: {
+				login: [
+					{ required: true, message: '请输入登录账号名称', trigger: 'blur' },
+				],
+				name: [
+					{ required: true, message: '请输入用户名称', trigger: 'blur' },
+				],
+				roles: [
+					{ required: true, message: '请先选择角色', trigger: 'blur' },
+				],
+			},
 		}
 	},
 	mounted(){
@@ -87,21 +100,27 @@ export default {
 			});
 		},
 		getRoles(){
-			Util.get('/system/getallroles').then(res => {
-				if(res && typeof(res.status) != 'undefined' && res.status > 0){
-					this.roles = res.result;
-				}
-				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-					this.message(res.msg, 'warning', 3000, '/system/adminlist');
-				}
-				else{
-					this.message('服务器未响应，请稍后重试', 'warning', 3000, '/system/adminlist');
-				}
+			get('/system/getallroles', true).then(res => {
+				this.roles = res;
 			}).catch(err => {
-				this.message('网络异常, 请稍后重试', 'warning', 3000, '/system/adminlist');
+				let msg = err.message || '网络异常, 请稍后重试';
+				this.message(msg, 'warning', 3000, '/system/adminlist');
 			});
+			// Util.get('/system/getallroles').then(res => {
+			// 	if(res && typeof(res.status) != 'undefined' && res.status > 0){
+			// 		this.roles = res.result;
+			// 	}
+			// 	else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
+			// 		this.message(res.msg, 'warning', 3000, '/system/adminlist');
+			// 	}
+			// 	else{
+			// 		this.message('服务器未响应，请稍后重试', 'warning', 3000, '/system/adminlist');
+			// 	}
+			// }).catch(err => {
+			// 	this.message('网络异常, 请稍后重试', 'warning', 3000, '/system/adminlist');
+			// });
 		},
-		onSubmit(formName) {
+		onSubmit() {
 			let args = {...this.form};
 			args.id = this.id;
 
@@ -118,22 +137,31 @@ export default {
 			}
 
 			this.loading(true);
-			Util.post('/system/adminedit', args).then(res => {
+			post('/system/adminedit', args, true).then(res => {
 				this.loading(false);
-				if(res && typeof(res.status) != 'undefined' && res.status > 0){
-					this.$router.push({path: '/system/adminlist'})
-				}
-				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-					this.message(res.msg);
-				}
-				else{
-					this.message('服务器未响应，请稍后重试');
-				}
-			}).catch(err => {
+				this.$router.push({path: '/system/adminlist'})
+			}).catch(e => {
 				this.loading(false);
-				let msg = (err instanceof Error) ? '网络异常, 请稍后重试' : err;
-				this.$message(msg, 'warning');
+				let msg = err.message || '网络异常, 请稍后重试';
+				this.message(msg, 'warning', 3000, '/system/adminlist');
 			});
+		
+			// Util.post(, args).then(res => {
+			// 	this.loading(false);
+			// 	if(res && typeof(res.status) != 'undefined' && res.status > 0){
+			// 		this.$router.push({path: '/system/adminlist'})
+			// 	}
+			// 	else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
+			// 		this.message(res.msg);
+			// 	}
+			// 	else{
+			// 		this.message('服务器未响应，请稍后重试');
+			// 	}
+			// }).catch(err => {
+			// 	this.loading(false);
+			// 	let msg = (err instanceof Error) ? '网络异常, 请稍后重试' : err;
+			// 	this.$message(msg, 'warning');
+			// });
 		},
 
 		resetForm(formName) {

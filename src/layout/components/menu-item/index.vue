@@ -11,7 +11,7 @@
 					:style="{backgroundColor: (item.is_active ? filters_color : 'transparent')}"
 					@click.stop="menuClick(index)"
 				>
-					<i class="menu-item-icon el-icon-s-grid" v-if="level< 1"></i>
+					<i class="menu-item-icon el-icon-s-grid" v-if="level < 1"></i>
 					<span class="menu-name">
 						{{item.name}}
 					</span>

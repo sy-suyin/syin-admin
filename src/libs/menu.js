@@ -100,7 +100,7 @@ class MenuInterface extends Component{
 /**
  * 菜单管理
  */
-export default class Menu extends MenuInterface{
+class Menu extends MenuInterface{
 
 	constructor(config){
 		super();
@@ -420,3 +420,5 @@ class MenuItem extends MenuInterface{
 		this.clear();
 	}
 }
+
+export default Menu;

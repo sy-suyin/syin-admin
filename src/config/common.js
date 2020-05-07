@@ -2,7 +2,7 @@
  * 系统基础配置
  */
 
-let config = {
+export default {
 
 	// 暂定为调试开关, 当为true时, 读取debug对象下的配置
 	debug: true,
@@ -14,7 +14,4 @@ let config = {
 	api_url: 'http://127.0.0.1:8000/client',
 
 	debug_config: {}
-
 }
-
-export default config;

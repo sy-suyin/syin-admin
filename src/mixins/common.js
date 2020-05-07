@@ -1,12 +1,15 @@
-import { Loading } from 'element-ui';
+import { Loading, Message } from 'element-ui';
 import permission from '@/directive/permission/index.js' // 权限判断指令
 import pageHeader from "@/components/page-header";
 import {checkPermission} from '@/libs/util.js';
 
 export const common = {
+
+	// 默认加载指令
 	directives: { permission },
 
-	components: {pageHeader},
+	// 默认加载组件
+	components: { pageHeader },
 
 	data(){
 		return {
@@ -43,7 +46,7 @@ export const common = {
 			}else{
 				this.is_loading = loading;
 			}
-			
+
 			if(loading && duration > -1){
 				this.loading_close = setTimeout(() => {
 					this.loading(false, fullscreen);
@@ -54,16 +57,17 @@ export const common = {
 		/** 
 		 * 提示消息
 		 * 
-		 * @param msg  消息内容
-		 * @param type 消息类型
-		 * @param duration 消息显示时间, 单位: 毫秒
-		 * @param path 消息关闭后跳转路径, 为空不跳转
+		 * @param message  消息内容
+		 * @param type 	   消息类型
+		 * @param duration 消息显示时间, 单位: 毫秒, 传入0将不会自动关闭
+		 * @param path     消息关闭后跳转路径, 为空不跳转
 		 */
-		message(msg, type='warning', duration=3000, path=''){
-			return this.$message({
+		message(message, type='warning', duration=3000, path=''){
+			return Message({
 				showClose: true,
-				message: msg,
-				type: type,
+				message,
+				type,
+				duration,
 				onClose: ()=>{
 					if(path != ''){
 						this.$router.push({path});
@@ -80,7 +84,7 @@ export const common = {
 		 * @param string type		page/data 权限类型，默认为data 
 		 */
 		checkPermission(controller, action, type='data'){
-			checkPermission(controller, action, 'data');
+			checkPermission(controller, action, type);
 		}
 	},
 }

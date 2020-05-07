@@ -8,20 +8,20 @@
 					添加管理员
 				</div>
 
-				<el-form ref="form" :model="form" label-width="80px">
-					<el-form-item label="登录账号">
+				<el-form ref="form" :model="form" :rules="rules" label-width="80px" @validate="formValidatea">
+					<el-form-item label="登录账号" prop="login">
 						<el-input v-model="form.login"></el-input>
 					</el-form-item>
 
-					<el-form-item label="用户名称">
+					<el-form-item label="用户名称" prop="name">
 						<el-input v-model="form.name"></el-input>
 					</el-form-item>
-					
-					<el-form-item label="登录密码">
+
+					<el-form-item label="登录密码" prop="password">
 						<el-input v-model="form.password" show-password></el-input>
 					</el-form-item>
 
-					<el-form-item label="权限角色">
+					<el-form-item label="权限角色" prop="roles">
 						<el-select v-model="form.roles" placeholder="请选择活动区域" multiple>
 
 							<el-option
@@ -46,7 +46,9 @@
 
 <script>
 import {common as commonMixin} from "@/mixins/common.js";
-import * as util from '@/libs/util.js';
+import * as Util from '@/libs/util.js';
+import {reqSuccess} from '@/libs/request.js';
+
 export default {
 	name: "system_adminadd",
 	mixins: [commonMixin],
@@ -59,7 +61,21 @@ export default {
           		name:  '',
 				password: '',
 				roles: []
-			}
+			},
+			rules: {
+				login: [
+					{ required: true, message: '请输入登录账号名称', trigger: 'blur' },
+				],
+				name: [
+					{ required: true, message: '请输入用户名称', trigger: 'blur' },
+				],
+				password: [
+					{ required: true, message: '请输入登录密码', trigger: 'blur' },
+				],
+				roles: [
+					{ required: true, message: '请先选择角色', trigger: 'blur' },
+				],
+			},
 		}
 	},
 	mounted(){
@@ -70,60 +86,75 @@ export default {
 			this.getRoles();
 		},
 		getRoles(){
-			util.get('/system/getallroles').then(res => {
-				if(res && typeof(res.status) != 'undefined' && res.status > 0){
-					this.roles = res.result;
-				}
-				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-					this.message(res.msg, 'warning', 3000, '/system/adminlist');
-				}
-				else{
-					this.message('服务器未响应，请稍后重试', 'warning', 3000, '/system/adminlist');
-				}
+			Util.get('/system/getallroles').then(res => {
+				reqSuccess(res, true, {
+					target: this,
+					url: '/system/adminlist'
+				}).then((result)=>{
+					this.roles = result;
+				});
 			}).catch(err => {
 				this.message('网络异常, 请稍后重试', 'warning', 3000, '/system/adminlist');
 			});
 		},
-		onSubmit(formName) {
-			let args = {...this.form};
 
-			if(args.login == ''){
-				return this.message('登录账号不能为空');
-			}
-
-			if(args.name == ''){
-				return this.message('角色名称不能为空');
-			}
-
-			if(args.password == ''){
-				return this.message('登录密码不能为空');
-			}
-
-			if(args.roles.length < 1){
-				return this.message('请先选择角色权限');
-			}
-
-			this.loading(true);
-			util.post('/system/adminadd', args).then(res => {
-				this.loading(false);
-				if(res && typeof(res.status) != 'undefined' && res.status > 0){
-					this.$router.push({path: '/system/adminlist'})
+		/**
+		 * 提交前进行数据检查
+		 */
+		validate(form_name){
+			this.$refs[form_name].validate((valid) => {
+				if(!valid){
+					return false;
 				}
-				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-					this.message(res.msg);
-				}
-				else{
-					this.message('服务器未响应，请稍后重试');
-				}
-			}).catch(err => {
-				this.loading(false);
-				let msg = (err instanceof Error) ? '网络异常, 请稍后重试' : err;
-				this.$message(msg, 'warning');
 			});
 		},
-		resetForm(formName) {
-			this.$refs[formName].resetFields();
+
+		onSubmit(formName) {
+			let form_name = 'form';
+			let args = {...this.form};
+
+			this.validate('form', ()=>{
+				this.loading(true);
+				Util.post('/system/adminadd', args).then(res => {
+					this.loading(false);
+
+					reqSuccess(res, true, {
+						target: this,
+					}).then((result)=>{
+						this.$router.push({path: '/system/adminlist'})
+					});
+				}).catch(err => {
+					this.loading(false);
+					let msg = (err instanceof Error) ? '网络异常, 请稍后重试' : err;
+					this.$message(msg, 'warning');
+				});
+			});
 		},
-    }
+
+		/**
+		 * 重置表单
+		 */
+		resetForm(form_name) {
+			this.$refs[form_name].resetFields();
+		},
+
+		/**
+		 * 表单验证消息提示, 在页面数据较多时, 默认的的提示方式用户可能会看不见(不在可是区域)
+		 * 此方法会获取表单检验中第一个检验不合格的字段, 并进行提示
+		 *
+		 */
+		formValidatea(field, valid = true, msg = ''){
+			!valid && this.validationTips(msg);
+		},
+
+		/**
+		 * 验证提示
+		 * 150毫秒内, 仅能提示一次
+		 */
+		validationTips: Util.debounce(150, function(msg){
+			this.message(msg);
+		})
+	},
+	
 };
 </script>

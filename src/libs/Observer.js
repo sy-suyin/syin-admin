@@ -2,7 +2,7 @@
  * 监听者
  */
 
-export default class Observer {
+class Observer {
 
 	static handlers = {}
 
@@ -48,3 +48,5 @@ export default class Observer {
 		return true;
 	}
 }
+
+export default Observer;

@@ -6,7 +6,7 @@ import store from '@/vuex/store';
 
 axios.defaults.withCredentials=false;
 
-/** 
+/**
  * 生成api网站请求网址
  */
 export function buildUrl(url){
@@ -20,7 +20,7 @@ export function buildUrl(url){
  * @param method         请求类型，取值post|get
  * @param params         发送数据，对象格式：如{id: 1, ...}；字符串形式：如'id=1&cid=0...'
  * @param responseType   服务器响应的数据类型，可以是 'arraybuffer', 'blob', 'document', 'json', 'text', 'stream'
- * 
+ *
  * @return Promise
  */
 export function request(url='', method='', params={}, responseType='json') {
@@ -40,7 +40,7 @@ export function request(url='', method='', params={}, responseType='json') {
 		let config = {
 			url
 		};
-	
+
 		config.method = (typeof(method) === 'undefined' || method === '') ? 'get' : method;
 		params = (typeof(params) === 'undefined' || params === '') ? {} : params;
 		config.responseType = (typeof(responseType) === 'undefined' || responseType === '') ? 'json' : responseType;
@@ -83,4 +83,35 @@ export function request(url='', method='', params={}, responseType='json') {
 			reject(error);
 		});
 	});
+}
+
+/**
+ * 请求成功处理
+ *
+ * @param {object}  result  后端返回的数据
+ * @param {bool}    tips    是否需要在请求失败时进行提示
+ * @param {objectg} config  进行提示时的额外参数
+ * @param {*} 		target  vue中传入this即可
+ * @param {string} 	url  	请求失败提示完跳转页面, 为空不跳转
+ *
+ */
+export function reqSuccess(result, tips = false, config){
+	return new Promise((resolve, reject) => {
+		let {
+			target = null,
+			url = '',
+		} = config;
+
+		if(result && typeof(result.status) != 'undefined' && result.status > 0){
+			resolve(result.result);
+		}
+		else if(result && typeof(result.msg) != 'undefined' && result.msg != ''){
+			tips && target.message(result.msg, 'warning', 3000, url);
+			reject(new Error(result.msg));
+		}
+		else{
+			tips && target.message('服务器未响应，请稍后重试', 'warning', 3000, url);
+			reject(new Error('服务器未响应，请稍后重试'));
+		}
+	})
 }
