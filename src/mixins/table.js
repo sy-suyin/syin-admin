@@ -39,7 +39,7 @@ export const table = {
 		/**
 		 * 获取跳转链接
 		 */
-		getUrl(key, params={}){
+		buildUrl(key, params={}){
 			let url = '';
 			if(this.urls.hasOwnProperty(key)){
 				url = this.urls[key];
@@ -66,7 +66,7 @@ export const table = {
 		 * 页面跳转
 		 */
 		jump(key, params={}){
-			let url = this.getUrl(key, params);
+			let url = this.buildUrl(key, params);
 			this.$router.push({path: url})
 		},
 
@@ -99,7 +99,7 @@ export const table = {
 		 * @param {int} operate		操作标识, 0: 恢复, 1: 删除
 		 */
 		del(id = -1, operate = 1){
-			let url = this.getUrl('del');
+			let url = this.buildUrl('del');
 			let msg = '你确认要' + 
 				(id == -1 ? '批量' : '') + ['恢复', '删除'][operate] +
 				'数据吗?';
@@ -122,7 +122,7 @@ export const table = {
 		 * @param {int} operate		操作标识, 0: 启用, 1: 禁用
 		 */
 		disabled(id = -1, operate = 1){
-			let url = this.getUrl('dis');
+			let url = this.buildUrl('dis');
 			TableInstance.execute(url, id, {operate}).then(res => {
 				id = (id == -1 ? res.resquset.id : [res.resquset.id]);
 				this.results.forEach((item, key)=>{
@@ -137,7 +137,7 @@ export const table = {
 		 * 排序, 需表格数据中有sort与id字段
 		 */
 		sort(){
-			let url = this.getUrl('sort');
+			let url = this.buildUrl('sort');
 			let data = this.extract('id, sort');
 			TableInstance.execute(url, data).then(res => {
 				this.message('操作成功', 'success');
@@ -189,7 +189,7 @@ export const table = {
 				ids.push(val.id);
 			});
 
-			TableInstance.setIds(ids);
+			TableInstance.setSelected(ids);
 		}),
 	},
 }

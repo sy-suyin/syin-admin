@@ -3,7 +3,7 @@
  * 注: 将此独立出来主要是考虑到可能会在详情页使用, 以及页面可能会有多个分页, 暂将每个分页用场景表示
  */
 
-import * as Util from '@/libs/util.js';
+import { post } from '@/libs/api';
 
 export const page = {
 	data(){
@@ -148,7 +148,7 @@ export const page = {
 		 * 如果需要重写, 只需要在引入该mixin的组件内使用相同名字的方法即可
 		 *
 		 * @param {string} page  分页页码
-		 * @param {object} args  请求参数
+		 * @param {object} args  请求数据
 		 * @param {bool}   reset 是否重置请求
 		 * @param {bool}   retry 是否在请求失败之后, 重新请求首页数据
 		 *
@@ -174,7 +174,7 @@ export const page = {
 			args['page'] = page;
 
 			this.loading(true);
-			Util.post(url, args).then(res => {
+			post(url, args, false).then(res => {
 				this.loading(false);
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
 					let result = res.result;
@@ -193,9 +193,9 @@ export const page = {
 				else{
 					this.message('服务器未响应，请稍后重试', 'warning');
 				}
-			}).catch(err => {
+			}).catch(e => {
 				this.loading(false);
-				let msg = (err instanceof Error) ? '网络异常, 请稍后重试' : err;
+				let msg = e.message || '网络异常, 请稍后重试';
 				this.$message(msg, 'warning');
 			});
 		},
@@ -220,6 +220,7 @@ export const page = {
 			if(!results || results.length < 1){
 				results = [];
 			}
+
 			// 保存返回的数据, 此处可考虑映射
 			if(target.mapping != ''){
 				this[target.mapping] = results;

@@ -1,4 +1,5 @@
-import * as util from '@/libs/util.js';
+import { getType } from '@/libs/util.js';
+import { post } from '@/libs/api.js';
 
 class Table{
 	target = null;
@@ -8,11 +9,11 @@ class Table{
 		this.target = target;
 	}
 
-	/** 
+	/**
 	 * 执行相应表单操作并使用POST提交数据
 	 * @param {string} url 	提交链接
 	 * @param {mixed}  data 提交的数据, 当为-1时使用表格选中栏的id数组
-	 * @param {mixed}  mark 操作标示, 可传入两种数据, 字符串或对象. 为字符串时会转换为对象, 转化后键为 mark 
+	 * @param {mixed}  mark 操作标示, 可传入两种数据, 字符串或对象. 为字符串时会转换为对象, 转化后键为 mark
 	 */
 	execute(url, data = -1, mark = ''){
 		let args = {};
@@ -26,10 +27,8 @@ class Table{
 
 			args.id = this.ids;
 		}else{
-			let data_type = util.getType(data);
-
 			// 当为数字时, 即可判断是单项删除之类的操作
-			if(data_type == 'number'){
+			if('number' == getType(data)){
 				if(+data < 1){
 					this.target.message('请选择需要操作的项目');
 					return Promise.reject('请选择需要操作的项目');
@@ -40,11 +39,11 @@ class Table{
 				args.data = data;
 			}
 		}
-		
+
 		// 整理操作标示数据
-		if(util.getType(mark) != 'object'){
+		if('object' != getType(mark)){
 			if(!!mark){
-				args.mark = mark; 
+				args.mark = mark;
 			}
 		}else{
 			let mark_keys = Object.keys(mark);
@@ -54,21 +53,18 @@ class Table{
 		}
 
 		this.target.loading(true);
-		return util.post(url, args).then((res)=>{
-			this.target.loading(false);
-			res.resquset = args;
-			return this.success(res);
+		return post(url, args, true).then((res)=>{
+			this.success(res, args);
 		}).catch((e)=>{
-			this.target.loading(false);
-			return this.error(e);
+			this.error(e);
 		});
 	}
 
 	/**
 	 * 对消息进行提示
 	 * @param {string} msg 		提示消息
-	 * @param {object} config 	
-	 * 
+	 * @param {object} config
+	 *
 	 */
 	tip(msg, config){
 		return this.target.$confirm(msg, '操作提示', {
@@ -94,30 +90,25 @@ class Table{
 	}
 
 	/**
-	 *请求成功时回调方法
+	 * 请求成功时回调方法
 	 */
-	success(res){
-		if(res && typeof(res.status) != 'undefined' && res.status > 0){
-			return Promise.resolve(res);
-		}
-		else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-			return Promise.reject(res.msg);
-		}
-		else{
-			return Promise.reject('服务器未响应，请稍后重试');
-		}
+	success(res, args){
+		this.target.loading(false);
+		res.resquset = args;
+		return Promise.resolve(res);
 	}
 
 	/**
 	 * 请求失败时回调方法
 	 */
 	error(e){
+		this.target.loading(false);
 		let msg = e.message || e;
 		this.target.message(msg, 'warning');
 		return Promise.reject(e);
 	}
 
-	setIds(ids){
+	setSelected(ids){
 		this.ids = ids;
 	}
 }

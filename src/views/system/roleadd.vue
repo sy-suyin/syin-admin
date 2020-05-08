@@ -82,7 +82,8 @@
 <script>
 import {common as commonMixin} from "@/mixins/common.js";
 import {menus} from '@/config/menu';
-import * as util from '@/libs/util.js';
+import { addRole, getAccessData } from '@/api/system';
+
 export default {
 	name: "system_roleadd",
 	mixins: [commonMixin],
@@ -117,40 +118,25 @@ export default {
 					page: []
 				}
 			},
+			redirect_url: '/system/rolelist',
 		}
 	},
 
 	mounted(){
 		this.dialog.data.page = menus;
-
-		util.get('/system/getaccessdata').then(res => {
-			if(res && typeof(res.status) != 'undefined' && res.status > 0){
-				this.dialog.data.data = Object.values(res.result.config);
-			}
-			else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-				this.$message({
-					showClose: true,
-					message: res.msg,
-					type: 'warning'
-				});
-			}
-			else{
-				this.$message({
-					showClose: true,
-					message: '服务器未响应，请稍后重试',
-					type: 'warning'
-				});
-			}
-		}).catch(err => {
-			this.$message({
-				showClose: true,
-				message: '网络异常, 请稍后重试',
-				type: 'warning'
-			});
-		});
+		this.init();
 	},
 
 	methods: {
+		init(){
+			getAccessData().then(res => {
+				this.dialog.data.data = Object.values(res.config);
+			}).catch(e => {
+				let msg = e.message || '网络异常, 请稍后重试';
+				this.message(msg, 'warning', 3000, this.redirect_url);
+			});
+		},
+
 		onSubmit(formName) {
 			let args = {...this.form};
 			args['data_forbid'] = this.getUnselected(this.dialog.selected.data, this.dialog.data.data);
@@ -161,21 +147,13 @@ export default {
 			}
 
 			this.loading = true;
-			util.post('/system/roleadd', args).then(res => {
+			roleAdd(args).then(res => {
 				this.loading = false;
-				if(res && typeof(res.status) != 'undefined' && res.status > 0){
-					this.$router.push({path: '/system/rolelist'})
-				}
-				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-					this.message(res.msg);
-				}
-				else{
-					this.message('服务器未响应，请稍后重试');
-				}
-			}).catch(err => {
+				this.$router.push({path: this.redirect_url})
+			}).catch(e => {
 				this.loading = false;
-				let msg = (err instanceof Error) ? '网络异常, 请稍后重试' : err;
-				this.$message(msg, 'warning');
+				let msg = e.message || '网络异常, 请稍后重试';
+				this.message(msg, 'warning', 3000);
 			});
 		},
 

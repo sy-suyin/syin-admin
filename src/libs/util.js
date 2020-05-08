@@ -1,5 +1,4 @@
 // 工具类
-import {request} from './request';
 import store from '@/vuex/store'
 
 /**
@@ -102,52 +101,16 @@ export function now() {
 	return time;
 }
 
-/** 
- * 请求之前进行检查
- * 
- * @param url            请求URL
- * @param method         请求类型，取值post|get
- * @param params         发送数据，对象格式：如{id: 1, ...}；字符串形式：如'id=1&cid=0...'
- */
-function request_check(url='', method='', params={}){
-	let can_access = true;
-
-	if(url[0] == '/'){
-		// 检查权限
-		let urls = url.split('/');
-		if(urls.length > 3){
-			let controller = urls[1].trim();
-			let action = urls[2].trim();
-			if(! checkPermission(controller, action, 'data')){
-				can_access = false;
-			}
-		}
-	}
-
-	if(!can_access){
-		return Promise.reject('很抱歉, 你没有执行该操作的权限');
-	}else{
-		return request(url, method, params);
-	}
-}
-
 /**
- * post提交数据
+ * 批量执行多个请求, 同一返回, 只有当多个请求都成功时才能成功
+ * @description 已查过axios源码, 故此处直接使用axios封装的代码
  * 
- * @param {string} url            请求URL
- * @param {object} params         发送数据，对象格式：如{id: 1, ...}；字符串形式：如'id=1&cid=0...'
+ * @param {*} 	promises 多个 Promise 实例
  */
-export function post(url='', params={}){
-	return request_check(url, 'post', params);
-}
-
-/**
- * get方式获取数据
- * @param {string} url            请求URL
- * 
- */
-export function get(url=''){
-	return request_check(url, 'get');
+export function requestAll(promises){
+	return Promise.all(promises).then((res)=>{
+		return res;
+	});
 }
 
 /**

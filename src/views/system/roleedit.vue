@@ -85,7 +85,9 @@
 // @ is an alias to /src
 import {common as commonMixin} from "@/mixins/common.js";
 import {menus} from '@/config/menu';
-import * as util from '@/libs/util.js';
+import { requestAll } from '@/libs/util.js';
+import { getRole, editRole, getAccessData } from '@/api/system';
+
 export default {
 	name: "system_roleedit",
 	mixins: [commonMixin],
@@ -128,6 +130,8 @@ export default {
 					page: []
 				}
 			},
+
+			redirect_url: '/system/rolelist',
 		}
 	},
 
@@ -141,37 +145,25 @@ export default {
 
 		// 初始化
 		init(){
-			let id = this.$route.params.id;
-			let url = '/system/roledetail';
-			let error_url = '/system/rolelist';
+			let id = +this.$route.params.id;
 
-			this.detail(id, url, error_url).then(result => {
-				this.form.name = result.name;
-				this.form.desc = result.description;
-				this.getAccessData();
+			if(!id){
+				return this.message('参数异常', 'warning', 3000, this.redirect_url);
+			}
+
+			requestAll([getRole(id), getAccessData(id)]).then((res)=>{
+				let {0: role, 1: access_data} = res;
+
+				// 处理角色数据
+				this.form.name = role.name;
+				this.form.desc = role.description;
+
+				// 处理后台返回的数据
+				this.dialog.data.data = Object.values(access_data.config);
+				this.treeInit(access_data.forbid);
 			}).catch(e => {
-			});
-		},
-
-		// 获取权限数据
-		getAccessData(){
-			this.loading(true);
-
-			util.get('/system/getaccessdata/id/'+this.id).then(res => {
-				if(res && typeof(res.status) != 'undefined' && res.status > 0){
-					this.dialog.data.data = Object.values(res.result.config);
-					this.treeInit(res.result.forbid);
-				}
-				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-					this.message(res.msg, 'warning', 3000, '/system/rolelist');
-				}
-				else{
-					this.message('服务器未响应，请稍后重试', 'warning', 3000, '/system/rolelist');
-				}
-				this.loading(false);
-			}).catch(err => {
-				this.loading(false);
-				this.message('网络异常, 请稍后重试', 'warning', 3000, '/system/rolelist');
+				let msg = e.message || '网络异常, 请稍后重试';
+				this.message(msg, 'warning', 3000, this.redirect_url);
 			});
 		},
 
@@ -194,21 +186,13 @@ export default {
 			}
 
 			this.loading(true);
-			util.post('/system/roleedit', args).then(res => {
+			editRole(args).then(res => {
 				this.loading(false);
-				if(res && typeof(res.status) != 'undefined' && res.status > 0){
-					this.$router.push({path: '/system/rolelist'})
-				}
-				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-					this.message(res.msg);
-				}
-				else{
-					this.message('服务器未响应，请稍后重试');
-				}
-			}).catch(err => {
+				this.$router.push({path: '/system/rolelist'})
+			}).catch(e => {
 				this.loading(false);
-				let msg = (err instanceof Error) ? '网络异常, 请稍后重试' : err;
-				this.$message(msg, 'warning');
+				let msg = e.message || '网络异常, 请稍后重试';
+				this.message(msg, 'warning', 3000, this.redirect_url);
 			});
 		},
 

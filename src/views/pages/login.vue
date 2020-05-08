@@ -11,7 +11,6 @@
 						<i class="icon el-icon-user-solid"></i>
 
 						<input type="text" class="login-name" placeholder="登录账户" v-model="args.login">
-
 					</div>
 
 					<div class="input-group">
@@ -30,6 +29,8 @@
 
 <script>
 import * as util from '@/libs/util.js';
+import { login } from '@/api/user';
+
 export default {
 	name: 'login',
 	data(){
@@ -47,70 +48,65 @@ export default {
 	methods: {
 		login(){
 			let args = {...this.args};
+			args.login = args.login.trim();
+			args.password = args.password.trim();
 
 			if(args.login == ''){
-				return this.$message({
-					showClose: true,
-					message: '请先输入登录账户',
-					type: 'warning'
-				});
+				return this.message('请先输入登录账户');
 			}
 
 			if(args.password == ''){
-				return this.$message({
-					showClose: true,
-					message: '请先输入登录密码',
-					type: 'warning'
-				});
+				return this.message('请先输入登录密码');
 			}
 
 			this.is_loading = true;
 
-			util.post('/login', args).then(res => {
+			login(args).then(result => {
 				this.is_loading = false;
 
-				if(res && typeof(res.status) != 'undefined' && res.status > 0){
-					// 存储相关登录信息
-					this.$store.commit('auth/setLogin',res.result.user);
-					this.$store.commit('access/set', {
-						data_forbid: res.result.forbid.data_forbid,	// 数据权限黑名单
-						page_forbid: res.result.forbid.page_forbid,	// 页面权限黑名单
-					});
+				// 存储相关登录信息
+				this.$store.commit('auth/setLogin',result.user);
+				this.$store.commit('access/set', {
+					data_forbid: result.forbid.data_forbid,	// 数据权限黑名单
+					page_forbid: result.forbid.page_forbid,	// 页面权限黑名单
+				});
 
-					// 如果有本地记录的重定向记录, 则在登陆后跳转回之前的页面
-					// 注: 此功能未实现
-					let redirect = localStorage.getItem('user_redirect');
-					localStorage.removeItem('user_redirect');
+				// 如果有本地记录的重定向记录, 则在登陆后跳转回之前的页面
+				// 注: 此功能未实现
+				let redirect = localStorage.getItem('user_redirect');
+				localStorage.removeItem('user_redirect');
 
-					// 登录跳转
-					let redirect_path = redirect ? redirect : this.$store.getters['access/routers'][0].path;
-					this.$router.replace({path: redirect_path})
-				}
-				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-					this.$message({
-						showClose: true,
-						message: res.msg,
-						type: 'warning'
-					});
-				}
-				else{
-					this.$message({
-						showClose: true,
-						message: '服务器未响应，请稍后重试',
-						type: 'warning'
-					});
-				}
+				// 登录跳转
+				let redirect_path = redirect ? redirect : this.$store.getters['access/routers'][0].path;
+				this.$router.replace({path: redirect_path})
 			}).catch(err => {
 				this.is_loading = false;
-
-				this.$message({
-					showClose: true,
-					message: '网络异常, 请稍后重试',
-					type: 'warning'
-				});
+				this.message('网络异常，请稍后重试');
 			});
 		}
-	}
+	},
+
+	/** 
+	 * 提示消息
+	 * 
+	 * @param message  消息内容
+	 * @param type 	   消息类型
+	 * @param duration 消息显示时间, 单位: 毫秒, 传入0将不会自动关闭
+	 * @param path     消息关闭后跳转路径, 为空不跳转
+	 */
+	message(message, type='warning', duration=3000, path=''){
+		return Message({
+			showClose: true,
+			message,
+			type,
+			duration,
+			onClose: ()=>{
+				if(path != ''){
+					this.$router.push({path});
+				}
+			}
+		});
+	},
 }
 </script>
 

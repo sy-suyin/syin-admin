@@ -8,7 +8,7 @@
 					修改管理员
 				</div>
 
-				<el-form ref="form" :model="form" label-width="80px">
+				<el-form ref="form" :model="form" :rules="rules" label-width="80px" @validate="formValidatea">
 					<el-form-item label="登录账号" prop="login">
 						<el-input v-model="form.login"></el-input>
 					</el-form-item>
@@ -49,8 +49,8 @@
 <script>
 import {common as commonMixin} from "@/mixins/common.js";
 import {detail as detailMixin} from "@/mixins/detail.js";
-import * as Util from '@/libs/util.js';
-import {get, post} from '@/libs/api';
+import { debounce, requestAll } from '@/libs/util.js';
+import { getAdmin, editAdmin, getRoles } from '@/api/system';
 
 export default {
 	name: "system_adminadd",
@@ -76,6 +76,7 @@ export default {
 					{ required: true, message: '请先选择角色', trigger: 'blur' },
 				],
 			},
+			redirect_url: '/system/adminlist',
 		}
 	},
 	mounted(){
@@ -83,90 +84,79 @@ export default {
 	},
 	methods: {
 		init(){
-			let id = this.$route.params.id;
-			let url = '/system/admindetail';
-			let error_url = '/system/adminlist';
+			let id = +this.$route.params.id;
 
-			this.detail(id, url, error_url).then(result => {
-				this.form.login = result.login_name;
-				this.form.name = result.name;
+			if(!id){
+				return this.message('参数异常', 'warning', 3000, this.redirect_url);
+			}
 
-				result.roles.forEach(val => {
+			requestAll([getAdmin(id), getRoles()]).then((res)=>{
+				let {0: admin, 1: roles} = res;
+
+				// 处理管理员数据
+				this.form.login = admin.login_name;
+				this.form.name = admin.name;
+				admin.roles.forEach(val => {
 					this.form.roles.push(val.id);
 				});
 
-				this.getRoles();
+				// 处理角色数据
+				this.roles = roles;
 			}).catch(e => {
+				let msg = e.message || '网络异常, 请稍后重试';
+				this.message(msg, 'warning', 3000, this.redirect_url);
 			});
 		},
-		getRoles(){
-			get('/system/getallroles', true).then(res => {
-				this.roles = res;
-			}).catch(err => {
-				let msg = err.message || '网络异常, 请稍后重试';
-				this.message(msg, 'warning', 3000, '/system/adminlist');
+
+		/**
+		 * 提交前进行数据检查
+		 */
+		validate(form_name){
+			this.$refs[form_name].validate((valid) => {
+				if(!valid){
+					return false;
+				}
 			});
-			// Util.get('/system/getallroles').then(res => {
-			// 	if(res && typeof(res.status) != 'undefined' && res.status > 0){
-			// 		this.roles = res.result;
-			// 	}
-			// 	else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-			// 		this.message(res.msg, 'warning', 3000, '/system/adminlist');
-			// 	}
-			// 	else{
-			// 		this.message('服务器未响应，请稍后重试', 'warning', 3000, '/system/adminlist');
-			// 	}
-			// }).catch(err => {
-			// 	this.message('网络异常, 请稍后重试', 'warning', 3000, '/system/adminlist');
-			// });
 		},
+
 		onSubmit() {
 			let args = {...this.form};
 			args.id = this.id;
 
-			if(args.login == ''){
-				return this.message('登录账号不能为空');
-			}
+			this.validate('form', ()=>{
+				this.loading(true);
 
-			if(args.name == ''){
-				return this.message('角色名称不能为空');
-			}
-
-			if(args.roles.length < 1){
-				return this.message('请先选择角色权限');
-			}
-
-			this.loading(true);
-			post('/system/adminedit', args, true).then(res => {
-				this.loading(false);
-				this.$router.push({path: '/system/adminlist'})
-			}).catch(e => {
-				this.loading(false);
-				let msg = err.message || '网络异常, 请稍后重试';
-				this.message(msg, 'warning', 3000, '/system/adminlist');
+				editAdmin(args).then(res => {
+					this.loading(false);
+					this.$router.push({path: this.redirect_url})
+				}).catch(e => {
+					this.loading(false);
+					let msg = e.message || '网络异常, 请稍后重试';
+					this.message(msg, 'warning', 3000, this.redirect_url);
+				});
 			});
-		
-			// Util.post(, args).then(res => {
-			// 	this.loading(false);
-			// 	if(res && typeof(res.status) != 'undefined' && res.status > 0){
-			// 		this.$router.push({path: '/system/adminlist'})
-			// 	}
-			// 	else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-			// 		this.message(res.msg);
-			// 	}
-			// 	else{
-			// 		this.message('服务器未响应，请稍后重试');
-			// 	}
-			// }).catch(err => {
-			// 	this.loading(false);
-			// 	let msg = (err instanceof Error) ? '网络异常, 请稍后重试' : err;
-			// 	this.$message(msg, 'warning');
-			// });
 		},
 
 		resetForm(formName) {
 			this.$refs[formName].resetFields();
 		},
+		
+		/**
+		 * 表单验证消息提示, 在页面数据较多时, 默认的的提示方式用户可能会看不见(不在可是区域)
+		 * 此方法会获取表单检验中第一个检验不合格的字段, 并进行提示
+		 *
+		 */
+		formValidatea(field, valid = true, msg = ''){
+			!valid && this.validationTips(msg);
+		},
+
+		/**
+		 * 验证提示
+		 * 150毫秒内, 仅能提示一次
+		 */
+		validationTips: debounce(150, function(msg){
+			this.message(msg);
+		})
     }
 };
 </script>

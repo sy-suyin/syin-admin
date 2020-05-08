@@ -46,8 +46,8 @@
 
 <script>
 import {common as commonMixin} from "@/mixins/common.js";
-import * as Util from '@/libs/util.js';
-import {reqSuccess} from '@/libs/request.js';
+import { debounce } from '@/libs/util.js';
+import { addAdmin, getRoles } from '@/api/system';
 
 export default {
 	name: "system_adminadd",
@@ -55,7 +55,6 @@ export default {
   	data() {
       	return {
 			roles: [],
-
         	form: {
 				login: '',
           		name:  '',
@@ -76,6 +75,7 @@ export default {
 					{ required: true, message: '请先选择角色', trigger: 'blur' },
 				],
 			},
+			redirect_url: '/system/adminlist',
 		}
 	},
 	mounted(){
@@ -86,15 +86,11 @@ export default {
 			this.getRoles();
 		},
 		getRoles(){
-			Util.get('/system/getallroles').then(res => {
-				reqSuccess(res, true, {
-					target: this,
-					url: '/system/adminlist'
-				}).then((result)=>{
-					this.roles = result;
-				});
-			}).catch(err => {
-				this.message('网络异常, 请稍后重试', 'warning', 3000, '/system/adminlist');
+			getRoles.then(res => {
+				this.roles = result;
+			}).catch(e => {
+				let msg = e.message || '网络异常, 请稍后重试';
+				this.message(msg, 'warning', 3000, this.redirect_url);
 			});
 		},
 
@@ -115,17 +111,13 @@ export default {
 
 			this.validate('form', ()=>{
 				this.loading(true);
-				Util.post('/system/adminadd', args).then(res => {
-					this.loading(false);
 
-					reqSuccess(res, true, {
-						target: this,
-					}).then((result)=>{
-						this.$router.push({path: '/system/adminlist'})
-					});
-				}).catch(err => {
+				addAdmin(args).then(res => {
 					this.loading(false);
-					let msg = (err instanceof Error) ? '网络异常, 请稍后重试' : err;
+					this.$router.push({path: this.redirect_url})
+				}).catch(e => {
+					this.loading(false);
+					let msg = e.message || '网络异常, 请稍后重试';
 					this.$message(msg, 'warning');
 				});
 			});
@@ -151,7 +143,7 @@ export default {
 		 * 验证提示
 		 * 150毫秒内, 仅能提示一次
 		 */
-		validationTips: Util.debounce(150, function(msg){
+		validationTips: debounce(150, function(msg){
 			this.message(msg);
 		})
 	},
