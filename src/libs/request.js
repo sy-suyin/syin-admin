@@ -40,25 +40,30 @@ class Request{
 				return Promise.reject(new Error('服务器未响应，请稍后重试'));
 			}
 	
-			if(response.data && typeof(response.data.status) != 'undefined' && response.data.status < 0){
-				// 这里退出登录
-
-				Aalert('账号过期, 请重新登录', '解锁密码', {
-					confirmButtonText: '确定',
-					callback: action => {
-						store.commit('auth/logout');
-					}
-				});
-
-				return Promise.reject(new Error(res.msg || 'Error'));
-			}
-
 			if(response.headers && typeof(response.headers.token) != 'undefined'){
 				store.commit('auth/updateToken',response.headers.token);
 			}
 
 			return res;
 		}, error => {
+			const { response: { status, statusText, data: { msg = '服务器未响应，请稍后重试' } }} = error;
+
+			if(status == 403){
+				setTimeout(() => {
+					store.commit('auth/logout');
+				}, 1500);
+				return Promise.reject(new Error('账号过期, 请重新登录'));
+
+				// Alert('账号过期, 请重新登录', '过期提示', {
+				// 	confirmButtonText: '确定',
+				// 	callback: action => {
+				// 	}
+				// });
+				return false;
+			}else if(status != 200){
+				return Promise.reject(new Error('服务器未响应，请稍后重试'));
+			}
+
 			return Promise.reject(error)
 		})
 	}

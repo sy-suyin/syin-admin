@@ -54,9 +54,9 @@ class Table{
 
 		this.target.loading(true);
 		return post(url, args, true).then((res)=>{
-			this.success(res, args);
+			return this.success(res, args);
 		}).catch((e)=>{
-			this.error(e);
+			return this.error(e);
 		});
 	}
 

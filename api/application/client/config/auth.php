@@ -21,4 +21,11 @@ return [
 	 * 类型：字符串
 	 */
 	'token_key' => 'QXD1XZTiqKsI*rZK0*M^EbQxDapijpyd',
+
+	/**
+	 * 访问白名单, 在该名单中的路由, 未登录时可直接访问
+	 */
+	'whitelist' => array(
+		'login' => ['index']
+	)
 ];

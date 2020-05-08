@@ -129,9 +129,12 @@ export default {
 
 	methods: {
 		init(){
+			this.loading(true);
 			getAccessData().then(res => {
+				this.loading(false);
 				this.dialog.data.data = Object.values(res.config);
 			}).catch(e => {
+				this.loading(false);
 				let msg = e.message || '网络异常, 请稍后重试';
 				this.message(msg, 'warning', 3000, this.redirect_url);
 			});
@@ -146,12 +149,12 @@ export default {
 				return this.message('角色名称不能为空');
 			}
 
-			this.loading = true;
-			roleAdd(args).then(res => {
-				this.loading = false;
+			this.loading(true);
+			addRole(args).then(res => {
+				this.loading(false);
 				this.$router.push({path: this.redirect_url})
 			}).catch(e => {
-				this.loading = false;
+				this.loading(false);
 				let msg = e.message || '网络异常, 请稍后重试';
 				this.message(msg, 'warning', 3000);
 			});

@@ -20,6 +20,8 @@ class Auth{
 		$key = $request->header('key');
 		// 用户身份验证TOKEn
 		$token = $request->header('token');
+		$controller = strtolower($request->controller());
+		$action = strtolower($request->action());
 		$is_logged = false;
 
 		if($token != ''){
@@ -38,15 +40,19 @@ class Auth{
 		if($is_logged){
 			$request->admin = $admin;
 
-			$verify_res = \app\client\library\AdminTool::verifyPermission($admin, $request->controller, $request->admin);
+			$verify_res = \app\client\library\AdminTool::verifyPermission($admin, $controller, $action);
 
 			if(false == $verify_res){
 				return show_error('对不起，您没有权限执行该操作');
 			}
 		}else{
-			// TODO: 于此处判断用户访问的页面是否允许未登录直接访问
-		}
+			// 未登录或token已过期
+			$whitelist = config('auth.whitelist');
 
+			if(empty($whitelist) || !isset($whitelist[$controller]) || !in_array($action, $whitelist[$controller])){
+				return json('请在登陆后重试', 403);
+			}
+		}
 
         return $next($request);
 	}

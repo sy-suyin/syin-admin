@@ -83,29 +83,29 @@ export default {
 				this.is_loading = false;
 				this.message('网络异常，请稍后重试');
 			});
-		}
-	},
+		},
 
-	/** 
-	 * 提示消息
-	 * 
-	 * @param message  消息内容
-	 * @param type 	   消息类型
-	 * @param duration 消息显示时间, 单位: 毫秒, 传入0将不会自动关闭
-	 * @param path     消息关闭后跳转路径, 为空不跳转
-	 */
-	message(message, type='warning', duration=3000, path=''){
-		return Message({
-			showClose: true,
-			message,
-			type,
-			duration,
-			onClose: ()=>{
-				if(path != ''){
-					this.$router.push({path});
+		/** 
+		 * 提示消息
+		 * 
+		 * @param message  消息内容
+		 * @param type 	   消息类型
+		 * @param duration 消息显示时间, 单位: 毫秒, 传入0将不会自动关闭
+		 * @param path     消息关闭后跳转路径, 为空不跳转
+		 */
+		message(message, type='warning', duration=3000, path=''){
+			return Message({
+				showClose: true,
+				message,
+				type,
+				duration,
+				onClose: ()=>{
+					if(path != ''){
+						this.$router.push({path});
+					}
 				}
-			}
-		});
+			});
+		}
 	},
 }
 </script>

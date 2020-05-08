@@ -13,3 +13,12 @@ export const login = ( {login, password} ) => {
 		data,
 	})
 }
+
+export const updateProfile = (args) => {
+	return request({
+		url: '/index/profile',
+		method: 'post',
+		dispose: true,
+		data: args,
+	})
+}

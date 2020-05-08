@@ -90,10 +90,13 @@ export default {
 				return this.message('参数异常', 'warning', 3000, this.redirect_url);
 			}
 
+			this.loading(true);
 			requestAll([getAdmin(id), getRoles()]).then((res)=>{
 				let {0: admin, 1: roles} = res;
+				this.loading(false);
 
 				// 处理管理员数据
+				this.id = id;
 				this.form.login = admin.login_name;
 				this.form.name = admin.name;
 				admin.roles.forEach(val => {
@@ -103,6 +106,7 @@ export default {
 				// 处理角色数据
 				this.roles = roles;
 			}).catch(e => {
+				this.loading(false);
 				let msg = e.message || '网络异常, 请稍后重试';
 				this.message(msg, 'warning', 3000, this.redirect_url);
 			});
@@ -111,12 +115,14 @@ export default {
 		/**
 		 * 提交前进行数据检查
 		 */
-		validate(form_name){
+		validate(form_name, cbfunc){
 			this.$refs[form_name].validate((valid) => {
 				if(!valid){
 					return false;
 				}
 			});
+
+			cbfunc();
 		},
 
 		onSubmit() {
@@ -132,7 +138,7 @@ export default {
 				}).catch(e => {
 					this.loading(false);
 					let msg = e.message || '网络异常, 请稍后重试';
-					this.message(msg, 'warning', 3000, this.redirect_url);
+					this.message(msg, 'warning', 3000);
 				});
 			});
 		},

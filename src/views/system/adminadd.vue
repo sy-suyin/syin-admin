@@ -83,11 +83,8 @@ export default {
 	},
 	methods: {
 		init(){
-			this.getRoles();
-		},
-		getRoles(){
-			getRoles.then(res => {
-				this.roles = result;
+			getRoles().then(res => {
+				this.roles = res;
 			}).catch(e => {
 				let msg = e.message || '网络异常, 请稍后重试';
 				this.message(msg, 'warning', 3000, this.redirect_url);
@@ -97,11 +94,13 @@ export default {
 		/**
 		 * 提交前进行数据检查
 		 */
-		validate(form_name){
+		validate(form_name, cbfunc){
 			this.$refs[form_name].validate((valid) => {
 				if(!valid){
 					return false;
 				}
+
+				cbfunc();
 			});
 		},
 

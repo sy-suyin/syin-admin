@@ -84,7 +84,7 @@ export const common = {
 		 * @param string type		page/data 权限类型，默认为data 
 		 */
 		checkPermission(controller, action, type='data'){
-			checkPermission(controller, action, type);
+			return checkPermission(controller, action, type);
 		}
 	},
 }

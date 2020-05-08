@@ -77,6 +77,8 @@
 <script>
 import * as util from '@/libs/util.js';
 import {common as commonMixin} from "@/mixins/common.js";
+import { updateProfile } from '@/api/user';
+
 export default {
 	name: "home",
 	mixins: [commonMixin],
@@ -148,22 +150,14 @@ export default {
 				}
 
 				this.loading(true);
-				util.post('/index/profile', args).then(res => {
+				updateProfile(args).then(res => {
 					this.loading(false);
-					if(res && typeof(res.status) != 'undefined' && res.status > 0){
-						this.updateUser(args);
-						this.message('数据更新成功');
-					}
-					else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-						this.message(res.msg);
-					}
-					else{
-						this.message('服务器未响应，请稍后重试');
-					}
+					this.updateUser(args);
+					this.message('数据更新成功', 'success');
 				}).catch(err => {
 					this.loading(false);
-					let msg = (err instanceof Error) ? '网络异常, 请稍后重试' : err;
-					this.$message(msg, 'warning');
+					let msg = e.message || '网络异常, 请稍后重试';
+					this.message(msg, 'warning', 3000);
 				});
 			});
 		},
