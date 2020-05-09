@@ -80,8 +80,7 @@ export default {
 			this.background_projects = config.sidebar_background_projects;
 
 			// 为选项设置选中
-
-			if(this.sidebar_filters_color == ''){
+			if(!this.sidebar_filters_color){
 				this.filterClick(0);
 			}else{
 				this.sidebar_filters.forEach((color, index) => {
@@ -91,7 +90,7 @@ export default {
 				});
 			}
 
-			if(this.background_project == ''){
+			if(!this.background_project){
 				let first_project = Object.keys(this.background_projects)[0];
 				this.bgProjectClick(first_project);
 			}else{
@@ -100,7 +99,7 @@ export default {
 				}
 			}
 			
-			if(this.sidebar_background_img == ''){
+			if(!this.sidebar_background_img){
 				this.bgImgClick(0);
 			}else{
 				this.background_imgs.forEach((color, index) => {

@@ -1,6 +1,5 @@
 <template>
-	<div class="layout-aside" :class="'aside-'+background_project.class" @mouseleave="mouseleave" @mouseenter="mouseenter">
-		{{this.sidebar_mini}}
+	<div class="layout-aside" :class="asideClass" @mouseleave="mouseleave" @mouseenter="mouseenter">
 		<div class="slider">
 			<el-scrollbar class="layout-aside-scroll">
 				<logo></logo>
@@ -94,8 +93,11 @@ export default {
 		}),
 
 		asideClass(){
+			let project_class = 'aside-' + this. background_project.class;
+
 			return {
-				'layout-aside-mini': this.sidebar_mini
+				'layout-aside-mini': this.sidebar_mini,
+				[project_class]: true,
 			}
 		},
 
