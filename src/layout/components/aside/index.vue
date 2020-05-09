@@ -1,5 +1,5 @@
 <template>
-	<div class="layout-aside" :class="asideClass" @mouseleave="mouseleave" @mouseenter="mouseenter">
+	<div class="layout-aside" :class="'aside-'+background_project.class" @mouseleave="mouseleave" @mouseenter="mouseenter">
 		{{this.sidebar_mini}}
 		<div class="slider">
 			<el-scrollbar class="layout-aside-scroll">
@@ -89,7 +89,7 @@ export default {
 		...mapState('settings', {
 			sidebar_mini: state =>state.sidebar_mini,
 			filters_color: state =>state.sidebar_filters_color,
-			background_color: state =>state.sidebar_background_color,
+			background_project: state =>state.sidebar_background_project,
 			background_img: state =>state.sidebar_background_img,
 		}),
 
@@ -102,9 +102,8 @@ export default {
 		backgroundStyle(){
 			return {
 				backgroundImage: 'url(' + this.background_img + ')',
-				'--bgcolor': this.background_color
 			}
-		}
+		},
 	},
 	watch: {
 		sidebar_mini(val){

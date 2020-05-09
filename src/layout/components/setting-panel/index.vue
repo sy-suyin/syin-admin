@@ -17,7 +17,7 @@
 				<h4 class="header-title">SIDEBAR BACKGROUND</h4>
 
 				<div class="sidebar-filter color-badge">
-					<span class="badge" :style="'background-color: '+ val" v-for="(val, index) in background_colors" :key="index" :class="{active: index==selected_index.bg_color}" @click="bgColorClick(index)"></span>
+					<span class="badge" :style="'background-color: '+ val.color" v-for="(val, project) in background_projects" :key="project" :class="{active: project == selected_index.project}" @click="bgProjectClick(project)"></span>
 				</div>
 
 				<el-divider></el-divider>
@@ -37,7 +37,7 @@
 				<h4 class="header-title">IMAGES</h4>
 
 				<ul class="imgs">
-					<li v-for="(img, index) in sidebar_background_imgs" :key="index" :class="{active: index==selected_index.bg_img}" @click="bgImgClick(index)">
+					<li v-for="(img, index) in background_imgs" :key="index" :class="{active: index==selected_index.image}" @click="bgImgClick(index)">
 						<img :src="img">
 					</li>
 				</ul>
@@ -50,32 +50,23 @@
 
 <script>
 import { mapState } from 'vuex'
+import config from '@/config/style';
 
 export default {
 	data(){
 		return {
 			is_show: false,
+
 			is_mini: false,
 
-			sidebar_filters: [
-				'#9368e9',
-				'#2ca8ff',
-				'#0bf',
-				'#18ce0f',
-				'#f44336',
-				'#e91e63',
-			],
+			sidebar_filters: null,
 
-			background_colors: [
-				'#000',
-				'#fff',
-				'#f44336',
-			],
+			background_projects: null,
 
 			selected_index: {
 				filter: 0,
-				bg_color: 0,
-				bg_img: 0,
+				project: '',
+				image: 0,
 			},
 		}
 	},
@@ -84,6 +75,12 @@ export default {
 	},
 	methods:{
 		init(){
+			// 设置默认数据
+			this.sidebar_filters = config.sidebar_filters;
+			this.background_projects = config.sidebar_background_projects;
+
+			// 为选项设置选中
+
 			if(this.sidebar_filters_color == ''){
 				this.filterClick(0);
 			}else{
@@ -94,22 +91,21 @@ export default {
 				});
 			}
 
-			if(this.sidebar_background_color == ''){
-				this.bgColorClick(0);
+			if(this.background_project == ''){
+				let first_project = Object.keys(this.background_projects)[0];
+				this.bgProjectClick(first_project);
 			}else{
-				this.background_colors.forEach((color, index) => {
-					if(color == this.sidebar_background_color){
-						this.selected_index.bg_color = index;
-					}
-				});
+				if(this.background_projects.hasOwnProperty(this.background_project.name)){
+					this.selected_index.project = this.background_project.name;
+				}
 			}
 			
 			if(this.sidebar_background_img == ''){
 				this.bgImgClick(0);
 			}else{
-				this.sidebar_background_imgs.forEach((color, index) => {
+				this.background_imgs.forEach((color, index) => {
 					if(color == this.sidebar_background_img){
-						this.selected_index.bg_img = index;
+						this.selected_index.image = index;
 					}
 				});
 			}
@@ -121,18 +117,18 @@ export default {
 				value: this.sidebar_filters[index]
 			});
 		},
-		bgColorClick(index){
-			this.selected_index.bg_color = index;
+		bgProjectClick(projct){
+			this.selected_index.project = projct;
 			this.$store.dispatch('settings/changeSetting', {
-				key: 'sidebar_background_color',
-				value: this.background_colors[index]
+				key: 'sidebar_background_project',
+				value: this.background_projects[projct]
 			});
 		},
 		bgImgClick(index){
-			this.selected_index.bg_img = index;
+			this.selected_index.image = index;
 			this.$store.dispatch('settings/changeSetting', {
 				key: 'sidebar_background_img',
-				value: this.sidebar_background_imgs[index]
+				value: this.background_imgs[index]
 			});
 		},
 	},
@@ -149,10 +145,10 @@ export default {
 			}
 		},
 		...mapState('settings', {
-			sidebar_filters_color: state =>state.sidebar_filters_color,
-			sidebar_background_color: state =>state.sidebar_background_color,
-			sidebar_background_img: state =>state.sidebar_background_img,
-			sidebar_background_imgs: state =>state.sidebar_background_imgs,
+			filters_color: state =>state.sidebar_filters_color,
+			background_project: state =>state.sidebar_background_project,
+			background_img: state =>state.sidebar_background_img,
+			background_imgs: state =>state.sidebar_background_imgs,
 		})
 	}
 }
@@ -263,6 +259,7 @@ export default {
 
 		.panel{
 			z-index: 1000;
+			width: 300px;
 			border-left: 1px solid #dcdfe6;
 		}
 

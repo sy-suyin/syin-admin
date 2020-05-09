@@ -78,7 +78,6 @@ class Request{
 
 			return res;
 		}, error => {
-			console.log(error);
 			if(!!error.isAxiosError){
 				const { response: { status, statusText, data: { msg = '服务器未响应，请稍后重试' } }} = error;
 
