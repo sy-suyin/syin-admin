@@ -11,11 +11,20 @@ module.exports = {
 		pro: 'http://admin.demo.syin.top'
 	},
 
-	// 应用标识
+	/** 
+	 * 应用标识
+	 */
 	key: 'r1bTzaRzQKCoJg3swTnyx1Kni0zGb4yV',
 
 	/**
 	 * 默认请求超时的毫秒数(0 表示无超时时间)
 	 */
 	timeout: 5000,
+
+	/**
+	 * 未登录时允许访问的页面
+	 */
+	not_logged_allow: {
+		login: ['index']
+	} 
 }

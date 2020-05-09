@@ -50,7 +50,7 @@ class Auth{
 			$whitelist = config('auth.whitelist');
 
 			if(empty($whitelist) || !isset($whitelist[$controller]) || !in_array($action, $whitelist[$controller])){
-				return json('请在登陆后重试', 403);
+				return json('请在登陆后重试', 401);
 			}
 		}
 

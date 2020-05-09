@@ -22,8 +22,6 @@ export function request(options) {
 
 	if(dispose){
 		return response.then((res)=>{
-			// return Promise.reject(new Error('服务器未响应，请稍后重试'));
-
 			if(res && typeof(res.status) != 'undefined' && res.status > 0){
 				return res.result;
 			}

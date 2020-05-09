@@ -79,7 +79,7 @@ export default {
 				// 登录跳转
 				let redirect_path = redirect ? redirect : this.$store.getters['access/routers'][0].path;
 				this.$router.replace({path: redirect_path})
-			}).catch(err => {
+			}).catch(e => {
 				this.is_loading = false;
 				this.message('网络异常，请稍后重试');
 			});
@@ -94,7 +94,7 @@ export default {
 		 * @param path     消息关闭后跳转路径, 为空不跳转
 		 */
 		message(message, type='warning', duration=3000, path=''){
-			return Message({
+			return this.$message({
 				showClose: true,
 				message,
 				type,
