@@ -138,6 +138,7 @@ export const page = {
 			if(reset){
 				target.args = {};
 				target.page_max = 1;
+				target.current = 1;
 			}
 
 			return target;
@@ -147,31 +148,29 @@ export const page = {
 		 * 获取分页数据
 		 * 如果需要重写, 只需要在引入该mixin的组件内使用相同名字的方法即可
 		 *
-		 * @param {string} page  分页页码
-		 * @param {object} args  请求数据
-		 * @param {bool}   reset 是否重置请求
-		 * @param {bool}   retry 是否在请求失败之后, 重新请求首页数据
+		 * @param {string} page   分页页码
+		 * @param {object} args   请求数据
+		 * @param {bool}   reset  是否重置请求, 与 retry reload 不可同时使用
+		 * @param {bool}   retry  是否在请求失败之后, 重新请求首页数据
+		 * @param {bool}   reload 是否重新请求
 		 *
 		 */
-		getRequestData(page = 1, args = false, {reset = false, retry = false} = {}){
+		getRequestData({page = 1, args = false, reset = false, retry = false, reload = false} = {}){
 			let param = this.getRequestParam(reset);
 			let url = param.url;
+			
+			if(reload){
+				args = {...param.args};
+				args.page = args.page || 1;
+			}else{
+				args = args || {...param.args};
 
-			args = args || {...param.args};
-
-			if(+page < 1){
-				page = 1;
-			}
-
-			if(page > param.page_max){
-				if(page == 1){
-					return this.message('暂无数据! ', 'warning');
-				}else{
+				if(page > 1 && page > param.page_max){
 					return this.message('请求页面超过最大页码! ', 'warning');
 				}
-			}
 
-			args['page'] = page;
+				args['page'] = page;
+			}
 
 			this.loading(true);
 			post(url, args, false).then(res => {
@@ -185,7 +184,7 @@ export const page = {
 				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
 					if(retry){
 						// 重新加载首页数据, 服务器异常等问题不会重新加载
-						this.getRequestData(1, args, {reset: 1});
+						this.getRequestData({reset: true});
 					}else{
 						this.$message(res.msg, 'warning');
 					}
@@ -197,6 +196,18 @@ export const page = {
 				this.loading(false);
 				let msg = e.message || '网络异常, 请稍后重试';
 				this.$message(msg, 'warning');
+			});
+		},
+
+		/**
+		 * 重新请求数据(刷新当前分页)
+		 * 
+		 * @param {bool}   retry 是否在请求失败之后, 重新请求首页数据
+		 */
+		reRequestData(retry = false){
+			this.getRequestData({
+				reload: true,
+				retry,
 			});
 		},
 
@@ -241,14 +252,20 @@ export const page = {
 			let param = this.getRequestParam(false);
 			param.args.num = size;
 
-			this.getRequestData(1, param.args, {reset: true});
+			this.getRequestData({
+				page: 1, 
+				args: param.args,
+				reset: true
+			});
 		},
 
 		// 分页点击切换页码
 		pageChange(page){
 			page = +page || 1;
 
-			this.getRequestData(page);
+			this.getRequestData({
+				page
+			});
 		},
 	}
 }

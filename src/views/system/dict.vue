@@ -45,7 +45,7 @@
 						<el-pagination
 							@size-change="defaultPage('sizeChange', $event)"
 							@current-change="defaultPage('pageChange', $event)"
-							:current-page="page_default.current_page"
+							:current-page="page_default.current"
 							:page-sizes="[5, 10, 20, 30, 50]"
 							:page-size="page_default.page_num"
 							layout="total, sizes, prev, pager, next"
@@ -98,7 +98,7 @@
 						<el-pagination
 							@size-change="dataPage('sizeChange', $event)"
 							@current-change="dataPage('pageChange', $event)"
-							:current-page="page_data.current_page"
+							:current-page="page_data.current"
 							:page-sizes="[5, 10, 20, 30, 50]"
 							:page-size="page_data.page_num"
 							layout="total, sizes, prev, pager, next, jumper"
@@ -138,7 +138,10 @@ export default {
 		show(row){
 			let args = {id: row.id};
 			this.changeScene('data');
-			this.getRequestData(1, args, {reset: true});
+			this.getRequestData({
+				args,
+				reset: true
+			});
 		},
 
 		defaultPage: sence('default'),

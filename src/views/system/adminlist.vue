@@ -150,7 +150,7 @@
 					<el-pagination
 						@size-change="sizeChange"
 						@current-change="pageChange"
-						:current-page="page_default.current_page"
+						:current-page="page_default.current"
 						:page-sizes="[10, 20, 30, 50]"
 						:page-size="page_default.page_num"
 						layout="total, sizes, prev, pager, next, jumper"

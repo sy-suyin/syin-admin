@@ -22,7 +22,7 @@ class Table{
 		if(data === -1){
 			if(this.ids.length < 1){
 				this.target.message('请选择需要操作的项目');
-				return Promise.reject('请选择需要操作的项目');
+				return Promise.reject(new Error('请选择需要操作的项目'));
 			}
 
 			args.id = this.ids;
@@ -31,7 +31,7 @@ class Table{
 			if('number' == getType(data)){
 				if(+data < 1){
 					this.target.message('请选择需要操作的项目');
-					return Promise.reject('请选择需要操作的项目');
+					return Promise.reject(new Error('请选择需要操作的项目'));
 				}
 
 				args.id = data;

@@ -75,13 +75,16 @@ export const table = {
 			this.search_args = {};
 			this.filter_args = {};
 			this.request_args = {};
-			this.getRequestData(1, {}, {reset: true});
+			this.getRequestData({reset: true});
 		},
 
 		// 搜索
 		search(){
 			this.request_args.keyword = this.search_args.keyword.trim();
-			this.getRequestData(1, this.request_args);
+			this.getRequestData({
+				args: this.request_args,
+				reset: true
+			});
 		},
 
 		// 筛选
@@ -109,9 +112,8 @@ export const table = {
 				data: id,
 				mark: {operate}
 			}).then(res => {
-				// 重新加载数据，如果没有该请求方法，则应在相应页面实现或者替换成对应的数据加载方法
-				// 此处采用的的是重新加载页面数据, 当获取当前页面数据失败时, 则重新加载数据
-				this.getRequestData(1, {}, {reset: true});
+				// 重载当前分页数据, 如果当前分页无数据则加载第一页数据
+				this.getRequestData({reload: true, retry: true});
 			}).catch((e)=>{});
 		},
 
