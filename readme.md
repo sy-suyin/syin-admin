@@ -1,5 +1,5 @@
 <h1>
-Admin Dashboard
+	syin Admin
     <h3>个人自用后台管理系统, 仅供学习交流</h3>
 </h1>
 
@@ -65,6 +65,17 @@ php think run
 - 方法二
 
 	> 使用如 phpStudy 之类的工具部署后台, 运行目录为 api/public 目录
+
+
+## 单独允许
+
+> 不启动PHP服务器, 只是简单体验
+
+找到 **src/views/pages/login.vue** 文件, 修改 ```use_offline``` 为 **true**
+
+即可正常登录体验, 但如果想获得完整体验, 请运行PHP服务
+
+public目录下offline文件夹, 为单独运行需要的资源文件, 如后期不需要可直接删除
 
 ## 功能
 

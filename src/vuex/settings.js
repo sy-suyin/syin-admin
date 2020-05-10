@@ -1,13 +1,14 @@
 import styleConfig from '@/config/style';
+import Storage from '@/libs/Storage.js';
 
-const { sidebar_mini, sidebar_filters_color, sidebar_background_img, sidebar_background_imgs, fixed_header } = styleConfig;
+const { sidebar_mini, sidebar_filters_color, sidebar_background_img, fixed_header } = styleConfig;
 
 const state = {
 	sidebar_mini: sidebar_mini,
 	sidebar_filters_color,
 	sidebar_background_project: '',
 	sidebar_background_img,
-	sidebar_background_imgs,
+	sidebar_background_imgs: [],
 	fixed_header,
 }
 
@@ -28,13 +29,17 @@ const mutations = {
 	},
 
 	archive(state){
-		localStorage.setItem('settings', JSON.stringify(state));
+		Storage.set('settings', state, false)
 	},
 
 	init(state){
-		let settings = localStorage.getItem('settings');
+		let settings = Storage.get('settings', {
+			json: true,
+			decrypt: false
+		});
+
+		console.log(settings);
 		if(settings){
-			settings = JSON.parse(settings);
 
 			if(settings){
 				for(let key in settings){
@@ -48,6 +53,8 @@ const mutations = {
 const actions = {
 	changeSetting({ commit }, data){
 		commit('settingEdit', data);
+
+		// 此处将数据提交给后端
 	}
 }
 

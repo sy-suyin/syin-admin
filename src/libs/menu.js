@@ -1,8 +1,10 @@
 /**
- * 新菜单处理方法
+ * 菜单处理方法
+ *
+ * 动态生成权限与后台菜单
  */
 
-import * as Util from '@/libs/util.js';
+import {checkPermission, getType} from '@/libs/util.js';
 import Layout from "@/layout";
 
 /**
@@ -115,7 +117,7 @@ class Menu extends MenuInterface{
 	 */
 	init(config){
 		config.forEach((item, index) =>{
-			if(! Util.checkPermission(item.controller, item.action, 'page')){
+			if(! checkPermission(item.controller, item.action, 'page')){
 				return;
 			}
 
@@ -136,7 +138,7 @@ class Menu extends MenuInterface{
 			}
 
 			// 使返回的数据始终为数组
-			if(Util.getType(result) != 'array'){
+			if(getType(result) != 'array'){
 				results.push(result);
 			}else{
 				results = result;
@@ -161,7 +163,7 @@ class Menu extends MenuInterface{
 		this.each((item, index)=>{
 			let router = item.routers();
 			if(router){
-				if(Util.getType(router) == 'array'){
+				if(getType(router) == 'array'){
 					routers.push(...router);
 				}else{
 					routers.push(router);
@@ -250,7 +252,7 @@ class MenuItem extends MenuInterface{
 
 		if(config.hasOwnProperty('children') && config.children.length > 0){
 			config.children.forEach((item, index) =>{
-				if(! Util.checkPermission(item.controller, item.action, 'page')){
+				if(! checkPermission(item.controller, item.action, 'page')){
 					return;
 				}
 
@@ -284,12 +286,12 @@ class MenuItem extends MenuInterface{
 				let first_result = result;
 
 				if(result){
-					let result_type = Util.getType(result);
+					let result_type = getType(result);
 					if(result_type == 'array'){
 						first_result = result[0];
 					}
 
-					if(!!first_result.is_hidden && Util.isSet(first_result, 'relation') && first_result.relation != ''){
+					if(!!first_result.is_hidden && first_result.hasOwnProperty('relation') && first_result.relation != ''){
 						// 将关联的也设置为已激活
 						this.each((brother, index)=>{
 							brother.relationActive(first_result.relation);
@@ -381,7 +383,7 @@ class MenuItem extends MenuInterface{
 			this.each((item, index)=>{
 				let router = item.routers();
 				if(router){
-					if(Util.getType(router) == 'array'){
+					if(getType(router) == 'array'){
 						routers.push(...router);
 					}else{
 						routers.push(router);

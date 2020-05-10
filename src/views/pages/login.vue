@@ -37,6 +37,8 @@ export default {
 		return {
 			is_loading: false,
 
+			use_offline: false,
+
 			args: {
 				login: 'test',
 				password: 'asd123'
@@ -47,6 +49,11 @@ export default {
 	},
 	methods: {
 		login(){
+			if(this.use_offline){
+				// 离线登录
+				return this.offlineLogin();
+			}
+
 			let args = {...this.args};
 			args.login = args.login.trim();
 			args.password = args.password.trim();
@@ -63,6 +70,12 @@ export default {
 
 			login(args).then(result => {
 				this.is_loading = false;
+
+				// 存储后端返回的相关配置信息
+				this.$store.commit('settings/settingEdit', {
+					key: 'sidebar_background_imgs',
+					value: result.config.sidebar_imgs
+				});
 
 				// 存储相关登录信息
 				this.$store.commit('auth/setLogin',result.user);
@@ -83,6 +96,58 @@ export default {
 				this.is_loading = false;
 				this.message('网络异常，请稍后重试');
 			});
+		},
+
+		// 离线登录, 不使用任何与后端有关的功能
+		offlineLogin(){
+			let result = {
+				config: {
+					sidebar_imgs: [
+						'http://localhost:8080/offline/bg-1.jpg',
+						'http://localhost:8080/offline/bg-2.jpg',
+						'http://localhost:8080/offline/bg-3.jpg',
+						'http://localhost:8080/offline/bg-4.jpg',
+					]
+				},
+				forbid: {
+					data_forbid: {
+
+					},
+					page_forbid: {
+						index: ['profile'],
+						system: ['adminlist', 'adminadd', 'adminedit', 'adminrecycle','rolelist', 'roleadd', 'roleedit', 'rolerecycle', 'dict']
+					}
+				},
+				user: {
+					id: 0,
+					login_name: 'test',
+					name: '离线用户',
+					avatar: 'http://localhost:8080/offline/avatar.png',
+					is_admin: 0,
+				}
+			};
+
+			// 存储后端返回的相关配置信息
+			this.$store.commit('settings/settingEdit', {
+				key: 'sidebar_background_imgs',
+				value: result.config.sidebar_imgs
+			});
+
+			// 存储相关登录信息
+			this.$store.commit('auth/setLogin',result.user);
+			this.$store.commit('access/set', {
+				data_forbid: result.forbid.data_forbid,	// 数据权限黑名单
+				page_forbid: result.forbid.page_forbid,	// 页面权限黑名单
+			});
+
+			// 如果有本地记录的重定向记录, 则在登陆后跳转回之前的页面
+			// 注: 此功能未实现
+			let redirect = localStorage.getItem('user_redirect');
+			localStorage.removeItem('user_redirect');
+
+			// 登录跳转
+			let redirect_path = redirect ? redirect : this.$store.getters['access/routers'][0].path;
+			this.$router.replace({path: redirect_path})
 		},
 
 		/** 

@@ -52,12 +52,21 @@ class Login extends Client{
 		$request->admin = $result;
 		$forbid = \app\client\library\AdminTool::getForbidData($result['id']);
 
-		$result['avatar'] = $request->domain().'/'.$result['avatar'];
+		$base_url = $request->domain().'/';
+		$result['avatar'] = $base_url.$result['avatar'];
 		unset($result['password']);
 
 		return show_success('登录成功', array(
 			'user'   => $result,
-			'forbid' =>	$forbid
+			'forbid' =>	$forbid,
+			'config' => array(
+				'sidebar_imgs' => [
+					$base_url.'static/api/sidebar/bg-1.jpg',
+					$base_url.'static/api/sidebar/bg-2.jpg',
+					$base_url.'static/api/sidebar/bg-3.jpg',
+					$base_url.'static/api/sidebar/bg-4.jpg',
+				],
+			)
 		));
 	}
 }
