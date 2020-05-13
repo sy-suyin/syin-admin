@@ -38,9 +38,7 @@ const mutations = {
 			decrypt: false
 		});
 
-		console.log(settings);
 		if(settings){
-
 			if(settings){
 				for(let key in settings){
 					state[key] = settings[key];

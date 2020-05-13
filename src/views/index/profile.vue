@@ -180,7 +180,7 @@ export default {
 		 * 获取头像地址
 		 */
 		getAvatarUrl(id){
-			let url = 'http://127.0.0.1:8000//static/api/avatar/' + id + '.png';
+			let url = 'http://admin.e.syin.top/static/api/avatar/' + id + '.png';
 			return url;
 		},
 

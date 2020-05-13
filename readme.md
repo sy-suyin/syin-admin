@@ -13,6 +13,12 @@
 
 - [iview-admin](https://github.com/iview/iview-admin)
 
+## 简介
+
+[syin-admin](http://admin.e.syin.top) 是一个后台前后端解决方案，它基于 [vue](https://github.com/vuejs/vue) 和 [element-ui](https://github.com/ElemeFE/element)实现。根据个人项目开发经验, 对过往业务代码进行提取整合, 封装前后端代码(后端代码见 API 文件夹), 简单已使用容易上手
+
+- [在线预览](http://admin.e.syin.top)
+
 ## 开发
 
 ```bash
