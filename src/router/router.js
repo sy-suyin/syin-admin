@@ -5,7 +5,7 @@ const loginRouter = {
 	meta: {
 		title: '登录'
 	},
-	component: () => import('../views/pages/login.vue')
+	component: () => import(/* webpackChunkName: "Login" */ '../views/pages/login.vue')
 };
 
 // 锁屏
@@ -15,7 +15,7 @@ const lockRouter = {
 	meta: {
 		title: '锁屏'
 	},
-	component: () => import('../views/pages/lock.vue')
+	component: () => import(/* webpackChunkName: "Lock" */ '../views/pages/lock.vue')
 };
 
 // 所有上面定义的路由都要写在下面的routers里

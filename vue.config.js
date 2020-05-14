@@ -52,7 +52,35 @@ module.exports = {
 		config.resolve.alias
 			.set('@', resolve('src')) // key,value自行定义，比如.set('@@', resolve('src/components'))
 			.set('_c', resolve('src/components'))
-		config.output.filename('[name].[hash].js').end();
+    config.output.filename('[name].[hash].js').end();
+    
+    // 生产模式
+    config.when(process.env.NODE_ENV === 'production', config => {
+      // 生产模式加载 main-prod 入口文件
+      config.entry('app').clear().add('./src/main-prod.js')
+      // CDN - externals
+      config.set('externals', {
+        vue: 'Vue',
+        'vue-router': 'VueRouter',
+        axios: 'axios',
+        echarts: 'echarts',
+      })
+      // 首页自定义，添加一个变量来控制html模版，是否加载cdn资源。
+      config.plugin('html').tap(args => {
+        args[0].isProd = true
+        return args
+      })
+    })
+    // 开发模式
+    config.when(process.env.NODE_ENV === 'development', config => {
+      // 开发模式加载 main-dev 入口文件
+      config.entry('app').clear().add('./src/main-dev.js')
+      // 首页自定义
+      config.plugin('html').tap(args => {
+        args[0].isProd = false
+        return args
+      })
+    })
 	},
   // 设为false打包时不生成.map文件
   productionSourceMap: false
