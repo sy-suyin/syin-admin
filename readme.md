@@ -15,7 +15,7 @@
 
 ## 简介
 
-[syin-admin](http://admin.e.syin.top) 是一个后台前后端解决方案，它基于 [vue](https://github.com/vuejs/vue) 和 [element-ui](https://github.com/ElemeFE/element)实现。根据个人项目开发经验, 对过往业务代码进行提取整合, 封装前后端代码(后端代码见 API 文件夹), 简单已使用容易上手
+[syin-admin](http://admin.e.syin.top) 是一个后台前后端解决方案，它基于 [vue](https://github.com/vuejs/vue) 和 [element-ui](https://github.com/ElemeFE/element)实现。根据个人项目开发经验, 对过往业务代码进行提取整合, 封装前后端常用功能(后端代码见 API 文件夹), 未集成其他可能用不到功能, 适合当基础模板来进行二次开发. 如需其他功能, 可以参考vue-element-admin
 
 - [在线预览](http://admin.e.syin.top)
 
@@ -23,7 +23,7 @@
 
 ```bash
 # 克隆项目
-git clone https://e.coding.net/sysyin/admin-dashboard/admin-dashboard.git
+git clone https://e.coding.net/sysyin/syin-admin/syin-admin.git
 
 # 进入项目目录
 cd vue-element-admin

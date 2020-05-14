@@ -49,9 +49,12 @@ module.exports = {
     }
   },
   chainWebpack: config => {
-		config.resolve.alias
-			.set('@', resolve('src')) // key,value自行定义，比如.set('@@', resolve('src/components'))
-			.set('_c', resolve('src/components'))
+	config.plugins.delete('preload')
+	config.plugins.delete('prefetch')
+
+	config.resolve.alias
+		.set('@', resolve('src')) // key,value自行定义，比如.set('@@', resolve('src/components'))
+
     config.output.filename('[name].[hash].js').end();
     
     // 生产模式
@@ -73,8 +76,7 @@ module.exports = {
     })
     // 开发模式
     config.when(process.env.NODE_ENV === 'development', config => {
-      // 开发模式加载 main-dev 入口文件
-      config.entry('app').clear().add('./src/main-dev.js')
+      // 开发模式
       // 首页自定义
       config.plugin('html').tap(args => {
         args[0].isProd = false
