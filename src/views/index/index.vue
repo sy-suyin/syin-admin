@@ -133,7 +133,7 @@
 							Chart title
 						</div>
 
-						<piechart />
+						<piechart2 />
 					</el-card>
 				</el-col>
 			</el-row>
@@ -206,13 +206,14 @@ import {common as commonMixin} from "@/mixins/common.js";
 import barchart from './components/barchart'
 import mapchart from './components/mapchart'
 import piechart from './components/piechart'
+import piechart2 from './components/piechart2'
 import linechart from './components/linechart'
 import echarts from 'echarts'
 
 export default {
 	name: "home",
 	mixins: [commonMixin],
-	components: {barchart, mapchart, piechart, linechart},
+	components: {barchart, mapchart, piechart, piechart2, linechart},
 	mounted(){
 	},
   	data() {

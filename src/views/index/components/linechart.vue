@@ -6,6 +6,10 @@
 import echarts from 'echarts'
 require('echarts/theme/macarons') // echarts theme
 
+// 代码参考
+// https://segmentfault.com/a/1190000022096665
+// https://juejin.im/post/5d88a77f6fb9a06acf2b98f8
+
 const animationDuration = 6000
 
 export default {
@@ -45,6 +49,9 @@ export default {
 		initChart() {
 			this.chart = echarts.init(this.$el, 'macarons')
 
+			 // 初始化数据 && 设置窗口自适应大小
+            // this.chart.setOption(this.option, window.onresize = this.chart.resize); 
+
 			this.chart.setOption({
 				tooltip: {
 					trigger: 'axis',
@@ -60,92 +67,41 @@ export default {
 					containLabel: true
 				},
 				xAxis: {
+					type: 'category',
+                    boundaryGap: false,
+                    data: ['周一','周二','周三','周四','周五','周六','周日','周八'] // 横坐标都一样。故取默认第一个
 				},
 				yAxis: {
 					splitLine: {
 						show: false
 					}
 				},
-				visualMap: {
-					top: 10,
-					right: 10,
-					pieces: [{
-						gt: 0,
-						lte: 50,
-						color: '#096'
-					}, {
-						gt: 50,
-						lte: 100,
-						color: '#ffde33'
-					}, {
-						gt: 100,
-						lte: 150,
-						color: '#ff9933'
-					}, {
-						gt: 150,
-						lte: 200,
-						color: '#cc0033'
-					}, {
-						gt: 200,
-						lte: 300,
-						color: '#660099'
-					}, {
-						gt: 300,
-						color: '#7e0023'
-					}],
-					outOfRange: {
-						color: '#999'
-					}
-				},
 				series: [{
-					name: 'expected', itemStyle: {
-						normal: {
-						color: '#FF005A',
-						lineStyle: {
-							color: '#FF005A',
-							width: 2
-						}
-						}
-					},
-					smooth: true,
+					name: 'xxx',
 					type: 'line',
-					// data: expectedData,
-					animationDuration: 2800,
-					animationEasing: 'cubicInOut'
-					},
-					{
-					name: 'actual',
-					smooth: true,
-					type: 'line',
-					itemStyle: {
-						normal: {
-							color: '#3888fa',
-							lineStyle: {
-								color: '#3888fa',
-								width: 2
-							},
-							areaStyle: {
-								color: '#f3f8ff'
+					smooth: true, // 平滑
+					itemStyle : {
+						normal : {
+							color: '#456ef4', // 设置折线折点颜色
+							lineStyle:{  
+								color: '#456ef4'  // 设置折线线条颜色
 							}
 						}
 					},
-					markLine: {
-						silent: true,
-						data: [{
-							yAxis: 50
-						}, {
-							yAxis: 100
-						}, {
-							yAxis: 150
-						}, {
-							yAxis: 200
-						}, {
-							yAxis: 300
-						}]
+					data: [120, 132, 101, 134, 90, 230, 210, 123]
+				}, {
+					name: 'xxx',
+					type: 'line',
+					smooth: true, // 平滑
+					itemStyle : {
+						normal : {
+							color: '#3fe0c2', // 设置折线折点颜色
+							lineStyle:{  
+								color: '#3fe0c2'  // 设置折线线条颜色
+							}
+						}
 					},
-					// data: actualData,
-					animationDuration: 2800,
-					animationEasing: 'quadraticOut'
+					data: [1210, 1132, 1101, 1134, 910, 2310, 2110, 1123]
 				}]
 			})
 		}
