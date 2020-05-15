@@ -20,12 +20,12 @@
 
 						<el-col :span="8" class="detail-item">
 							<span class="detail-item-label">销售单号</span>
-							<span class="detail-item-content">1234123421</span>
+							<span class="detail-item-content">1231231231</span>
 						</el-col>
 
 						<el-col :span="8" class="detail-item">
 							<span class="detail-item-label">子订单</span>
-							<span class="detail-item-content">3214321432</span>
+							<span class="detail-item-content">1231231231</span>
 						</el-col>
 					</el-row>
 				</div>
@@ -38,22 +38,22 @@
 					<el-row class="detail-content" :gutter="20">
 						<el-col :span="8" class="detail-item">
 							<span class="detail-item-label">用户姓名</span>
-							<span class="detail-item-content">付小小</span>
+							<span class="detail-item-content">测试</span>
 						</el-col>
 
 						<el-col :span="8" class="detail-item">
 							<span class="detail-item-label">联系电话</span>
-							<span class="detail-item-content">18100000000</span>
+							<span class="detail-item-content">13400000000</span>
 						</el-col>
 
 						<el-col :span="8" class="detail-item">
-							<span class="detail-item-label">常用快递</span>
-							<span class="detail-item-content">菜鸟仓储</span>
+							<span class="detail-item-label">性别</span>
+							<span class="detail-item-content">无</span>
 						</el-col>
 
 						<el-col :span="8" class="detail-item">
 							<span class="detail-item-label">取货地址</span>
-							<span class="detail-item-content">浙江省杭州市西湖区万塘路18号</span>
+							<span class="detail-item-content">甘肃省庆阳市西峰区温泉乡囫囵峁</span>
 						</el-col>
 
 						<el-col :span="8" class="detail-item">

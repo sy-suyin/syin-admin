@@ -18,6 +18,7 @@
 		position: relative;
 		height: 100vh;
 		flex-basis: $aside-max-width;
+		min-width: $aside-max-width;
 		transition: all .3s ease;
 	
 		.layout-aside-scroll{
@@ -279,7 +280,8 @@
 	// 侧边栏最小化时的样式
 	.layout-aside-mini{
 		flex-basis: $aside-min-width;
-	
+		min-width: $aside-min-width;
+
 		.slider{
 			width: $aside-min-width;
 		}

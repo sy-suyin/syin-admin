@@ -75,7 +75,6 @@
 						<template slot-scope="scope">
 
 							<div v-if="checkPermission('system', 'admindis', 'data')">
-
 								<el-tag 
 									class="disabled-btn" 
 									type="success" 
@@ -93,7 +92,6 @@
 									@click="disabled(scope.row.id, 0)" 
 									v-else
 								>禁用</el-tag>
-
 							</div>
 							<div v-else>
 								
