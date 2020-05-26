@@ -15,6 +15,14 @@ class ComposerStaticInit7393720ddf1ca50d9ee4b12586d0a4da
         array (
             'app\\' => 4,
         ),
+        'G' => 
+        array (
+            'GraphQL\\' => 8,
+        ),
+        'F' => 
+        array (
+            'Firebase\\JWT\\' => 13,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -25,6 +33,14 @@ class ComposerStaticInit7393720ddf1ca50d9ee4b12586d0a4da
         'app\\' => 
         array (
             0 => __DIR__ . '/../..' . '/application',
+        ),
+        'GraphQL\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/webonyx/graphql-php/src',
+        ),
+        'Firebase\\JWT\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
     );
 

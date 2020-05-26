@@ -9,7 +9,6 @@
 				<div>
 					<div class="input-group">
 						<i class="icon el-icon-user-solid"></i>
-
 						<input type="text" class="login-name" placeholder="登录账户" v-model="args.login">
 					</div>
 
@@ -73,11 +72,17 @@ export default {
 
 				// 存储后端返回的相关配置信息
 				this.$store.commit('settings/settingEdit', {
+					key: 'domain',
+					value: result.config.domain
+				});
+
+				this.$store.commit('settings/settingEdit', {
 					key: 'sidebar_background_imgs',
 					value: result.config.sidebar_imgs
 				});
 
 				// 存储相关登录信息
+				result.user.avatar = result.config.domain + result.user.avatar;
 				this.$store.commit('auth/setLogin',result.user);
 				this.$store.commit('access/set', {
 					data_forbid: result.forbid.data_forbid,	// 数据权限黑名单

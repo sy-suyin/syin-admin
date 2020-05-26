@@ -122,7 +122,7 @@
 						</template>
 					</el-table-column>
 
-					<el-table-column prop="add_time" label="添加时间" width="180"></el-table-column>
+					<el-table-column prop="add_time" label="添加时间" width="180" :formatter="filterTime"></el-table-column>
 
 					<el-table-column align="right" label="操作">
 						<template slot-scope="scope">
@@ -150,9 +150,8 @@
 						@current-change="pageChange"
 						:current-page="page_default.current"
 						:page-sizes="[10, 20, 30, 50]"
-						:page-size="page_default.page_num"
+						:page-size="page_default.num"
 						layout="total, sizes, prev, pager, next, jumper"
-						:hide-on-single-page="true"
 						:total="page_default.total">
 					</el-pagination>
 				</div>

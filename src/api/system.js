@@ -1,24 +1,9 @@
 import { request } from '@/libs/api';
 
-/** 
- * 链接合集
- * 格式: 方法名 => 链接
- */
-const URLS = {
-	getAdmin: '/system/admindetail',
-	addAdmin:  '/system/adminadd',
-	editAdmin: '/system/adminedit',
-	getRole: '/system/roledetail',
-	addRole:  '/system/roleadd',
-	editRole: '/system/roleedit',
-	getRoles: '/system/getallroles',
-	getAccessData: '/system/getaccessdata',
-};
-
 // 获取管理员数据
 export const getAdmin = ( id ) => {
 	return request({
-		url: URLS['getAdmin'],
+		url: '/system/adminData',
 		method: 'get',
 		params: { id },
 		dispose: true,
@@ -28,7 +13,7 @@ export const getAdmin = ( id ) => {
 // 添加管理员数据
 export const addAdmin = ( args ) => {
 	return request({
-		url: URLS['addAdmin'],
+		url: '/system/adminadd',
 		method: 'post',
 		dispose: true,
 		data: args,
@@ -38,7 +23,7 @@ export const addAdmin = ( args ) => {
 // 修改管理员数据
 export const editAdmin = ( args ) => {
 	return request({
-		url: URLS['editAdmin'],
+		url: '/system/adminedit',
 		method: 'post',
 		dispose: true,
 		data: args,
@@ -48,7 +33,7 @@ export const editAdmin = ( args ) => {
 // 获取角色数据
 export const getRole = ( id ) => {
 	return request({
-		url: URLS['getRole'],
+		url: '/system/roleData',
 		method: 'get',
 		params: { id },
 		dispose: true,
@@ -58,7 +43,7 @@ export const getRole = ( id ) => {
 // 添加角色数据
 export const addRole = ( args ) => {
 	return request({
-		url: URLS['addRole'],
+		url: '/system/roleadd',
 		method: 'post',
 		dispose: true,
 		data: args,
@@ -68,7 +53,7 @@ export const addRole = ( args ) => {
 // 修改角色数据
 export const editRole = ( args ) => {
 	return request({
-		url: URLS['editRole'],
+		url: '/system/roleedit',
 		method: 'post',
 		dispose: true,
 		data: args,
@@ -78,7 +63,7 @@ export const editRole = ( args ) => {
 // 获取所有角色
 export const getRoles = () => {
 	return request({
-		url: URLS['getRoles'],
+		url: '/system/roleAll',
 		method: 'get',
 		dispose: true,
 	})
@@ -87,7 +72,7 @@ export const getRoles = () => {
 // 获取权限数据
 export const getAccessData = (id = 0) => {
 	return request({
-		url: URLS['getAccessData'],
+		url: '/system/getaccessdata',
 		method: 'get',
 		params: { id },
 		dispose: true,

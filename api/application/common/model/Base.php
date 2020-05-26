@@ -4,8 +4,22 @@ namespace app\common\model;
 use think\Model;
 use \app\common\library\RuntimeError;
 
-class Base extends Model
-{
+class Base extends Model{
+
+	/**
+	 * 查询范围 未被禁用的数据
+	 */
+    public function scopeNoDisabled($query){
+		$query->where('is_disabled', 0);
+    }
+
+	/**
+	 * 查询范围 未被删除的数据
+	 */
+    public function scopeNoDeleted($query){
+		$query->where('is_deleted', 0);
+	}
+
 	/**
 	 * 禁用项目
 	 *
@@ -81,9 +95,9 @@ class Base extends Model
 	/**
 	 * 项目自定义排序
 	 * 传入数据示例 [ {id: 1, sort: 5}, {id: 2, sort: 12} ]
-	 * 
+	 *
 	 * @param array $data	排序数据
-	 * 
+	 *
 	 */
 	public static function sortItem($data){
 		$count = 0;
@@ -114,6 +128,6 @@ class Base extends Model
 	 * 根据id获取数据
 	 */
 	public static function getById($id, $field='*'){
-		return self::where('is_deleted', 0)->where('is_disabled', 0)->field($field)->find($id);
+		return self::scope('nodisabled, nodeleted')->field($field)->find($id);
 	}
 }

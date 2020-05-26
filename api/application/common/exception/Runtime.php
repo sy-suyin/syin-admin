@@ -11,11 +11,10 @@ use think\exception\HttpException;
 class Runtime extends Handle{
 	public function render(Exception $e){
 		$status = 200;
-
         if (is_error($e)) {
             $status = $e->getStatusCode();
-            $error_msg = $e->getErrorMsg();
-
+			$error_msg = $e->getError();
+			
             if(request()->isAjax()){
                 return json(array(
                     'status' => 0,
@@ -34,8 +33,15 @@ class Runtime extends Handle{
                 $cnt = trim(substr($msg, 0, -10));
 
                 if(in_array($cnt, ['method', 'controller', 'module'])){
-                    return $this->display(404, '未找到相关页面');
-                }
+					if(request()->isAjax()){
+						return json(array(
+							'status' => 0,
+							'msg'    => '未找到相关接口'
+						), $status);
+					}else{
+						return $this->display(404, '未找到相关页面');
+					}
+				}
             }
         }
 

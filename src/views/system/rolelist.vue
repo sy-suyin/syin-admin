@@ -23,25 +23,25 @@
 
 					<div class="table-toolbar">
 						<el-button
-							size="mini" 
-							type="primary" 
+							size="mini"
+							type="primary"
 							icon="el-icon-plus"
 							@click="jump('add')"
 							v-permission:page="['system', 'roleadd']"
 						>添加</el-button>
 
-						<el-button 
+						<el-button
 							size="mini"
-							type="warning" 
-							icon="el-icon-s-promotion" 
-							@click="jump('recycle')" 
+							type="warning"
+							icon="el-icon-s-promotion"
+							@click="jump('recycle')"
 							v-permission:page="['system', 'adminrecycle']"
 						>回收站</el-button>
 
-						<el-button 
-							size="mini" 
-							type="danger" 
-							icon="el-icon-delete" 
+						<el-button
+							size="mini"
+							type="danger"
+							icon="el-icon-delete"
 							@click="del(-1, 1)"
 							v-permission:page="['system', 'admindel']"
 						>删除</el-button>
@@ -66,40 +66,40 @@
 
 							<div v-if="checkPermission('system', 'roledis', 'data')">
 
-								<el-tag 
-									class="disabled-btn" 
-									type="success" 
-									effect="dark" 
-									size="mini" 
-									@click="disabled(scope.row.id, 1)" 
+								<el-tag
+									class="disabled-btn"
+									type="success"
+									effect="dark"
+									size="mini"
+									@click="disabled(scope.row.id, 1)"
 									v-if="scope.row.is_disabled < 1"
 								>启用</el-tag>
 
-								<el-tag 
-									class="disabled-btn" 
-									type="danger" 
-									effect="dark" 
-									size="mini" 
-									@click="disabled(scope.row.id, 0)" 
+								<el-tag
+									class="disabled-btn"
+									type="danger"
+									effect="dark"
+									size="mini"
+									@click="disabled(scope.row.id, 0)"
 									v-else
 								>禁用</el-tag>
 
 							</div>
 							<div v-else>
-								
-								<el-tag 
-									class="disabled-btn" 
-									type="success" 
-									effect="dark" 
-									size="mini" 
+
+								<el-tag
+									class="disabled-btn"
+									type="success"
+									effect="dark"
+									size="mini"
 									v-if="scope.row.is_disabled < 1"
 								>启用</el-tag>
 
-								<el-tag 
-									class="disabled-btn" 
-									type="danger" 
-									effect="dark" 
-									size="mini" 
+								<el-tag
+									class="disabled-btn"
+									type="danger"
+									effect="dark"
+									size="mini"
 									v-else
 								>禁用</el-tag>
 
@@ -107,12 +107,12 @@
 						</template>
 					</el-table-column>
 
-					<el-table-column prop="add_time" label="添加时间" width="180"></el-table-column>
+					<el-table-column prop="add_time" label="添加时间" width="180" :formatter="filterTime"></el-table-column>
 
 					<el-table-column align="right" label="操作">
 						<template slot-scope="scope">
 							<el-button
-								size="mini" type="text" 
+								size="mini" type="text"
 								@click="jump('edit', {id: scope.row.id})"
 								v-permission:page="['system', 'roleedit']"
 							>修改</el-button>
@@ -121,7 +121,7 @@
 
 							<el-button
 								size="mini"
-								type="text" 
+								type="text"
 								@click="del(scope.row.id, 1)"
 								v-permission:page="['system', 'roledel']"
 							>删除</el-button>
@@ -135,9 +135,8 @@
 						@current-change="pageChange"
 						:current-page="page_default.current"
 						:page-sizes="[10, 20, 30, 50]"
-						:page-size="page_default.page_num"
+						:page-size="page_default.num"
 						layout="total, sizes, prev, pager, next, jumper"
-						:hide-on-single-page="true"
 						:total="page_default.total">
 					</el-pagination>
 				</div>
@@ -172,7 +171,7 @@ export default {
 		this.getRequestData();
 	},
 	methods: {
-		
+
     }
 };
 </script>

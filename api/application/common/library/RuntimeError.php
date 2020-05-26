@@ -24,7 +24,7 @@ class RuntimeError extends \RuntimeException
      * @access public
      * @return array|string
      */
-    public function getErrorMsg()
+    public function getError()
     {
         return $this->error;
     }

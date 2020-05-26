@@ -151,13 +151,13 @@ export default {
 
 				this.loading(true);
 				updateProfile(args).then(res => {
-					this.loading(false);
 					this.updateUser(args);
 					this.message('数据更新成功', 'success');
-				}).catch(err => {
-					this.loading(false);
+				}).catch(e => {
 					let msg = e.message || '网络异常, 请稍后重试';
 					this.message(msg, 'warning', 3000);
+				}).finally(()=>{
+					this.loading(false);
 				});
 			});
 		},

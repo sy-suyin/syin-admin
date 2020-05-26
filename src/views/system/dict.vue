@@ -47,7 +47,7 @@
 							@current-change="defaultPage('pageChange', $event)"
 							:current-page="page_default.current"
 							:page-sizes="[5, 10, 20, 30, 50]"
-							:page-size="page_default.page_num"
+							:page-size="page_default.num"
 							layout="total, sizes, prev, pager, next"
 							:total="page_default.total">
 						</el-pagination>
@@ -100,9 +100,8 @@
 							@current-change="dataPage('pageChange', $event)"
 							:current-page="page_data.current"
 							:page-sizes="[5, 10, 20, 30, 50]"
-							:page-size="page_data.page_num"
+							:page-size="page_data.num"
 							layout="total, sizes, prev, pager, next, jumper"
-							:hide-on-single-page="true"
 							:total="page_data.total">
 						</el-pagination>
 					</div>

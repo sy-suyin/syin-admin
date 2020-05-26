@@ -4,7 +4,7 @@
  */
 namespace app\client\middleware;
 
-use think\Response;
+use app\client\service\AdminService;
 
 class Auth{
 
@@ -40,7 +40,7 @@ class Auth{
 		if($is_logged){
 			$request->admin = $admin;
 
-			$verify_res = \app\client\library\AdminTool::verifyPermission($admin, $controller, $action);
+			$verify_res = AdminService::verifyPermission($admin, $controller, $action);
 
 			if(false == $verify_res){
 				return show_error('对不起，您没有权限执行该操作');

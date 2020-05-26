@@ -4,6 +4,7 @@ import Storage from '@/libs/Storage.js';
 const { sidebar_mini, sidebar_filters_color, sidebar_background_img, fixed_header } = styleConfig;
 
 const state = {
+	domain: '',
 	sidebar_mini: sidebar_mini,
 	sidebar_filters_color,
 	sidebar_background_project: '',
@@ -13,6 +14,7 @@ const state = {
 }
 
 const getters = {
+	domain:state=>state.domain,
 	sidebar_mini:state=>state.sidebar_mini,
 	sidebar_filters_color:state=>state.sidebar_filters_color,
 	sidebar_background_project:state=>state.sidebar_background_project,

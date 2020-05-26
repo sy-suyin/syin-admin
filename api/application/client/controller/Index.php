@@ -2,7 +2,8 @@
 namespace app\client\controller;
 
 use app\common\controller\Client;
-use app\client\library\IndexTool;
+use app\client\model\Admin as AdminModel;
+use app\client\service\AdminService;
 use think\Request;
 
 class Index extends Client {
@@ -11,20 +12,25 @@ class Index extends Client {
      * 个人中心
      */
     public function profileAction(Request $request){
-		$admin = $request->admin;
-		$model = IndexTool::getProfileArgs($admin);
+		// 验证提交数据
+		$params = $request->post();
+		$params['id'] = $request->admin->id;
+		$data = AdminService::profileParams($request->admin, $params, 'profile');
 
-		if(is_error($model)){
-			return show_error($model->getErrorMsg());
+		if(is_error($data)){
+			return show_error($data->getError());
 		}
 
-		if(! $model->save()){
-			return show_error('操作失败，请稍后重试');
+		// 保存数据
+		$save = AdminService::saveData($request->admin, $data);
+
+		if(! $save){
+			return show_error('修改失败，请稍后重试');
 		}
 
-		$request->admin = $request->admin->get($request->admin->id);
+		// 保存日志
 
-		// $request->log = '管理员'.($request->admin->name).', 修改了个人信息';
-		return show_success('已成功修改项目');
+		// 返回消息
+		return show_success('已成功修改个人信息');
     }
 }

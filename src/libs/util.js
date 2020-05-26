@@ -173,9 +173,12 @@ export function timeAgo (timestamp) {
  * @param bool   isMs	   isMs为时间戳是否为毫秒
  *
  */
-export function timestampToTime(timestamp = Date.parse(new Date()), isMs = true) {
-	const date = new Date(timestamp * (isMs ? 1 : 1000))
-	return `${date.getFullYear()}-${date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+export function timestampToTime(timestamp = Date.parse(new Date()), isMs = false) {
+	const date = new Date(timestamp * (isMs ? 1 : 1000));
+	if(date == 'Invalid Date'){
+		return false;
+	}
+	return `${date.getFullYear()}-${date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
 }
 
 /**

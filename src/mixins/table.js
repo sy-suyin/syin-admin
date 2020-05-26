@@ -2,7 +2,7 @@
  * 封装表格页面相关操作
  */
 
-import * as Util from '@/libs/util.js';
+import {isEmpty, isSet, debounce, throttle, timestampToTime} from '@/libs/util.js';
 import Table from '@/libs/Table.js';
 
 let TableInstance = null; 
@@ -45,11 +45,11 @@ export const table = {
 				url = this.urls[key];
 			}
 
-			if(url != '' && !Util.isEmpty(params)){
+			if(url != '' && !isEmpty(params)){
 				url = url.replace(/\/:[a-zA-Z0-0_+]+/g, (str)=>{
 					str = str.substring(2);
 
-					if(Util.isSet(params, str)){
+					if(isSet(params, str)){
 						str = ('/'+params[str]).trim();
 					}else{
 						str = '';
@@ -185,7 +185,7 @@ export const table = {
 		/**
 		 * 表格复选框改变
 		 */
-		selectionChange: Util.debounce(500, function(selected){
+		selectionChange: debounce(500, function(selected){
 			let ids = [];
 			selected.forEach(val => {
 				ids.push(val.id);
@@ -193,5 +193,18 @@ export const table = {
 
 			TableInstance.setSelected(ids);
 		}),
+
+		///////////////////////////////////////////////////////////
+		// 表格常用的过滤器
+		///////////////////////////////////////////////////////////
+		filterTime(row, column){
+			let time = row[column.property] || '';
+			let time_str = '';
+			if(time){
+				time_str = timestampToTime(time);
+			}
+
+			return time_str ? time_str : '';
+		}
 	},
 }

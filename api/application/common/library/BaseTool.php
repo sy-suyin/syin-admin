@@ -2,103 +2,165 @@
 namespace app\common\library;
 
 use \app\common\library\RuntimeError;
+use think\Validate;
 
 class BaseTool{
 
-	// 参数类型 - 字符串
-	const STRING_TYPE = 0;
-
-	// 参数类型 - 数字
-	const INT_TYPE = 1;
-
-	// 参数类型 - 价格
-	const PRICE_TYPE = 2;
-
-	// 参数类型 - 浮点数
-	const FLOAT_TYPE = 3;
-
-	// 参数类型 - 布尔值
-	const BOOL_TYPE = 4;
-
-	// 参数类型 - 数组
-	const ARRAY_TYPE = 5;
-
-	// 参数类型 - 时间
-	const TIME_TYPE = 6;
-
-	// 参数类型 - 其他
-	const OTHER_TYPE = 7;
-
-	/** 
-	 * 获取请求参数
-	 * 
+	/**
+	 * 逻辑删除项目
+	 *
+	 * @param Class    	$model 模型类实例
+	 * @param String	$name  数据名称
 	 */
-	public static function getRequestParams($fields){
-		$args = array();
+	public static function deletedItemLogically($model, $name){
+		$id = isset($_POST['id'])	?	$_POST['id']	:	array();
+		$deleted = absint(input('operate'));
+		$operation_type = $deleted ? '删除' : '恢复';
 
-		if(!empty($fields)){
-			foreach($fields as $key => $field){
-				!is_array($field) && $field = array('type'=>$field);
+		$result = $model->deletedItemLogically($id, $deleted);
 
-				$name    = isset($field['name'])    ? 	$field['name'] 		: 	$key;
-				$type    = isset($field['type']) 	? 	$field['type']		: 	self::STRING_TYPE;
-				$default = isset($field['default']) ?	$field['default'] 	:	null;
+		if(is_error($result)){
+			return [
+				'status' => 0,
+				'msg'	 => $result->getError()
+			];
+		}
 
-				$args[$key] = self::input($name, $type, $default); 
-			}
+		$msg = $operation_type.$result.'条'.$name.'记录';
+
+		// 返回数据
+		return [
+			'status' => 1,
+			'type'   => $operation_type,
+			'result' => $result,
+			'msg'    => $msg,
+		];
+	}
+
+	/**
+	 * 逻辑删除项目
+	 *
+	 * @param Class    	$model 模型类实例
+	 * @param String	$name  数据名称
+	 *
+	 */
+	public static function disableItem($model, $name){
+		$id = isset($_POST['id'])	?	$_POST['id']	:	array();
+		$disabled = absint(input('operate'));
+		$operation_type = $disabled ? '禁用' : '启用';
+
+		$result = $model->disableItem($id, $disabled, ['is_admin' => 0]);
+
+		if(is_error($result)){
+			return [
+				'status' => 0,
+				'msg'	 => $result->getError()
+			];
+		}
+
+		// 返回数据
+		$msg = $operation_type.$result.'条'.$name.'记录';
+		return [
+			'status' => 1,
+			'type'   => $operation_type,
+			'result' => $result,
+			'msg'    => $msg,
+		];
+	}
+
+	/**
+	 * 项目自定义排序
+	 *
+	 * @param Class    	$model 模型类实例
+	 * @param String	$name  数据名称
+	 *
+	 */
+	public static function sortItem($model, $name){
+		$data   = input('data/a');
+		$result = $model->sortItem($data);
+
+		if(is_error($result)){
+			return [
+				'status' => 0,
+				'msg'	 => $result->getError()
+			];
+		}
+
+		// 返回数据
+		$msg = '对'.$result.'条'.$name.'记录进行排序';
+		return [
+			'status' => 1,
+			'result' => $result,
+			'msg'    => $msg,
+		];
+	}
+
+	/**
+	 * 获取请求参数
+	 *
+	 */
+	public static function getRequestParams($fields, $params){
+		$args = [];
+
+		foreach($fields as $key => $field){
+			!is_array($field) && $field = array('type'=>$field);
+
+			$name    = isset($field['name'])    ? 	$field['name'] 		: 	$key;
+			$type    = isset($field['type']) 	? 	$field['type']		: 	'string';
+			$default = isset($field['default']) ?	$field['default'] 	:	null;
+
+			$args[$key] = self::input($name, $type, $default, $params);
 		}
 
 		return $args;
 	}
 
-	/** 
+	/**
 	 * 过滤处理表单数据
 	 */
 	public static function input($name, $type, $default=null, $data=null){
 		!empty($data) || $data = $_REQUEST;
 		$value = '';
 		switch($type){
-			case self::STRING_TYPE:{
+			case 'string':{
 				// 字符串
 				$default == null && $default = '';
-				$value = self::stringFilter($data[$name], $default);
+				$value = isset($data[$name]) ? htmlspecialchars(urldecode(strip_tags($data[$name])), ENT_QUOTES, 'UTF-8') : $default;
 				break;
 			}
-			case self::INT_TYPE:{
+			case 'int':{
 				// 数字
 				$default == null && $default = 0;
-				$value = self::intFilter($data[$name], $default);
+				$value = isset($data[$name]) ? absint($data[$name]) : $default;
 				break;
 			}
-			case self::PRICE_TYPE:{
+			case 'price':{
 				// 价格
 				$default == null && $default = 0;
 				$value = isset($data[$name]) ? sprintf("%.2f",$data[$name]) : $default;
 				break;
 			}
-			case self::FLOAT_TYPE:{
+			case 'float':{
 				// 浮点数
 				$default == null && $default = 0;
-				$value = self::floatFilter($data[$name], $default);
+				$value = isset($data[$name])  ? filter_var($value, FILTER_VALIDATE_FLOAT) : $default;
 				is_bool($value) && $value = $default;
 				break;
 			}
-			case self::BOOL_TYPE:{
+			case 'bool':{
 				// 布尔值
 				$default == null && $default = 0;
 				$value = !empty($data[$name]) ? 1 : 0;
 				break;
 			}
-			case self::ARRAY_TYPE:{
+			case 'array':{
 				// 数组
 				$default == null && $default = [];
 				$value = isset($data[$name]) ? $data[$name] : [];
 				is_array($value) || $value = [];
-
-				// $value = array_map('filter', $value);
 				break;
 			}
-			case self::TIME_TYPE:{
+			case 'time':{
 				// 时间
 				$default == null && $default = 0;
 				$value = isset($data[$name]) ? strtotime($data[$name]) : 0;
@@ -114,67 +176,154 @@ class BaseTool{
 	}
 
 	/**
-	 * 字符串过滤
+	 * 对前端传入的方法进行检查
 	 */
-	public static function stringFilter($value, $default=''){
-		$value = isset($value) ? htmlspecialchars(urldecode(strip_tags($value)), ENT_QUOTES, 'UTF-8') : $default;
-		return $value;
-	} 
+	public static function requestCheck($model, $params, $scene = false){
+		$is_add = $scene == 'add' ? true : false;
+		$id = 0;
 
-	/**
-	 * 整数过滤
-	 */
-	public static function intFilter($value, $default=0){
-		$value = isset($value) ? absint($value) : $default;
-		return $value;
-	}
-
-	/**
-	 * 浮点数过滤
-	 */
-	public static function floatFilter($value, $default=0){
-		$value = isset($value)  ? filter_var($value, FILTER_VALIDATE_FLOAT) : $default;
-		return $value;
-	}
-
-	/**
-	 * 获取表单提交的数据
-	 */
-	public static function autoDeal(){
-		$part = self::input('part', self::ARRAY_TYPE);
-		$args = self::input('args', self::ARRAY_TYPE);
-
-		if(empty($part) || empty($args)){
-			return false;
+		// 自动选择场景
+		if($scene === false){
+			$is_add = isset($params['id']) ? false : true;
+			$scene = $is_add ? 'add' : 'edit';
 		}
 
-		$def_arr = [
-			'txt'
-		];
+		if(! $is_add && isset($params['id'])){
+			$id = absint($params['id']);
 
-		foreach($part as $key => $type){
-			$val = '';
-			switch($type){
-				case 'num': {
-					$val = isset($args[$key]) ? absint($args[$key]) : 0;
-					break;
-				}
-				default:{
-					$val = isset($args[$key]) ? file ($args[$key]) : 0;
+			if(! ($model = $model->getById($id))){
+				return new RuntimeError('未找到相关数据');
+			}
+		}
+
+		$fields = $model->getFields($scene);
+		$validation = $model->getRules($scene);
+
+		if(empty($fields)){
+			return new RuntimeError('未找到相关字段配置');
+		}
+
+		// 对数据进行基础过滤
+		$data = self::getRequestParams($fields, $params);
+
+		// 给数据加上id
+		$is_add || $data['id'] = $id;
+
+		// 进行数据验证
+		if(!empty($validation)){
+			list($rules, $msgs) = $validation;
+
+			$validate = Validate::make($rules, $msgs);
+			$result = $validate->check($data);
+
+			if(!$result){
+				return new RuntimeError($validate->getError());
+			}
+		}
+
+		return [$data, $model];
+	}
+
+	/**
+	 * 对前端传入的二维数组进行检查
+	 */
+	public static function requestMultiCheck($model, $params, $scene = false){
+		$is_edit = $scene == 'edit' ? true : false;
+
+		// 自动选择场景
+		if($scene === false){
+			$is_edit = isset($params['id']) ? true : false;
+			$scene = $is_edit ? 'edit' : 'add';
+		}
+
+		$fields = $model->getFields($scene);
+		$validation = $model->getRules($scene);
+		$results = [];
+
+		if(empty($fields)){
+			return new RuntimeError('未找到相关字段配置');
+		}
+
+		// 进行数据验证
+		if(!empty($validation)){
+			list($rules, $msgs) = $validation;
+
+			$validate = Validate::make($rules, $msgs);
+		}
+
+		foreach($params as $param){
+			// 对数据进行基础过滤
+			$data = self::getRequestParams($fields, $param);
+
+			// 进行数据验证
+			if(!empty($validation)){
+				$valid = $validate->check($data);
+
+				if(!$valid){
+					continue;
 				}
 			}
 
+			$results[] = $data;
 		}
+
+
+		return [$data, $model];
 	}
 
-	/** 
-	 * 清除缩略图
+	/**
+	 * 获取数据
 	 */
-	public static function clearThumb(){
+	public static function getData($model, $params){
+		$id = isset($params['id']) ? absint($params['id']) : 0;
 
+		if($id){
+			return $model->getById($id);
+		}
+
+		return false;
 	}
 
-	public static function saveImage(){
+	/**
+	 * 保存数据
+	 */
+	public static function saveData($model, $data){
+		$data['update_time'] = time();
+		if($model->isEmpty()){
+			$data['add_time'] = $data['update_time'];
+		}
 
+		unset($data['roles']);
+		return $model->data($data)->save();
+	}
+
+	/**
+	 * 分页查询数据
+	 */
+	public static function page($model, $params){
+		$page  = max(input('page/d'), 1);
+		$where = isset($params['where']) 		? $params['where'] 		: [];
+		$hidden  = isset($params['hidden']) 	? $params['hidden'] 	: [];
+		$append  = isset($params['append']) 	? $params['append'] 	: [];
+		$visible = isset($params['visible']) 	? $params['visible'] 	: [];
+		$order 	 = isset($params['order']) 		? $params['order'] 		: [];
+		$num   	 = isset($params['num']) 		? $params['num'] 		: 10;
+
+		$data = $model
+			->where($where)
+			->hidden($hidden)		// 隐藏字段
+			->append($append)		// 追加额外字段
+			->visible($visible)		// 只显示传入的字段
+			->page($page, $num)
+			->order($order)
+			->select();
+
+		$total = $model->where($where)->count();
+
+		return [
+			'data' 	 => $data->toArray(),
+			'num' 	 => $num,
+			'total'  => $total,
+		];
 	}
 }

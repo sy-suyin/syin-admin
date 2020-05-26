@@ -1,200 +1,162 @@
 <?php
 namespace app\client\controller;
 
-use app\common\controller\Client;
-use app\client\library\SystemTool;
+use app\client\model\Admin as AdminModel;
+use app\client\model\Role as RoleModel;
+use app\client\service\SystemService;
 use think\Request;
 
-class System extends Client {
+class System {
 
 	/**
-	 * 管理员 - 列表
+	 * 管理员管理 - 列表
 	 */
-	public function adminlistAction(){
-		$result	= SystemTool::getAdminResultsArgs(false);
-		$num = 10;
-		$results = $result['model']->paginate($num, false, ['query'=>$result['args']]);
-		$results = $results->toArray();
+	public function adminListAction(Request $request, AdminModel $model){
+		// 1. 获取查询参数
+		$params = SystemService::adminListParams($request->post());
 
-		$results['data' ] = SystemTool::convertTime($results['data']);
-		$results['data' ] = SystemTool::getAdminRelation($results['data']);
+		// 2. 查询数据
+		$result = SystemService::page($model, $params);
+		$result['data' ] = SystemService::adminMultiRelationRoles($result['data']);
 
-		return show_success('', [
-			'total' => $results['total'],
-			'current_page' => $results['current_page'],
-			'page_max' => ceil($results['total'] / $num),
-			'page_num' => $num,
-			'results'  => $results['data'],
-		]);
+		return show_success('', $result);
 	}
 
 	/**
-	 * 管理员 - 回收站
+	 * 管理员管理 - 回收站
 	 */
-	public function adminrecycleAction(){
-		$result	= SystemTool::getAdminResultsArgs(true);
-		$num = 10;
-		$results = $result['model']->paginate($num, false, ['query'=>$result['args']]);
-		$results = $results->toArray();
+	public function adminRecycleAction(Request $request, AdminModel $model){
+		// 1. 获取查询参数
+		$params = SystemService::adminListParams($request->post(), true);
 
-		$results['data' ] = SystemTool::convertTime($results['data']);
+		// 2. 查询数据
+		$result = SystemService::page($model, $params);
 
-		return show_success('', [
-			'total' => $results['total'],
-			'current_page' => $results['current_page'],
-			'page_max' => ceil($results['total'] / $num),
-			'page_num' => $num,
-			'results'  => $results['data'],
-		]);
+		return show_success('', $result);
+	}
+
+	/**
+	 * 角色管理 - 管理员数据
+	 */
+	public function adminDataAction(Request $request, AdminModel $model){
+		$result = SystemService::getData($model, $request->get());
+
+		if(empty($result)){
+			return show_error('未找到相关数据');
+		}
+
+		$result = $result->toArray();
+		$result['roles'] = SystemService::adminRelationRoles($result['id']);
+
+		return show_success('查询成功', $result);
+	}
+
+	/**
+	 * 管理员管理 - 添加
+	 */
+	public function adminAddAction(Request $request, AdminModel $model){
+		// 验证提交数据
+		$result = SystemService::requestCheck($model, $request->post(), 'add');
+
+		if(is_error($result)){
+			return show_error($result->getError());
+		}
+
+		// 保存数据
+		list($data, $model) = $result;
+		$save = SystemService::adminSave($model, $data);
+
+		if(! $save){
+			return show_error('添加失败，请稍后重试');
+		}
+
+		// 保存角色关联权限信息
+		SystemService::adminRoleSave($model, $data['roles'], false);
+
+		// 保存日志
+
+		// 返回消息
+		return show_success('已成功添加角色');
+	}
+
+	/**
+	 * 管理员管理 - 修改
+	 */
+	public function adminEditAction(Request $request, AdminModel $model){
+		// 验证提交数据
+		$result = SystemService::requestCheck($model, $request->post(), 'edit');
+
+		if(is_error($result)){
+			return show_error($result->getError());
+		}
+
+		// 保存数据
+		list($data, $model) = $result;
+		$save = SystemService::adminSave($model, $data);
+
+		if(! $save){
+			return show_error('修改失败，请稍后重试');
+		}
+
+		// 保存角色关联权限信息
+		SystemService::adminRoleSave($model, $data['roles'], true);
+
+		// 保存日志
+
+		// 返回消息
+		return show_success('已成功修改角色');
 	}
 
 	/**
 	 * 管理员管理 - 删除
 	 */
-	public function admindelAction(Request $request){
-		$id = isset($_POST['id'])	?	$_POST['id']	:	array();
-		$deleted = absint(input('operate'));
-		$operation_type = $deleted ? '删除' : '恢复';
-
-		$result = \app\client\model\Admin::deletedItemLogically($id, $deleted);
-
-		if(is_error($result)){
-			return show_error($result->getErrorMsg());
+	public function admindelAction(AdminModel $model){
+		$result = SystemService::deletedItemLogically($model, '管理员');
+		
+		if($result['status']){
+			return show_success('操作成功, 共'.$result['msg']);
+		}else{
+			return show_success('操作失败：'.$result['msg']);
 		}
-
-		// $request->log = '管理员'.($request->admin->name).', 共'.$operation_type.$result.'个管理员';
-		return show_success('操作成功, 共'.$operation_type.$result.'个管理员');
 	}
 
 	/**
 	 * 管理员管理 - 禁用
 	 */
-	public function admindisAction(Request $request){
-		$id = isset($_POST['id'])	?	$_POST['id']	:	array();
-		$disabled = absint(input('operate'));
-		$operation_type = $disabled ? '禁用' : '启用';
+	public function admindisAction(AdminModel $model){
+		$result = SystemService::disableItem($model, '管理员');
 
-		$result = \app\client\model\Admin::disableItem($id, $disabled, ['is_admin' => 0]);
-
-		if(is_error($result)){
-			return show_error($result->getErrorMsg());
+		if($result['status']){
+			return show_success('操作成功, 共'.$result['msg']);
+		}else{
+			return show_success('操作失败：'.$result['msg']);
 		}
-
-		// $request->log = '管理员'.($request->admin->name).', 共'.$operation_type.$result.'个管理员';
-		return show_success('操作成功, 共'.$operation_type.$result.'个管理员');
 	}
-	
+
 	/**
 	 * 管理员管理 - 排序
 	 */
-	public function adminsortAction(Request $request){
-		$data  = input('data/a');
+	public function adminsortAction(AdminModel $model){
+		$result = SystemService::sortItem($model, '管理员');
 
-		$result = \app\client\model\Admin::sortItem($data);
-
-		if(is_error($result)){
-			return show_error($result->getErrorMsg());
+		if($result['status']){
+			return show_success('操作成功, 共'.$result['msg']);
+		}else{
+			return show_success('操作失败：'.$result['msg']);
 		}
-
-		// $request->log = '管理员'.($request->admin->name).', 对'.$result.'个管理员进行了排序';
-		return show_success('操作成功, 共对'.$result.'个管理员进行了排序');
 	}
 
-	/**
-	 * 管理员 - 添加
-	 */
-	public function adminaddAction(Request $request){
-		$result = SystemTool::getAdminArgs();
 
-		if(is_error($result)){
-			return show_error($result->getErrorMsg());
-		}
-
-		if(! $result['model']->save()){
-			return show_error('新建失败，请稍后重试');
-		}
-
-		$relation_args = [];
-		foreach($result['roles'] as $role){
-			$relation_args[] = [
-				'admin_id' => $result['model']->id,
-				'role_id'  => $role,
-			];
-		}
-
-		db('admin_role_relation')->insertAll($relation_args);
-		// $request->log = '管理员'.($request->admin->name).', 新建了管理员'.$result['model']->name;
-		return show_success('已成功添加管理员');
-	}
 
 	/**
-	 * 管理员 - 修改
+	 * 角色管理 - 列表
 	 */
-	public function admineditAction(Request $request){
-		$id = absint(input('id'));
+	public function roleListAction(Request $request, RoleModel $model){
+		// 1. 获取查询参数
+		$params = SystemService::roleListParams($request->post());
 
-		if($id){
-			$model = \app\client\model\Admin::get($id);
-		}
-
-		if(empty($model)){
-			return show_error('未找到相关信息');
-		}
-
-		if(! $request->isPost()){
-			return show_error('请求失败，请稍后重试');
-		}
-
-		$result = SystemTool::getAdminArgs(true, $model);
-		if(is_error($result)){
-			return show_error($result->getErrorMsg());
-		}
-
-		if(! $result['model']->save()){
-			return show_error('修改失败，请稍后重试');
-		}
-
-		$relation_args = [];
-		foreach($result['roles'] as $role){
-			$relation_args[] = [
-				'admin_id' => $id,
-				'role_id'  => $role,
-			];
-		}
-
-		// 先接触绑定,再建立新的绑定
-		db('admin_role_relation')->where('admin_id', $id)->delete();
-		db('admin_role_relation')->insertAll($relation_args);
-		// $request->log = '管理员'.($request->admin->name).', 修改了管理员'.$result['model']->name;
-		return show_success('已成功修改管理员数据');
-	}
-
-	/**
-	 * 获取管理员详情
-	 */
-	public function admindetailAction(){
-		$id = absint(input('id'));
-
-		if($id){
-			$model = \app\client\model\Admin::get($id);
-		}
-
-		if(empty($model)){
-			return show_error('未找到相关信息');
-		}
-
-		$roles = db('admin_role_relation')
-			->field('r.id, name')
-			->alias('rr')
-			->where('admin_id', $id)
-			->join('admin_role r', 'r.id = rr.role_id')
-			->select();
-
-		$result = $model -> toArray();
-		unset($result['password']);
-
-		$result['avatar_url'] = request()->domain().$result['avatar'];
-		$result['roles'] = empty($roles) ? [] : $roles;
+		// 2. 查询数据
+		$result = SystemService::page($model, $params);
 
 		return show_success('', $result);
 	}
@@ -202,256 +164,145 @@ class System extends Client {
 	/**
 	 * 角色管理 - 回收站
 	 */
-	public function rolerecycleAction(){
-		$result	= SystemTool::getRoleResultsArgs(true);
-		$num = config('common.page_num');
-		$results = $result['model']->paginate($num, false, ['query'=>$result['args']]);
-		$results = $results->toArray();
+	public function roleRecycleAction(Request $request, RoleModel $model){
+		// 1. 获取查询参数
+		$params = SystemService::roleListParams($request->post(), true);
 
-		$results['data' ] = SystemTool::convertTime($results['data']);
+		// 2. 查询数据
+		$result = SystemService::page($model, $params);
 
-		return show_success('', [
-			'total' => $results['total'],
-			'current_page' => $results['current_page'],
-			'page_max' => ceil($results['total'] / $num),
-			'page_num' => $num,
-			'results'  => $results['data'],
-		]);
-	}
-
-	/**
-	 * 角色管理 - 列表
-	 */
-	public function rolelistAction(){
-		$result	= SystemTool::getRoleResultsArgs(false);
-		$num = config('common.page_num');
-		$results = $result['model']->paginate($num, false, ['query'=>$result['args']]);
-		$results = $results->toArray();
-
-		$results['data' ] = SystemTool::convertTime($results['data']);
-
-		return show_success('', [
-			'total' => $results['total'],
-			'current_page' => $results['current_page'],
-			'page_max' => ceil($results['total'] / $num),
-			'page_num' => $num,
-			'results'  => $results['data'],
-		]);
-	}
-
-	/**
-	 * 获取所有角色数据
-	 */
-	public function getallrolesAction(){
-		$results = db('admin_role')
-			->field('id, name, description')
-			->where('is_disabled', 0)
-			->where('is_deleted', 0)
-			->select();
-
-		return show_success('', $results);
-	}
-
-	/**
-	 * 获取角色详情
-	 */
-	public function roledetailAction(){
-		$id = absint(input('id'));
-
-		if($id){
-			$model = \app\client\model\Role::get($id);
-		}
-
-		if(empty($model)){
-			return show_error('未找到相关信息');
-		}
-
-		$result = $model -> toArray();
 		return show_success('', $result);
 	}
 
 	/**
-	 * 添加角色
+	 * 角色管理 - 角色数据
 	 */
-	public function roleaddAction(Request $request){
-		if(! $request->isPost()){
-			return show_error('请求失败，请稍后重试');
+	public function roleDataAction(Request $request, RoleModel $model){
+		$result = SystemService::getData($model, $request->get());
+
+		if(empty($result)){
+			return show_error('未找到相关数据');
 		}
 
-		$result = SystemTool::getRoleArgs();
+		return show_success('查询成功', $result->toArray());
+	}
+
+	/**
+	 * 角色管理 - 添加
+	 */
+	public function roleAddAction(Request $request, RoleModel $model){
+		// 获取提交数据
+		$params = $request->post();
+
+		// 验证提交数据
+		$result = SystemService::requestCheck($model, $params, 'add');
+		$forbid_data = SystemService::roleForbidCheck($params);
+
 		if(is_error($result)){
-			return show_error($result->getErrorMsg());
+			return show_error($result->getError());
 		}
 
-		if(! $result['model']->save()){
+		// 保存数据
+		list($data, $model) = $result;
+		$save = SystemService::saveData($model, $data);
+
+		if(! $save){
 			return show_error('添加失败，请稍后重试');
 		}
 
-		$bans = [];
+		// 保存角色权限
+		$data['id'] = $model->id;
+		SystemService::roleForbidSave($data, $forbid_data, false);
 
-		$role_id = $result['model']->id;
+		// 保存日志
 
-		$module = $request->module();
-
-		if(!empty($result['data_forbid'])){
-			foreach($result['data_forbid'] as $val){
-				$val['module'] = $module;
-				$val['role_id'] = $role_id;
-				$bans[] = $val;
-			}
-		}
-
-		if(!empty($result['page_forbid'])){
-			foreach($result['page_forbid'] as $val){
-				$val['module'] = $module;
-				$val['role_id'] = $role_id;
-				$bans[] = $val;
-			}
-		}
-
-		if(!empty($bans)){
-			db('admin_role_ban')->insertAll($bans);
-		}
-
-		// $request->log = '管理员'.($request->admin->name).', 添加了新角色'.$result['model']->name;
+		// 返回消息
 		return show_success('已成功添加角色');
 	}
 
 	/**
-	 * 添加角色
+	 * 角色管理 - 修改
 	 */
-	public function roleeditAction(Request $request){
-		$id = absint(input('id'));
+	public function roleEditAction(Request $request, RoleModel $model){
+		// 获取提交数据
+		$params = $request->post();
 
-		if($id){
-			$model = \app\client\model\Role::get($id);
-		}
+		// 验证提交数据
+		$result = SystemService::requestCheck($model, $params, 'edit');
+		$forbid_data = SystemService::roleForbidCheck($params);
 
-		if(empty($model)){
-			return show_error('未找到相关信息');
-		}
-
-		if(! $request->isPost()){
-			return show_error('请求失败，请稍后重试');
-		}
-
-		$result = SystemTool::getRoleArgs(true, $model);
 		if(is_error($result)){
-			return show_error($result->getErrorMsg());
+			return show_error($result->getError());
 		}
 
-		if(! $result['model']->save()){
+		// 保存数据
+		list($data, $model) = $result;
+		$save = SystemService::saveData($model, $data);
+
+		if(! $save){
 			return show_error('添加失败，请稍后重试');
 		}
 
-		// 处理权限数据
-		$data_forbid_edit = !empty($_POST['data_forbid_edit']) ? true : false;
-		$page_forbid_edit = !empty($_POST['page_forbid_edit']) ? true : false;
-		$role_id = $result['model']->id;
-		$module = $request->module();
-		$bans = [];
+		// 保存角色权限
+		$data['id'] = $model->id;
+		SystemService::roleForbidSave($data, $forbid_data, true);
 
-		if($data_forbid_edit){
-			if(!empty($result['data_forbid'])){
-				foreach($result['data_forbid'] as $val){
-					$val['module'] = $module;
-					$val['role_id'] = $role_id;
-					$bans[] = $val;
-				}
-			}
+		// 保存日志
 
-			// 直接删除旧数据, 再重新插入新数据
-			db('admin_role_ban')->where('role_id', $role_id)->where('type', 1)->delete();
-		}
-
-		if($page_forbid_edit){
-			if(!empty($result['page_forbid'])){
-				foreach($result['page_forbid'] as $val){
-					$val['module'] = $module;
-					$val['role_id'] = $role_id;
-					$bans[] = $val;
-				}
-			}
-
-			db('admin_role_ban')->where('role_id', $role_id)->where('type', 2)->delete();
-		}
-
-		if(!empty($bans)){
-			db('admin_role_ban')->insertAll($bans);
-		}
-
-		// $request->log = '管理员'.($request->admin->name).', 修改了角色'.$result['model']->name;
-		return show_success('已成功修改角色');
+		// 返回消息
+		return show_success('已成功添加角色');
 	}
 
 	/**
 	 * 角色管理 - 删除
 	 */
-	public function roledelAction(Request $request){
-		$id = isset($_POST['id'])	?	$_POST['id']	:	array();
-		$deleted = absint(input('operate'));
-		$operation_type = $deleted ? '删除' : '恢复';
+	public function roledelAction(RoleModel $model){
+		$result = SystemService::deletedItemLogically($model, '角色');
 
-		$result = \app\client\model\Role::deletedItemLogically($id, $deleted);
-
-		if(is_error($result)){
-			return show_error($result->getErrorMsg());
+		if($result['status']){
+			return show_success('操作成功, 共'.$result['msg']);
+		}else{
+			return show_success('操作失败：'.$result['msg']);
 		}
-
-		// $request->log = '管理员'.($request->admin->name).', 共'.$operation_type.$result.'个角色';
-		return show_success('操作成功, 共'.$operation_type.$result.'个角色');
 	}
 
 	/**
 	 * 角色管理 - 禁用
 	 */
-	public function roledisAction(Request $request){
-		$id = isset($_POST['id'])	?	$_POST['id']	:	array();
-		$disabled = absint(input('operate'));
-		$operation_type = $disabled ? '禁用' : '启用';
+	public function roledisAction(RoleModel $model){
+		$result = SystemService::disableItem($model, '角色');
 
-		$result = \app\client\model\Role::disableItem($id, $disabled);
-
-		if(is_error($result)){
-			return show_error($result->getErrorMsg());
+		if($result['status']){
+			return show_success('操作成功, 共'.$result['msg']);
+		}else{
+			return show_success('操作失败：'.$result['msg']);
 		}
+	}
 
-		// $request->log = '管理员'.($request->admin->name).', 共'.$operation_type.$result.'个角色';
-		return show_success('操作成功, 共'.$operation_type.$result.'个角色');
+	/**
+	 * 获取所有角色数据
+	 */
+	public function roleAllAction(RoleModel $model){
+		$results = RoleModel::getAll();
+		return show_success('', $results);
 	}
 
 	/**
 	 * 获取数据权限信息
 	 */
-	public function getaccessdataAction(){
-		// 数据权限配置数据
-		$config = config('access.');
+	public function getAccessDataAction(){
 		// 角色id
 		$id = absint(input('id'));
-		// 禁止访问数据权限
-		$forbid = [
-			'data_forbid' => [],
-			'page_forbid' => [],
-		];
+		
+		// 数据权限配置数据
+		$config = config('access.');
 
-		if($id > 0){
-			$forbid_data = db('admin_role_ban')->where('role_id', $id)->select();
-
-			if(!empty($forbid_data)){
-				foreach($forbid_data as $val){
-					if($val['type'] == 1){
-						$forbid['data_forbid'][] = $val;
-					}elseif($val['type'] == 2){
-						$forbid['page_forbid'][] = $val;
-					}
-				}
-			}
-		}
+		// 获取角色的禁止权限信息
+		$forbid = SystemService::getRoleForbidData($id, $config);
 
 		return show_success('', [
 			'forbid' => $forbid,
 			'config' => $config,
 		]);
 	}
-
 }

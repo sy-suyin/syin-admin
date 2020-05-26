@@ -1,72 +1,36 @@
 <?php
 namespace app\client\controller;
 
-use app\common\controller\Client;
-use app\common\library\BaseTool;
+use app\client\model\Admin as AdminModel;
+use app\client\service\AdminService;
 use think\Request;
 
 
-class Login extends Client{
-
-	public function __construct(){
-		parent::__construct();
-		
-	}
+class Login{
 
 	/**
 	 * 登录控制器
 	 */
-	public function indexAction(Request $request){
-		$login_name = BaseTool::input('login', 0);
-		$password = BaseTool::input('password', 0);
+	public function indexAction(Request $request, AdminModel $model){
+		// 验证提交数据
+		$result = AdminService::requestCheck($model, $request->post(), 'login');
 
-		if('' == trim($login_name)){
-			return show_error('登录账号不能为空');
+		if(is_error($result)){
+			return show_error($result->getError());
 		}
 
-		if('' == trim($password)){
-			return show_error('登录密码不能为空');
+		// 登录
+		list($data, $model) = $result;
+		$admin = AdminService::login($model, $data);
+
+		if(is_error($admin)){
+			return show_error($admin->getError());
 		}
 
-		if(!check_password_strength($password)){
-			return show_error('登录密码格式有误');
-		}
+		// 配置登录后返回的数据
+		$result = AdminService::loginConfig($admin);
+		$result['user'] = $admin->hidden(['password', 'sort'])->toArray();
 
-		$result = db('admin')
-			->where('is_deleted', 0)
-			->where('login_name', $login_name)
-			->find();
-
-		if(empty($result)){
-			return show_error('登录账号或密码错误'.$login_name);
-		}
-
-		if(!check_password_hash($password, $result['password'])){
-			return show_error('登录账号或密码错误');
-		}
-
-		if($result['is_disabled'] > 0){
-			return show_error('登录账号已被禁用, 请联系管理');
-		}
-
-		$request->admin = $result;
-		$forbid = \app\client\library\AdminTool::getForbidData($result['id']);
-
-		$base_url = $request->domain().'/';
-		$result['avatar'] = $base_url.$result['avatar'];
-		unset($result['password']);
-
-		return show_success('登录成功', array(
-			'user'   => $result,
-			'forbid' =>	$forbid,
-			'config' => array(
-				'sidebar_imgs' => [
-					$base_url.'static/api/sidebar/bg-1.jpg',
-					$base_url.'static/api/sidebar/bg-2.jpg',
-					$base_url.'static/api/sidebar/bg-3.jpg',
-					$base_url.'static/api/sidebar/bg-4.jpg',
-				],
-			)
-		));
+		return show_success('登录成功', $result);
 	}
 }

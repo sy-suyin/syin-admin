@@ -47,10 +47,10 @@ export const page = {
 				current: 1,
 
 				// 最大页码
-				page_max: 1,
+				maxpage: 1,
 
 				// 每页显示消息数
-				page_num: 0,
+				num: 0,
 
 				// 总记录数
 				total: 0,
@@ -100,8 +100,8 @@ export const page = {
 						mapping: mapping,
 						results: [],
 						current: 1,
-						page_max: 1,
-						page_num: 0,
+						maxpage: 1,
+						num: 0,
 						total: 0,
 						args: {},
 					};
@@ -137,7 +137,7 @@ export const page = {
 			// 重置各种数据
 			if(reset){
 				target.args = {};
-				target.page_max = 1;
+				target.maxpage = 1;
 				target.current = 1;
 			}
 
@@ -165,7 +165,7 @@ export const page = {
 			}else{
 				args = args || {...param.args};
 
-				if(page > 1 && page > param.page_max){
+				if(page > 1 && page > param.maxpage){
 					return this.message('请求页面超过最大页码! ', 'warning');
 				}
 
@@ -219,17 +219,16 @@ export const page = {
 		 */
 		saveRequestResult(result, args){
 			let target = null;
+			let results = result.data;
+
+			if(!results || results.length < 1){
+				results = [];
+			}
 
 			if(! this.use_scene){
 				target = this.page_default;
 			}else{
 				target = this[`page_${this.current_scene}`];
-			}
-
-			let results = result.results;
-
-			if(!results || results.length < 1){
-				results = [];
 			}
 
 			// 保存返回的数据, 此处可考虑映射
@@ -240,10 +239,10 @@ export const page = {
 			}
 
 			target.args = args;
-			target.current = result.current_page * 1;
-			target.page_max = result.page_max * 1;
-			target.page_num = result.page_num * 1;
+			target.current = args.page;
+			target.num = result.num * 1;
 			target.total = result.total * 1;
+			target.maxpage = Math.ceil(result.total / result.num);
 		},
 
 		// 每页加载数改变
