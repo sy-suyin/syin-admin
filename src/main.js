@@ -5,6 +5,7 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import store from './vuex/store'
 import Observer from '@/libs/Observer.js';
+import './icons' // icon
 
 Vue.config.productionTip = false
 Vue.prototype.$event = Observer;

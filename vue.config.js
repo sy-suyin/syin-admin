@@ -55,24 +55,41 @@ module.exports = {
 	config.resolve.alias
 		.set('@', resolve('src')) // key,value自行定义，比如.set('@@', resolve('src/components'))
 
-    config.output.filename('[name].[hash].js').end();
-    
+	config.output.filename('[name].[hash].js').end()
+
+	config.module
+		.rule('svg')
+		.exclude.add(resolve('src/icons'))
+		.end()
+
+	config.module
+		.rule('icons')
+		.test(/\.svg$/)
+		.include.add(resolve('src/icons'))
+		.end()
+		.use('svg-sprite-loader')
+		.loader('svg-sprite-loader')
+		.options({
+			symbolId: 'icon-[name]'
+		})
+		.end()
+
     // 生产模式
     config.when(process.env.NODE_ENV === 'production', config => {
-      // 生产模式加载 main-prod 入口文件
-      config.entry('app').clear().add('./src/main-prod.js')
-      // CDN - externals
-      config.set('externals', {
-        vue: 'Vue',
-        'vue-router': 'VueRouter',
-        axios: 'axios',
-        echarts: 'echarts',
-      })
-      // 首页自定义，添加一个变量来控制html模版，是否加载cdn资源。
-      config.plugin('html').tap(args => {
-        args[0].isProd = true
-        return args
-      })
+		// 生产模式加载 main-prod 入口文件
+		config.entry('app').clear().add('./src/main-prod.js')
+		// CDN - externals
+		config.set('externals', {
+			vue: 'Vue',
+			'vue-router': 'VueRouter',
+			axios: 'axios',
+			echarts: 'echarts',
+		})
+		// 首页自定义，添加一个变量来控制html模版，是否加载cdn资源。
+		config.plugin('html').tap(args => {
+			args[0].isProd = true
+			return args
+		})
     })
     // 开发模式
     config.when(process.env.NODE_ENV === 'development', config => {

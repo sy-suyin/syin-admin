@@ -117,6 +117,13 @@ const menus = [
 				action: 'lock',
 				is_hidden: 0,
 			},
+			{
+				name: '图标',
+				icon: '',
+				controller: 'demo',
+				action: 'icon',
+				is_hidden: 0,
+			},
 		]
 	},
 	{
