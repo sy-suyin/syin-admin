@@ -8,12 +8,18 @@ import store from '@/vuex/store';
 import {timeout, not_logged_allow} from '@/config/reuqest';
 import {checkPermission} from '@/libs/util';
 import Token from '@/libs/Token';
+import Observer from '@/libs/Observer.js';
 
 class Request{
 	constructor (base_url = '') {
 		this.base_url = base_url;
 	}
 
+	/**
+	 * 对请求的链接进行权限判断
+	 * 
+	 * @param {string} url 请求链接 
+	 */
 	checkPermission(url){
 		if(url == '' || url[0] != '/'){
 			return true;
@@ -38,7 +44,13 @@ class Request{
 		return checkPermission(controller, action);
 	}
 
-	interceptors(instance, options){
+	/**
+	 * 设置拦截器
+	 * 
+	 * @param {*} instance 
+	 * @param {*} options 
+	 */
+	interceptors(instance){
 		// 请求拦截
 		instance.interceptors.request.use(config => {
 			// 判断权限
@@ -84,6 +96,7 @@ class Request{
 						setTimeout(() => {
 							store.commit('auth/logout');
 						}, 1500);
+
 						return Promise.reject(new Error('账号过期, 请重新登录'));
 					});
 				}else if(status != 200){
@@ -95,6 +108,11 @@ class Request{
 		})
 	}
 
+	/**
+	 * 处理请求成功时返回数据
+	 * 
+	 * @param {*} response 
+	 */
 	responseSuccess(response){
 		const res = response.data;
 
@@ -105,6 +123,11 @@ class Request{
 		return res;
 	}
 
+	/**
+	 * 构建完整请求链接
+	 * 
+	 * @param {string} url 
+	 */
 	buildUrl(url){
 		if(url == '' || url[0] != '/'){
 			return url;
@@ -114,10 +137,33 @@ class Request{
 		return url;
 	}
 
+	/**
+	 * 将请求放入请求队列中
+	 * 如果请求被挂起, 所有在队列中的请求都将在请求挂起取消后继续
+	 * 
+	 * @param {*} fn 
+	 */
+	queue(fn){
+		if(Token.isRequest()){
+			return new Promise((resolve, reject) => {
+				Observer.on('refresh_token_end', (token)=>{
+					resolve(fn());
+				});
+			});
+		}else{
+			return fn()
+		}
+	}
+
+	/**
+	 * 请求数据
+	 * 
+	 * @param {object} options 
+	 */
 	request(options){
 		const instance = axios.create({timeout});
-		this.interceptors(instance, options);
-		return Token.next(()=>{return instance(options)});
+		this.interceptors(instance);
+		return this.queue(()=>{return instance(options)});
 	}
 }
 

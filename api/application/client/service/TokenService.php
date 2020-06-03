@@ -5,25 +5,18 @@ use Firebase\JWT\JWT;
 
 class TokenService {
 
-	private const TOKEN_KEY = 'token_key';
-
+	private const TOKEN_PRI_FILE = 'token_pri';
+	private const TOKEN_PUB_FILE = 'token_pub';
+	private const REFRESH_TOKEN_KEY = 'refresh_token_key';
 	private const TOKEN_EXPIRE = 'token_expire';
-
-	private const REFRESH_TOKEN_PRI_FILE = 'refresh_token_pri';
-
-	private const REFRESH_TOKEN_PUB_FILE = 'refresh_token_pub';
-
-	private const REFRESH_TOKEN_PUB_EXPIRE = 'refresh_token_expire';
-
-	
+	private const REFRESH_TOKEN_EXPIRE = 'refresh_token_expire';
 
 	/**
 	 * 生成token
 	 */
 	public static function generateToken($data = []){
-		$time = time();
-		$token_key = config('auth.'. self::TOKEN_KEY);
-		$expire = config('auth.'. self::TOKEN_EXPIRE);
+		$time    = time();
+		$expire  = config('auth.'. self::TOKEN_EXPIRE);
 		$payload = [
 			// 过期时间
 			'exp' => $time + $expire,
@@ -39,7 +32,12 @@ class TokenService {
 
 		$payload = array_merge($payload, $data);
 
-		$token = JWT::encode($payload, $token_key, 'HS256');
+		// 获取私钥数据
+		$base_path    = env('root_path') . 'rsa/';
+		$pri_key_path = $base_path . config('auth.'. self::TOKEN_PRI_FILE);
+		$private_key  = file_get_contents($pri_key_path);
+
+		$token = JWT::encode($payload, $private_key, 'RS256');
 		return $token;
 	}
 
@@ -47,8 +45,9 @@ class TokenService {
 	 * 生成 refresh token
 	 */
 	public static function generateRefreshToken($data = []){
-		$time = time();
-		$expire = config('auth.'. self::REFRESH_TOKEN_PUB_EXPIRE);
+		$time   = time();
+		$expire = config('auth.'. self::REFRESH_TOKEN_EXPIRE);
+		$refresh_key = config('auth.'. self::REFRESH_TOKEN_KEY);
 		$payload = [
 			// 过期时间
 			'exp' => $time + $expire,
@@ -66,14 +65,9 @@ class TokenService {
 
 		// 附加上浏览器信息, 生成 hash
 		$user_agent = request()->header('user-agent');
-		$payload['hash'] = md5($user_agent);
+		$payload['hash'] = md5($user_agent.$refresh_key);
 
-		// 获取私钥数据
-		$base_path = env('root_path') . 'rsa/';
-		$pri_key_path = $base_path . config('auth.'. self::REFRESH_TOKEN_PRI_FILE);
-		$private_key = file_get_contents($pri_key_path);
-
-		$token = JWT::encode($payload, $private_key, 'RS256');
+		$token = JWT::encode($payload, $refresh_key, 'HS256');
 		return $token;
 	}
 
@@ -81,7 +75,9 @@ class TokenService {
 	 * 验证 token
 	 */
 	public static function verifyToken($token){
-		$token_key = config('auth.token_key');
+		$base_path = env('root_path') . 'rsa/';
+		$pub_key_path = $base_path . config('auth.'. self::TOKEN_PUB_FILE);
+		$public_key = file_get_contents($pub_key_path);
 		$curr_time = time();
 
 		if(empty($token)){
@@ -89,13 +85,14 @@ class TokenService {
 		}
 
 		try{
-			$payload = JWT::decode($token, $token_key, ['HS256']);
+			$payload = JWT::decode($token, $public_key, ['RS256']);
 		}catch(\Exception $e){
 			return false;
 		}
 
+
 		if(! is_array($payload)){
-			$payload = json_decode(json_encode($payload),true);
+			$payload = json_decode(json_encode($payload), true);
 		}
 
 		// 验证时间
@@ -115,22 +112,19 @@ class TokenService {
 	 * 验证 refresh token
 	 */
 	public static function verifyRefreshToken($refresh_token){
-		$base_path = env('root_path') . 'rsa/';
-		$pub_key_path = $base_path . config('auth.'. self::REFRESH_TOKEN_PUB_FILE);
-		$public_key = file_get_contents($pub_key_path);
+		$refresh_key = config('auth.'. self::REFRESH_TOKEN_KEY);
+		$curr_time = time();
 
 		if(empty($refresh_token)){
 			return false;
 		}
 
 		try{
-			$payload = JWT::decode($refresh_token, $public_key, ['RS256']);
+			$payload = JWT::decode($refresh_token, $refresh_key, ['HS256']);
 		}catch(\Exception $e){
 			return false;
 		}
 
-		$curr_time = time();
-		
 		if(! is_array($payload)){
 			$payload = json_decode(json_encode($payload),true);
 		}
@@ -145,7 +139,7 @@ class TokenService {
 
 		// 验证hash
 		$user_agent = request()->header('user-agent');
-		$hash = md5($user_agent);
+		$hash = md5($user_agent.$refresh_key);
 		if($hash != $payload['hash']){
 			return false;
 		}

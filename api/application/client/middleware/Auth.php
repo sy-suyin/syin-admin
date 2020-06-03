@@ -6,7 +6,6 @@ namespace app\client\middleware;
 
 use app\client\service\AdminService;
 use app\client\service\TokenService;
-use Firebase\JWT\JWT;
 
 class Auth{
 
@@ -30,7 +29,7 @@ class Auth{
 			if($token != ''){
 				$payload = TokenService::verifyToken($token);
 				$admin = null;
-				
+
 				if($payload && !empty($payload['uid'])){
 					$admin = db('admin')
 						->where('id', $payload['uid'])
@@ -57,76 +56,11 @@ class Auth{
 				$whitelist = config('auth.whitelist');
 	
 				if(empty($whitelist) || !isset($whitelist[$controller]) || !in_array($action, $whitelist[$controller])){
-					return json('请在登陆后重试'.$token, 401);
+					return json('请在登陆后重试', 401);
 				}
 			}
 	
 			return $next($request);
 		}
-
-		/* 
-		$token = TokenService::generateToken([
-			'id' => 1
-		]);
-
-		p($token);
-
-		$payload = TokenService::verifyToken($token);
-		p($payload);
-		die;
-		
-		die;
-
-		$token = TokenService::generateRefreshToken([
-			'id' => 1
-		]);
-
-		p($token);
-
-		$payload = TokenService::verifyRefreshToken($token);
-		p($payload);
-		die; */
-
-		// 尝试生成Token
-		// token 使用 rs256 生成
-		// refersh_token 使用 hs256 生成
-		// token 有效期, 5分钟
-		// refersh_token 有效期 3 天
-/* 
-		$time = time();
-		$payload = [
-			// 过期时间
-			'exp' => $time + 600,
-			// 生效时间，在此之前是无效的
-			'nbf' => $time,
-			// 签发时间
-			'iat' => $time,
-			// 客户端id
-			'client_id' => '',
-			// 用户id
-			'uid' => ''
-		];
-
-		$path = env('root_path');
-		$pri_key_path = $path. 'rsa/' . config('auth.refresh_token_pub');
-		$privateKey = file_get_contents($pri_key_path);
-
-		$pub_key_path = $path. 'rsa/' . config('auth.refresh_token_pri');
-		$publicKey = file_get_contents($pub_key_path);
-
-		$token = JWT::encode($payload, $privateKey, 'RS256');
-		p($token); */
-		/* 
-		try{
-			$payload = JWT::decode($token, $publicKey, ['RS256']);
-			if(! is_array($payload)){
-				$payload = json_decode(json_encode($payload),true);
-			}
-		}catch(\Exception $e){
-			p($e);
-		}
-		p($payload);
-
-		die; */
 	}
 }

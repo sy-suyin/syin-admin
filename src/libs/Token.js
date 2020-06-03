@@ -17,7 +17,7 @@ class Token {
 	}
 
 	/**
-	 * 保存token
+	 * 更新token
 	 * 
 	 * @param {string} token 
 	 */
@@ -37,7 +37,7 @@ class Token {
 	 */
 	static refreshToken(){
 		return new Promise((resolve, reject) => {
-			if(this.is_request){
+			if(this.isRequest()){
 				Observer.on('refresh_token_end', (token)=>{
 					resolve(token);
 				});
@@ -52,17 +52,18 @@ class Token {
 					// 此处判断后端传过来的数据有没有问题
 					if(!res
 						|| typeof(res.status) == 'undefined' 
-						|| typeof(res.token) == 'undefined' 
 						|| res.status != 1
-						|| res.token == ''
 					){
 						reject(new Error('token获取失败'));
 					}
 
 					// 保存提交的数据
-					let token = res.result.token;
+					let token = res.result.token || '';
 
-					// 更新本地存储的token
+					if(! token){
+						reject(new Error('token获取失败'));
+					}
+
 					this.updateToken(token);
 
 					// 通知其他地方可以继续执行
@@ -80,21 +81,8 @@ class Token {
 		});
 	}
 
-	/**
-	 * 执行请求, 当token已过期, 其他的请求正在获取新的token时, 将会挂起该请求直到新token获取完成
-	 * 
-	 * @param {*} fn 
-	 */
-	static next(fn){
-		return new Promise((resolve, reject) => {
-			if(!this.is_request){
-				resolve(fn());
-			}else{
-				Observer.on('refresh_token_end', (token)=>{
-					resolve(fn());
-				});
-			}
-		});
+	static isRequest(){
+		return this.is_request;
 	}
 }
 

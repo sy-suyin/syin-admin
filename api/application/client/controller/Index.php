@@ -39,6 +39,8 @@ class Index extends Client {
 	 */
 	public function refreshTokenAction(){
 		$refresh_token = input('refresh_token/s', '');
+		$refresh_token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1OTEzNzI3NjEsIm5iZiI6MTU5MTE5OTk2MSwiaWF0IjoxNTkxMTk5OTYxLCJjbGllbnRfaWQiOiIiLCJ1aWQiOjEsImhhc2giOiJjMjBkZTUzMWEyYTRhZTAzYjI1Zjc2NjZlMmNhZmI4YSJ9.hHF3Z6WTl2FS2BRSg2RDrpD0_1tHj-YUReDT0bekMN8";
+
 
 		if(empty($refresh_token)){
 			return show_error('token生成失败');
