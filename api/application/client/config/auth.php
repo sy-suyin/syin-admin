@@ -26,6 +26,7 @@ return [
 	 * 访问白名单, 在该名单中的路由, 未登录时可直接访问
 	 */
 	'whitelist' => array(
-		'login' => ['index']
+		'login' => ['index'],
+		'index' => ['refreshtoken']
 	)
 ];

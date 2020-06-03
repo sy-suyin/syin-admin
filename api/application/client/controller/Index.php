@@ -8,7 +8,7 @@ use think\Request;
 
 class Index extends Client {
 
-	/** 
+	/**
      * 个人中心
      */
     public function profileAction(Request $request){
@@ -32,5 +32,17 @@ class Index extends Client {
 
 		// 返回消息
 		return show_success('已成功修改个人信息');
-    }
+	}
+
+	/**
+	 * 获取新token
+	 */
+	public function refreshTokenAction(){
+		sleep(1);
+
+		return show_success('', [
+			'token' => 'test123'
+			// 'token' => 'asd123'
+		]);
+	}
 }

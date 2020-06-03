@@ -47,7 +47,10 @@
 <script>
 import {common as commonMixin} from "@/mixins/common.js";
 import { debounce } from '@/libs/util.js';
+import Chain from '@/libs/Chain.js';
 import { addAdmin, getRoles } from '@/api/system';
+
+let instance = new Chain();
 
 export default {
 	name: "system_adminadd",
@@ -79,6 +82,24 @@ export default {
 		}
 	},
 	mounted(){
+
+		// console.log(Form);
+		instance.sort(['verify', 'submit']);
+
+		instance.bind('verify', ()=>{
+			console.log(this);
+			let args = this.form;
+			return {...args};
+		});
+
+		instance.bind('submit', (args)=>{
+			console.log(this);
+			console.log(args);
+			// let args = this.form;
+			// return args;
+		});
+		// this.test();
+
 		this.init();
 	},
 	methods: {
@@ -89,6 +110,57 @@ export default {
 				let msg = e.message || '网络异常, 请稍后重试';
 				this.message(msg, 'warning', 3000, this.redirect_url);
 			});
+		},
+
+		test(){
+			let chain = [this['subtest'], this['subend']];
+			let config = {
+				test: 1
+			}
+
+			let promise = Promise.resolve(config);
+
+		    chain.unshift(this.testvalid, this.validfail);
+    		chain.push(null, this.failend);
+
+			while (chain.length) {
+				console.log(promise);
+				promise = promise.then(chain.shift(), chain.shift());
+			}
+			// console.log(this);
+			// console.log(this.hasOwnProperty('subtest'));
+		},
+
+		validfail(){
+			console.log('fail 1');
+		},
+
+		testvalid(config){
+			return new Promise((resolve, reject) => {
+
+				// console.log(config);
+				console.log('step 1');
+
+				setTimeout(()=>{
+					resolve(config);
+				}, 5000);
+	
+				// return Promise.resolve(config);
+			});
+		},
+
+		subtest(config){
+			console.log('step 2');
+			console.log(config);
+			return Promise.resolve('xxx');
+		},
+
+		subend(){
+			console.log('fail 2');
+		},
+
+		failend(){
+			console.log('fail 3');
 		},
 
 		/**
@@ -105,6 +177,9 @@ export default {
 		},
 
 		onSubmit(formName) {
+			console.log(instance.commit());
+			return false;
+
 			let form_name = 'form';
 			let args = {...this.form};
 

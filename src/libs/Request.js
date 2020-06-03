@@ -7,6 +7,12 @@ import axios from 'axios'
 import store from '@/vuex/store';
 import {timeout, key as app_key, not_logged_allow} from '@/config/reuqest';
 import {checkPermission} from '@/libs/util.js';
+import Tokenn from '@/libs/Token';
+import Vue from 'vue'
+
+
+let tokenInstance = new Tokenn();
+
 
 class Request{
 	constructor (base_url = '') {
@@ -72,20 +78,40 @@ class Request{
 				return Promise.reject(new Error('服务器未响应，请稍后重试'));
 			}
 
-			if(response.headers && typeof(response.headers.token) != 'undefined'){
-				store.commit('auth/updateToken',response.headers.token);
-			}
-
 			return res;
 		}, error => {
 			if(!!error.isAxiosError){
 				const { response: { status, statusText, data: { msg = '服务器未响应，请稍后重试' } }} = error;
 
 				if(status == 401){
-					setTimeout(() => {
-						store.commit('auth/logout');
-					}, 1500);
-					return Promise.reject(new Error('账号过期, 请重新登录'));
+					// token 过期
+					return	tokenInstance.getRefreshToken().then(token => {
+						let config = error.config;
+						config.headers.token = token;
+						return axios.request(config).then(response => {
+							const res = response.data;
+
+							if(response.status !== 200){
+								return Promise.reject(new Error('服务器未响应，请稍后重试'));
+							}
+
+							return res;
+						});
+					}).catch(e => {
+						console.log(e);
+						// setTimeout(() => {
+						// 	store.commit('auth/logout');
+						// }, 1500);
+						// return Promise.reject(new Error('账号过期, 请重新登录'));
+					});
+					// return tokenInstance.getrefreshToken().then((res)=>{
+					// 	window.localstorage.token = res.token;
+					// 	return axios.request(error.config);
+					// });
+					// setTimeout(() => {
+					// 	store.commit('auth/logout');
+					// }, 1500);
+					// return Promise.reject(new Error('账号过期, 请重新登录'));
 				}else if(status != 200){
 					return Promise.reject(new Error('服务器未响应，请稍后重试'));
 				}
