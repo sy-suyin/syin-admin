@@ -1,5 +1,5 @@
 import store from '@/vuex/store'
-import {isEmpty, isSet} from '@/libs/util.js';
+import {isEmpty, isSet} from '@/libs/util';
 
 export default {
 	inserted(el, binding, vnode) {

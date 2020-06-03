@@ -5,14 +5,9 @@
 import Qs from 'qs';
 import axios from 'axios'
 import store from '@/vuex/store';
-import {timeout, key as app_key, not_logged_allow} from '@/config/reuqest';
-import {checkPermission} from '@/libs/util.js';
-import Tokenn from '@/libs/Token';
-import Vue from 'vue'
-
-
-let tokenInstance = new Tokenn();
-
+import {timeout, not_logged_allow} from '@/config/reuqest';
+import {checkPermission} from '@/libs/util';
+import Token from '@/libs/Token';
 
 class Request{
 	constructor (base_url = '') {
@@ -34,10 +29,10 @@ class Request{
 		let controller = url[1];
 		let action = url[2];
 
-		if(not_logged_allow.hasOwnProperty(controller) && 
+		if(not_logged_allow.hasOwnProperty(controller) &&
 			not_logged_allow[controller].indexOf(action) != -1
 		){
-			return true;	
+			return true;
 		}
 
 		return checkPermission(controller, action);
@@ -55,8 +50,7 @@ class Request{
 			config.url = this.buildUrl(config.url);
 
 			config.headers = {
-				'token': store.getters['auth/token'],
-				'key': app_key
+				'token': Token.getToken(),
 			};
 
 			// 对post提交的数据进行额外处理
@@ -72,46 +66,26 @@ class Request{
 
 		// 响应拦截
 		instance.interceptors.response.use(response => {
-			const res = response.data;
-
-			if(response.status !== 200){
-				return Promise.reject(new Error('服务器未响应，请稍后重试'));
-			}
-
-			return res;
+			return this.responseSuccess(response);
 		}, error => {
-			if(!!error.isAxiosError){
+			if(error.hasOwnProperty('isAxiosError') && error.isAxiosError){
 				const { response: { status, statusText, data: { msg = '服务器未响应，请稍后重试' } }} = error;
 
 				if(status == 401){
-					// token 过期
-					return	tokenInstance.getRefreshToken().then(token => {
+					// token 过期, 获取新 token
+					return	Token.refreshToken().then(token => {
 						let config = error.config;
 						config.headers.token = token;
+
 						return axios.request(config).then(response => {
-							const res = response.data;
-
-							if(response.status !== 200){
-								return Promise.reject(new Error('服务器未响应，请稍后重试'));
-							}
-
-							return res;
+							return this.responseSuccess(response);
 						});
 					}).catch(e => {
-						console.log(e);
-						// setTimeout(() => {
-						// 	store.commit('auth/logout');
-						// }, 1500);
-						// return Promise.reject(new Error('账号过期, 请重新登录'));
+						setTimeout(() => {
+							store.commit('auth/logout');
+						}, 1500);
+						return Promise.reject(new Error('账号过期, 请重新登录'));
 					});
-					// return tokenInstance.getrefreshToken().then((res)=>{
-					// 	window.localstorage.token = res.token;
-					// 	return axios.request(error.config);
-					// });
-					// setTimeout(() => {
-					// 	store.commit('auth/logout');
-					// }, 1500);
-					// return Promise.reject(new Error('账号过期, 请重新登录'));
 				}else if(status != 200){
 					return Promise.reject(new Error('服务器未响应，请稍后重试'));
 				}
@@ -119,6 +93,16 @@ class Request{
 
 			return Promise.reject(error)
 		})
+	}
+
+	responseSuccess(response){
+		const res = response.data;
+
+		if(response.status !== 200){
+			return Promise.reject(new Error('服务器未响应，请稍后重试'));
+		}
+
+		return res;
 	}
 
 	buildUrl(url){
@@ -131,9 +115,9 @@ class Request{
 	}
 
 	request(options){
-		const instance = axios.create({timeout})
+		const instance = axios.create({timeout});
 		this.interceptors(instance, options);
-		return instance(options);
+		return Token.next(()=>{return instance(options)});
 	}
 }
 

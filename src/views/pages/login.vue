@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import * as util from '@/libs/util.js';
+import * as util from '@/libs/util';
 import { login } from '@/api/user';
 
 export default {
@@ -82,6 +82,9 @@ export default {
 				});
 
 				// 存储相关登录信息
+				this.$store.commit('auth/updateToken', result.token);
+				this.$store.commit('auth/updateRefreshToken', result.refresh_token);
+
 				result.user.avatar = result.config.domain + result.user.avatar;
 				this.$store.commit('auth/setLogin',result.user);
 				this.$store.commit('access/set', {

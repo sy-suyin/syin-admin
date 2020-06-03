@@ -49,7 +49,7 @@
 <script>
 import {common as commonMixin} from "@/mixins/common.js";
 import {detail as detailMixin} from "@/mixins/detail.js";
-import { debounce, requestAll } from '@/libs/util.js';
+import { debounce, requestAll } from '@/libs/util';
 import { getAdmin, editAdmin, getRoles } from '@/api/system';
 
 export default {

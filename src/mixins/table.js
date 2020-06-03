@@ -2,7 +2,7 @@
  * 封装表格页面相关操作
  */
 
-import {isEmpty, isSet, debounce, throttle, timestampToTime} from '@/libs/util.js';
+import {isEmpty, isSet, debounce, throttle, timestampToTime} from '@/libs/util';
 import Table from '@/libs/Table.js';
 
 let TableInstance = null; 

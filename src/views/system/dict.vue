@@ -115,7 +115,7 @@
 import {page as pageMixin} from "@/mixins/page.js";
 import {table as tableMixin} from "@/mixins/table.js";
 import {common as commonMixin} from "@/mixins/common.js";
-import * as Util from '@/libs/util.js';
+import * as Util from '@/libs/util';
 import {sence} from '@/libs/page.js';
 
 export default {

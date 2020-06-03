@@ -4,7 +4,7 @@
  * 动态生成权限与后台菜单
  */
 
-import {checkPermission, getType} from '@/libs/util.js';
+import {checkPermission, getType} from '@/libs/util';
 import Layout from "@/layout";
 
 /**

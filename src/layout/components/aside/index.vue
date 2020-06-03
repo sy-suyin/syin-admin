@@ -25,7 +25,7 @@
 <script>
 import menuItem from "../menu-item";
 import logo from "../logo";
-import { debounce } from '@/libs/util.js';
+import { debounce } from '@/libs/util';
 import { mapState } from 'vuex'
 
 export default {

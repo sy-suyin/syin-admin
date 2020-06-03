@@ -1,12 +1,16 @@
 import Storage from '@/libs/Storage.js';
+import Cookie from '@/libs/Cookie';
+import {aes_encrypt, aes_decrypt} from '@/libs/crypto';
 
 const state = {
 	token:'',
+	refresh_token:'',
 	currentUser:'',
 }
 
 const getters = {
 	token:state=>state.token,
+	refresh_token:state=>state.refresh_token,
 	user:state=>state.currentUser,
 }
 
@@ -38,23 +42,43 @@ const mutations = {
 	/*
 	 * 更新hash
 	 */
-	updateToken(state,token){
+	updateToken(state, token){
 		state.token = token;
 
-		Storage.set('authToken', token)
+		token = aes_encrypt(token);
+		Cookie.write('auth_token', token, null, null, null, true);
+	},
+
+	updateRefreshToken(state,refresh_token){
+		state.refresh_token = refresh_token;
+
+		refresh_token = aes_encrypt(refresh_token);
+		Cookie.write('auth_refresh_token', refresh_token, null, null, null, true);
 	},
 
 	/*
 	 *重新加载, 从缓存中读取数据
 	 */
 	reload(){
-		let token = Storage.get('authToken');
+		let token = Cookie.read('auth_token');
+		let refresh_token = Cookie.read('auth_refresh_token');
+
 		let user = Storage.get('currentUser', {json: true});
 
-		if(token && user){
-			user && this.commit('auth/setLogin', user);
-			this.commit('auth/updateToken', token);
+		if(!token || user || refresh_token){
+			return;
 		}
+
+		token = aes_decrypt(token);
+		refresh_token = aes_decrypt(refresh_token);
+
+		if(!token || !refresh_token){
+			return;
+		}
+
+		state.token = token;
+		state.refresh_token = refresh_token;
+		user && this.commit('auth/setLogin', user);
 	},
 
 	/**

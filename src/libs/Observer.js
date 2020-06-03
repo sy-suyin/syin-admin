@@ -47,6 +47,15 @@ class Observer {
 
 		return true;
 	}
+
+	/**
+	 * 删除观察事件
+	 * 
+	 * @param {string} 		name 	事件名称
+	 */
+	static remove(name){
+		delete this.handlers[name];
+	}
 }
 
 export default Observer;

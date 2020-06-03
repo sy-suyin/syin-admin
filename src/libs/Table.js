@@ -1,4 +1,4 @@
-import { getType } from '@/libs/util.js';
+import { getType } from '@/libs/util';
 import { post } from '@/libs/api.js';
 
 class Table{

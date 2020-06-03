@@ -46,7 +46,7 @@
 
 <script>
 import {common as commonMixin} from "@/mixins/common.js";
-import { debounce } from '@/libs/util.js';
+import { debounce } from '@/libs/util';
 import Chain from '@/libs/Chain.js';
 import { addAdmin, getRoles } from '@/api/system';
 
@@ -110,57 +110,6 @@ export default {
 				let msg = e.message || '网络异常, 请稍后重试';
 				this.message(msg, 'warning', 3000, this.redirect_url);
 			});
-		},
-
-		test(){
-			let chain = [this['subtest'], this['subend']];
-			let config = {
-				test: 1
-			}
-
-			let promise = Promise.resolve(config);
-
-		    chain.unshift(this.testvalid, this.validfail);
-    		chain.push(null, this.failend);
-
-			while (chain.length) {
-				console.log(promise);
-				promise = promise.then(chain.shift(), chain.shift());
-			}
-			// console.log(this);
-			// console.log(this.hasOwnProperty('subtest'));
-		},
-
-		validfail(){
-			console.log('fail 1');
-		},
-
-		testvalid(config){
-			return new Promise((resolve, reject) => {
-
-				// console.log(config);
-				console.log('step 1');
-
-				setTimeout(()=>{
-					resolve(config);
-				}, 5000);
-	
-				// return Promise.resolve(config);
-			});
-		},
-
-		subtest(config){
-			console.log('step 2');
-			console.log(config);
-			return Promise.resolve('xxx');
-		},
-
-		subend(){
-			console.log('fail 2');
-		},
-
-		failend(){
-			console.log('fail 3');
 		},
 
 		/**

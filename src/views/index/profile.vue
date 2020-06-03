@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import * as util from '@/libs/util.js';
+import * as util from '@/libs/util';
 import {common as commonMixin} from "@/mixins/common.js";
 import { updateProfile } from '@/api/user';
 

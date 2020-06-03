@@ -11,11 +11,6 @@ module.exports = {
 		pro: 'http://admin.e.syin.top/client'
 	},
 
-	/** 
-	 * 应用标识
-	 */
-	key: 'r1bTzaRzQKCoJg3swTnyx1Kni0zGb4yV',
-
 	/**
 	 * 默认请求超时的毫秒数(0 表示无超时时间)
 	 */

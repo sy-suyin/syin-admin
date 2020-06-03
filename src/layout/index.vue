@@ -35,6 +35,11 @@ export default {
 	},
 	created(){
 		getAdmin(1);
+
+		setTimeout(()=>{
+			getRoles();
+		}, 2000);
+
 		this.init();
 	},
 	methods:{

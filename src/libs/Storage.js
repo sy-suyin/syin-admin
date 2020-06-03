@@ -2,7 +2,7 @@
  * 封装localStorage操作
  */
 
-import * as Crypto from '@/libs/crypto.js';
+import {aes_encrypt, aes_decrypt} from '@/libs/crypto.js';
 
 class Storage {
 
@@ -21,7 +21,7 @@ class Storage {
 
 		// 对数据进行加密
 		if(encrypt){
-			data = Crypto.aes_encrypt(data);
+			data = aes_encrypt(data);
 		}
 
 		localStorage.setItem(key, data);
@@ -52,7 +52,7 @@ class Storage {
 		}
 
 		if(decrypt){
-			result = Crypto.aes_decrypt(result);
+			result = aes_decrypt(result);
 
 			if(!result){
 				return false;

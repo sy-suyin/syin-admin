@@ -2,8 +2,8 @@
 namespace app\client\controller;
 
 use app\common\controller\Client;
-use app\client\model\Admin as AdminModel;
 use app\client\service\AdminService;
+use app\client\service\TokenService;
 use think\Request;
 
 class Index extends Client {
@@ -38,11 +38,30 @@ class Index extends Client {
 	 * 获取新token
 	 */
 	public function refreshTokenAction(){
-		sleep(1);
+		$refresh_token = input('refresh_token/s', '');
+
+		if(empty($refresh_token)){
+			return show_error('token生成失败');
+		}
+
+		$payload = TokenService::verifyRefreshToken($refresh_token);
+						
+		if(!$payload || empty($payload['uid'])){
+			return show_error('token生成失败');
+		}
+
+		$admin = db('admin')
+			->where('id', $payload['uid'])
+			->where('is_disabled',0)
+			->where('is_deleted',0)
+			->find();
+	
+		$token = TokenService::generateToken([
+			'uid' => $admin['id']
+		]);
 
 		return show_success('', [
-			'token' => 'test123'
-			// 'token' => 'asd123'
+			'token' => $token
 		]);
 	}
 }

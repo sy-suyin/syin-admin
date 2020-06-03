@@ -17,13 +17,10 @@ const service = new Request(BASE_URL);
  */
 export function request(options) {
 	let {dispose = false} = options;
-
 	let response = service.request(options);
-	console.log(response);
 
 	if(dispose){
 		return response.then((res)=>{
-			console.log(res);
 			if(res && typeof(res.status) != 'undefined' && res.status > 0){
 				return res.result;
 			}
