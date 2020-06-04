@@ -4,5 +4,6 @@
  */
 
 return [
+	app\client\middleware\Options::class,
 	app\client\middleware\Auth::class,
 ];

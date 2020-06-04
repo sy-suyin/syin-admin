@@ -83,7 +83,6 @@ export default {
 	},
 	mounted(){
 
-		// console.log(Form);
 		instance.sort(['verify', 'submit']);
 
 		instance.bind('verify', ()=>{
@@ -136,12 +135,12 @@ export default {
 				this.loading(true);
 
 				addAdmin(args).then(res => {
-					this.loading(false);
 					this.$router.push({path: this.redirect_url})
 				}).catch(e => {
-					this.loading(false);
 					let msg = e.message || '网络异常, 请稍后重试';
 					this.$message(msg, 'warning');
+				}).finally(()=>{
+					this.loading(false);
 				});
 			});
 		},

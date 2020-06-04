@@ -1,18 +1,40 @@
 import axios from 'axios'
-import {baseUrl} from '@/config/reuqest';
 import store from '@/vuex/store'
 import Observer from '@/libs/Observer.js';
-
-const BASE_URL = process.env.NODE_ENV === 'development' ? baseUrl.dev : baseUrl.pro;
 
 class Token {
 
 	static is_request = false;
 
 	/**
-	 * 获取本地存储的token
+	 * 获取 Token
 	 */
 	static getToken(){
+		let old_auth_time = store.getters['auth/auth_time'];
+		let auth_time = localStorage.getItem('auth_time');
+
+		// 其他标签页已退出登录
+		if(old_auth_time && auth_time == null){
+			return store.commit('auth/logout');
+		}
+
+		// 本地存储的token已被更新
+		if(old_auth_time != auth_time){
+			// 仅当本地存储数据比vuex中数据新时, 才会更新vuex中的数据
+			if(old_auth_time < auth_time){
+				// 检查登录时间
+				let old_login_time = store.getters['auth/login_time'];
+				let login_time = localStorage.getItem('login_time');
+
+				// 其他标签页已变更登录信息
+				if(old_login_time < login_time){
+					store.commit('auth/reload');
+				}else{
+					store.commit('auth/reloadToken');
+				}
+			}
+		}
+
 		return store.getters['auth/token'];
 	}
 
@@ -23,6 +45,10 @@ class Token {
 	 */
 	static updateToken(token){
 		store.commit('auth/updateToken', token);
+	}
+
+	static getRefreshTokenUrl(){
+		return store.getters['auth/refresh_token_url'];
 	}
 
 	/**
@@ -43,7 +69,7 @@ class Token {
 				});
 			}else{
 				this.is_request = true;
-				let url = BASE_URL+'/index/refreshtoken';
+				let url = this.getRefreshTokenUrl();
 				let refresh_token = this.getRefreshToken();
 				
 				axios.post(url, {refresh_token}).then(res => {

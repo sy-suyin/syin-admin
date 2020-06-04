@@ -90,7 +90,6 @@ class TokenService {
 			return false;
 		}
 
-
 		if(! is_array($payload)){
 			$payload = json_decode(json_encode($payload), true);
 		}

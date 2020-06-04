@@ -39,12 +39,14 @@ export default {
 			use_offline: false,
 
 			args: {
-				login: 'test',
-				password: 'asd123'
+				login: '',
+				password: ''
 			}
 		}
 	},
 	mounted(){
+		this.args.login = 'test';
+		this.args.password = 'asd123';
 	},
 	methods: {
 		login(){
@@ -68,8 +70,18 @@ export default {
 			this.is_loading = true;
 
 			login(args).then(result => {
+				this.loginSuccess(result);
+			}).catch(e => {
+				this.message('网络异常，请稍后重试');
+			}).finally(()=>{
 				this.is_loading = false;
+			});
+		},
 
+		/**
+		 * 登录成功处理
+		 */
+		loginSuccess(result){
 				// 存储后端返回的相关配置信息
 				this.$store.commit('settings/settingEdit', {
 					key: 'domain',
@@ -82,15 +94,20 @@ export default {
 				});
 
 				// 存储相关登录信息
-				this.$store.commit('auth/updateToken', result.token);
-				this.$store.commit('auth/updateRefreshToken', result.refresh_token);
-
 				result.user.avatar = result.config.domain + result.user.avatar;
-				this.$store.commit('auth/setLogin',result.user);
-				this.$store.commit('access/set', {
-					data_forbid: result.forbid.data_forbid,	// 数据权限黑名单
-					page_forbid: result.forbid.page_forbid,	// 页面权限黑名单
+				this.$store.commit('auth/setLogin', {
+					user: result.user, 
+					token: result.token,
+					refresh_token: result.refresh_token,
+					refresh_token_url: result.refresh_token_url,
 				});
+
+				this.$store.commit('access/set', result.forbid);
+
+				// this.$store.commit('access/set', {
+				// 	data_forbid: result.forbid.data_forbid,	// 数据权限黑名单
+				// 	page_forbid: result.forbid.page_forbid,	// 页面权限黑名单
+				// });
 
 				// 如果有本地记录的重定向记录, 则在登陆后跳转回之前的页面
 				// 注: 此功能未实现
@@ -100,10 +117,6 @@ export default {
 				// 登录跳转
 				let redirect_path = redirect ? redirect : this.$store.getters['access/routers'][0].path;
 				this.$router.replace({path: redirect_path})
-			}).catch(e => {
-				this.is_loading = false;
-				this.message('网络异常，请稍后重试');
-			});
 		},
 
 		// 离线登录, 不使用任何与后端有关的功能

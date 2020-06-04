@@ -154,7 +154,6 @@ export default {
 			this.loading(true);
 			requestAll([getRole(id), getAccessData(id)]).then((res)=>{
 				let {0: role, 1: access_data} = res;
-				this.loading(false);
 
 				// 处理角色数据
 				this.id = id;
@@ -165,9 +164,10 @@ export default {
 				this.dialog.data.data = Object.values(access_data.config);
 				this.treeInit(access_data.forbid);
 			}).catch(e => {
-				this.loading(false);
 				let msg = e.message || '网络异常, 请稍后重试';
 				this.message(msg, 'warning', 3000, this.redirect_url);
+			}).finally(()=>{
+				this.loading(false);
 			});
 		},
 
@@ -191,12 +191,12 @@ export default {
 
 			this.loading(true);
 			editRole(args).then(res => {
-				this.loading(false);
 				this.$router.push({path: this.redirect_url})
 			}).catch(e => {
-				this.loading(false);
 				let msg = e.message || '网络异常, 请稍后重试';
 				this.message(msg, 'warning', 3000);
+			}).finally(()=>{
+				this.loading(false);
 			});
 		},
 

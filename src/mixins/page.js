@@ -174,7 +174,6 @@ export const page = {
 
 			this.loading(true);
 			post(url, args, false).then(res => {
-				this.loading(false);
 				if(res && typeof(res.status) != 'undefined' && res.status > 0){
 					let result = res.result;
 
@@ -193,9 +192,10 @@ export const page = {
 					this.message('服务器未响应，请稍后重试', 'warning');
 				}
 			}).catch(e => {
-				this.loading(false);
 				let msg = e.message || '网络异常, 请稍后重试';
 				this.$message(msg, 'warning');
+			}).finally(()=>{
+				this.loading(false);
 			});
 		},
 

@@ -56,14 +56,11 @@ function add_operate_log($content, $data='', $type='admin', $uid=0){
 	$add = db('log_operate')->insert(array(
 		'type'			=> $type,
 		'user_id'		=> $uid,
-		'program'		=> MODULE_NAME,
-		'controller'	=> CONTROLLER_NAME,
-		'action'		=> ACTION_NAME,
 		'content'		=> htmlspecialchars(strip_tags($content), ENT_QUOTES, 'UTF-8'),
 		'data'			=> htmlspecialchars(strip_tags($data), ENT_QUOTES, 'UTF-8'),
 		'add_time'		=> time(),
 		'client_ip'		=> request()->ip(),
-		'user_agent'	=> request()->server()['HTTP_USER_AGENT']
+		'user_agent'	=> request()->header('user-agent')
 	));
 
 	return $add ? $add : false;
@@ -93,8 +90,6 @@ function admin_can_access($controller, $action){
 	}
 
 	if(! isset($ban_list[$admin['id']])){
-		$accesses = [];
-
 		$role_ids = db('admin_role_relation')
 			->alias('rr')
 			->join('admin_role r', 'r.id = rr.role_id', 'left')

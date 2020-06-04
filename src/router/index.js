@@ -16,7 +16,7 @@ let is_router_add = false;
 const NOT_LOGGED_PAGES = ['login', 'register'];
 
 router.beforeEach((to, from, next) => {
-	let is_logged = !!store.state.auth.currentUser;
+	let is_logged = !!store.state.auth.user;
 	let path = to.path;
 
 	path = path ? path.substr(1) : '';

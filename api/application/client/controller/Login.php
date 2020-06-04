@@ -3,7 +3,6 @@ namespace app\client\controller;
 
 use app\client\model\Admin as AdminModel;
 use app\client\service\AdminService;
-use app\client\service\TokenService;
 use think\Request;
 
 
@@ -31,15 +30,6 @@ class Login{
 		// 配置登录后返回的数据
 		$result = AdminService::loginConfig($admin);
 		$result['user'] = $admin->hidden(['password', 'sort'])->toArray();
-
-		// 生成token
-		$result['token'] = TokenService::generateToken([
-			'uid' => $admin->id
-		]);
-
-		$result['refresh_token'] = TokenService::generateRefreshToken([
-			'uid' => $admin->id
-		]);
 
 		return show_success('登录成功', $result);
 	}

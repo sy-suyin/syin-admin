@@ -35,12 +35,12 @@ class AdminService extends BaseTool {
 	/**
 	 * 登录时返回账号相关的配置
 	 */
-	public static function loginConfig($model){
-		$forbid = self::getForbidData($model->id);
+	public static function loginConfig($admin){
+		$forbid = self::getForbidData($admin->id);
 		$domain = request()->domain();
 		$domain = trim($domain, '/');
 
-		return [
+		$result = [
 			'forbid' =>	$forbid,
 			'config' => array(
 				'domain' => $domain,
@@ -52,6 +52,19 @@ class AdminService extends BaseTool {
 				],
 			)
 		];
+
+		// 生成token
+		$result['token'] = TokenService::generateToken([
+			'uid' => $admin->id
+		]);
+
+		$result['refresh_token'] = TokenService::generateRefreshToken([
+			'uid' => $admin->id
+		]);
+
+		$result['refresh_token_url'] = url('index/refreshtoken', '', true, true);
+
+		return $result;
 	}
 
 	/**
@@ -247,5 +260,38 @@ class AdminService extends BaseTool {
 		}
 
 		return true;
+	}
+
+	/**
+	 * 刷新token
+	 */
+	public static function refreshToken($params){
+		if(empty($params)){
+			return new RuntimeError('refresh token 异常');
+		}
+
+		$refresh_token =  isset($params['refresh_token']) ? $params['refresh_token'] : '';
+
+		if(empty($refresh_token)){
+			return new RuntimeError('token生成失败');
+		}
+
+		$payload = TokenService::verifyRefreshToken($refresh_token);
+						
+		if(!$payload || empty($payload['uid'])){
+			return new RuntimeError('token生成失败');
+		}
+
+		$admin = db('admin')
+			->where('id', $payload['uid'])
+			->where('is_disabled', 0)
+			->where('is_deleted', 0)
+			->find();
+
+		$token = TokenService::generateToken([
+			'uid' => $admin['id']
+		]);
+
+		return $token;
 	}
 }

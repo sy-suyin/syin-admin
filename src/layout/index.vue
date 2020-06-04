@@ -19,7 +19,6 @@ import layoutAside from "./components/aside";
 import settingPanel from "./components/setting-panel";
 import containerHead from "./components/container-head";
 import errorPage from "./components/error-page";
-import { getAdmin, editAdmin, getRoles } from '@/api/system';
 
 export default {
 	name: "base-layout",
@@ -34,12 +33,6 @@ export default {
 		}
 	},
 	created(){
-		getAdmin(1);
-
-		setTimeout(()=>{
-			getRoles();
-		}, 2000);
-
 		this.init();
 	},
 	methods:{

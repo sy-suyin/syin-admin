@@ -131,12 +131,12 @@ export default {
 		init(){
 			this.loading(true);
 			getAccessData().then(res => {
-				this.loading(false);
 				this.dialog.data.data = Object.values(res.config);
 			}).catch(e => {
-				this.loading(false);
 				let msg = e.message || '网络异常, 请稍后重试';
 				this.message(msg, 'warning', 3000, this.redirect_url);
+			}).finally(()=>{
+				this.loading(false);
 			});
 		},
 
@@ -151,12 +151,12 @@ export default {
 
 			this.loading(true);
 			addRole(args).then(res => {
-				this.loading(false);
 				this.$router.push({path: this.redirect_url})
 			}).catch(e => {
-				this.loading(false);
 				let msg = e.message || '网络异常, 请稍后重试';
 				this.message(msg, 'warning', 3000);
+			}).finally(()=>{
+				this.loading(false);
 			});
 		},
 

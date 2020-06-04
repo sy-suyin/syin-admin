@@ -28,7 +28,7 @@ return [
 	/**
 	 * token 授权过期时长, 单位: 秒
 	 */
-	'token_expire' => 10,
+	'token_expire' => 300,
 
 	/**
 	 * refresh token 授权过期时长, 单位: 秒
