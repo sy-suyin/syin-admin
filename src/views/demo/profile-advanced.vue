@@ -4,11 +4,18 @@
 			<div slot="breadcrumb-after">
 				<div class="page-header-heading">
 					<div>
-						<h1>单号: 12312312412</h1>
+						<h1 class="order-no">单号: 12312312412</h1>
 					</div>
 					<div>
-						操作1
-						操作2
+						<el-button-group>
+							<el-button size="mini">操作1</el-button>
+							<el-button size="mini">操作2</el-button>
+							<el-button size="mini">...</el-button>
+						</el-button-group>
+
+						<div style="margin-left: 20px; display: inline-block;">
+							<el-button type="primary" size="mini">主操作</el-button>
+						</div>
 					</div>
 				</div>
 				<div class="page-header-content">
@@ -16,33 +23,33 @@
 						<table>
 							<tbody>
 								<tr>
-									<td>
-										<span>创建人</span>
-										<span>test</span>
+									<td class="detail-item">
+										<span class="item-label">创建人</span>
+										<span class="item-content">test</span>
 									</td>
-									<td>
-										<span>订购产品</span>
-										<span>xxxx</span>
-									</td>
-								</tr>
-								<tr>
-									<td>
-										<span>创建时间</span>
-										<span>test</span>
-									</td>
-									<td>
-										<span>关联单据</span>
-										<span>xxxx</span>
+									<td class="detail-item">
+										<span class="item-label">订购产品</span>
+										<span class="item-content">xxxx</span>
 									</td>
 								</tr>
 								<tr>
-									<td>
-										<span>生效日期</span>
-										<span>test</span>
+									<td class="detail-item">
+										<span class="item-label">创建时间</span>
+										<span class="item-content">test</span>
 									</td>
-									<td>
-										<span>备注</span>
-										<span>xxxx</span>
+									<td class="detail-item">
+										<span class="item-label">关联单据</span>
+										<span class="item-content">xxxx</span>
+									</td>
+								</tr>
+								<tr>
+									<td class="detail-item">
+										<span class="item-label">生效日期</span>
+										<span class="item-content">test</span>
+									</td>
+									<td class="detail-item">
+										<span class="item-label">备注</span>
+										<span class="item-content">xxxx</span>
 									</td>
 								</tr>
 							</tbody>
@@ -95,15 +102,15 @@
 				<table class="info-table">
 					<tbody>
 						<tr>
-							<td>
+							<td class="detail-item">
 								<span class="item-label">用户姓名</span>
 								<span class="item-content">测试</span>
 							</td>
-							<td>
+							<td class="detail-item">
 								<span class="item-label">会员卡号</span>
 								<span class="item-content">32943898021309809423	</span>
 							</td>
-							<td>
+							<td class="detail-item">
 								<span>会员卡号</span>
 								<span>32943898021309809423	</span>
 							</td>
@@ -301,11 +308,16 @@ export default {
 .page-header-heading{
 	display: flex;
 	justify-content: space-between;
+
+	.order-no{
+		font-weight: 600;
+	}
 }
 
 .page-header-content{
 	display: flex;
 	padding-top: 12px;
+	padding-bottom: 20px;
 
 	.page-header-content-detail{
 		flex: auto;
@@ -349,6 +361,31 @@ export default {
 
 .info-table{
 	width: 100%;
+}
+
+.detail-item{
+	padding-bottom: 16px;
+
+	.item-label{
+		color: rgba(0,0,0,.85);
+		font-weight: 400;
+		font-size: 14px;
+		line-height: 1.5;
+		white-space: nowrap;
+
+		&:after {
+			content: ":";
+			position: relative;
+			top: -.5px;
+			margin: 0 8px 0 2px;
+		}
+	}
+
+	.item-content{
+		color: rgba(0,0,0,.65);
+		font-size: 14px;
+		line-height: 1.5;
+	}
 }
 
 .item-label{

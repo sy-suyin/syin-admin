@@ -9,23 +9,23 @@
 
 					<el-row class="detail-content" :gutter="20">
 						<el-col :span="8" class="detail-item">
-							<span class="detail-item-label">取货单号</span>
-							<span class="detail-item-content">1000000000</span>
+							<span class="item-label">取货单号</span>
+							<span class="item-content">1000000000</span>
 						</el-col>
 
 						<el-col :span="8" class="detail-item">
-							<span class="detail-item-label">状态</span>
-							<span class="detail-item-content">已取货</span>
+							<span class="item-label">状态</span>
+							<span class="item-content">已取货</span>
 						</el-col>
 
 						<el-col :span="8" class="detail-item">
-							<span class="detail-item-label">销售单号</span>
-							<span class="detail-item-content">1231231231</span>
+							<span class="item-label">销售单号</span>
+							<span class="item-content">1231231231</span>
 						</el-col>
 
 						<el-col :span="8" class="detail-item">
-							<span class="detail-item-label">子订单</span>
-							<span class="detail-item-content">1231231231</span>
+							<span class="item-label">子订单</span>
+							<span class="item-content">1231231231</span>
 						</el-col>
 					</el-row>
 				</div>
@@ -37,28 +37,28 @@
 
 					<el-row class="detail-content" :gutter="20">
 						<el-col :span="8" class="detail-item">
-							<span class="detail-item-label">用户姓名</span>
-							<span class="detail-item-content">测试</span>
+							<span class="item-label">用户姓名</span>
+							<span class="item-content">测试</span>
 						</el-col>
 
 						<el-col :span="8" class="detail-item">
-							<span class="detail-item-label">联系电话</span>
-							<span class="detail-item-content">13400000000</span>
+							<span class="item-label">联系电话</span>
+							<span class="item-content">13400000000</span>
 						</el-col>
 
 						<el-col :span="8" class="detail-item">
-							<span class="detail-item-label">性别</span>
-							<span class="detail-item-content">无</span>
+							<span class="item-label">性别</span>
+							<span class="item-content">无</span>
 						</el-col>
 
 						<el-col :span="8" class="detail-item">
-							<span class="detail-item-label">取货地址</span>
-							<span class="detail-item-content">甘肃省庆阳市西峰区温泉乡囫囵峁</span>
+							<span class="item-label">取货地址</span>
+							<span class="item-content">甘肃省庆阳市西峰区温泉乡囫囵峁</span>
 						</el-col>
 
 						<el-col :span="8" class="detail-item">
-							<span class="detail-item-label">备注</span>
-							<span class="detail-item-content">无</span>
+							<span class="item-label">备注</span>
+							<span class="item-content">无</span>
 						</el-col>
 					</el-row>
 				</div>
@@ -240,30 +240,28 @@ export default {
 		margin-top: 0;
 	}
 
-	.detail-content{
-		.detail-item{
-			padding-bottom: 16px;
+	.detail-item{
+		padding-bottom: 16px;
 
-			.detail-item-label{
-				color: rgba(0,0,0,.85);
-				font-weight: 400;
-				font-size: 14px;
-				line-height: 1.5;
-				white-space: nowrap;
+		.item-label{
+			color: rgba(0,0,0,.85);
+			font-weight: 400;
+			font-size: 14px;
+			line-height: 1.5;
+			white-space: nowrap;
 
-				&:after {
-					content: ":";
-					position: relative;
-					top: -.5px;
-					margin: 0 8px 0 2px;
-				}
+			&:after {
+				content: ":";
+				position: relative;
+				top: -.5px;
+				margin: 0 8px 0 2px;
 			}
+		}
 
-			.detail-item-content{
-				color: rgba(0,0,0,.65);
-				font-size: 14px;
-				line-height: 1.5;
-			}
+		.item-content{
+			color: rgba(0,0,0,.65);
+			font-size: 14px;
+			line-height: 1.5;
 		}
 	}
 

@@ -47,10 +47,7 @@
 <script>
 import {common as commonMixin} from "@/mixins/common.js";
 import { debounce } from '@/libs/util';
-import Chain from '@/libs/Chain.js';
 import { addAdmin, getRoles } from '@/api/system';
-
-let instance = new Chain();
 
 export default {
 	name: "system_adminadd",
@@ -82,23 +79,6 @@ export default {
 		}
 	},
 	mounted(){
-
-		instance.sort(['verify', 'submit']);
-
-		instance.bind('verify', ()=>{
-			console.log(this);
-			let args = this.form;
-			return {...args};
-		});
-
-		instance.bind('submit', (args)=>{
-			console.log(this);
-			console.log(args);
-			// let args = this.form;
-			// return args;
-		});
-		// this.test();
-
 		this.init();
 	},
 	methods: {
@@ -125,9 +105,6 @@ export default {
 		},
 
 		onSubmit(formName) {
-			console.log(instance.commit());
-			return false;
-
 			let form_name = 'form';
 			let args = {...this.form};
 
