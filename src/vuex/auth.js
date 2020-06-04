@@ -50,7 +50,7 @@ const mutations = {
 		Storage.clear();
 
 		// 直接刷新: 重置动态添加的路由
-		history.go(0);
+		location.reload()
 	},
 
 	/**
