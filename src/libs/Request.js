@@ -17,8 +17,8 @@ class Request{
 
 	/**
 	 * 对请求的链接进行权限判断
-	 * 
-	 * @param {string} url 请求链接 
+	 *
+	 * @param {string} url 请求链接
 	 */
 	checkPermission(url){
 		if(url == '' || url[0] != '/'){
@@ -46,9 +46,9 @@ class Request{
 
 	/**
 	 * 设置拦截器
-	 * 
-	 * @param {*} instance 
-	 * @param {*} options 
+	 *
+	 * @param {*} instance
+	 * @param {*} options
 	 */
 	interceptors(instance){
 		// 请求拦截
@@ -62,7 +62,7 @@ class Request{
 			config.url = this.buildUrl(config.url);
 
 			config.headers = {
-				'token': Token.getToken(),
+				'Authorization': Token.getToken(),
 			};
 
 			// 对post提交的数据进行额外处理
@@ -87,7 +87,7 @@ class Request{
 					// token 过期, 获取新 token
 					return	Token.refreshToken().then(token => {
 						let config = error.config;
-						config.headers.token = token;
+						config.headers['Authorization'] = 'Bearer ' + token;
 
 						return axios.request(config).then(response => {
 							return this.responseSuccess(response);
@@ -110,23 +110,43 @@ class Request{
 
 	/**
 	 * 处理请求成功时返回数据
-	 * 
-	 * @param {*} response 
+	 *
+	 * @param {*} response
 	 */
 	responseSuccess(response){
-		const res = response.data;
+		const result = response.data;
+		const headers = response.headers;
 
 		if(response.status !== 200){
 			return Promise.reject(new Error('服务器未响应，请稍后重试'));
 		}
 
-		return res;
+		// 获取并保存 token
+		if(headers.hasOwnProperty('token_type') && headers.hasOwnProperty('access_token')){
+			if(headers['token_type'] == 'bearer'){
+				let access_token = headers['access_token'];
+
+				store.commit('auth/updateToken', access_token);
+
+				if(headers.hasOwnProperty('refresh_token') && headers.hasOwnProperty('refresh_token_url')){
+					let refresh_token = headers['refresh_token'];
+					let refresh_token_url = headers['refresh_token_url'];
+
+					store.commit('auth/updateRefreshToken', {
+						refresh_token,
+						refresh_token_url,
+					});
+				}
+			}
+		}
+
+		return result;
 	}
 
 	/**
 	 * 构建完整请求链接
-	 * 
-	 * @param {string} url 
+	 *
+	 * @param {string} url
 	 */
 	buildUrl(url){
 		if(url == '' || url[0] != '/'){
@@ -140,8 +160,8 @@ class Request{
 	/**
 	 * 将请求放入请求队列中
 	 * 如果请求被挂起, 所有在队列中的请求都将在请求挂起取消后继续
-	 * 
-	 * @param {*} fn 
+	 *
+	 * @param {*} fn
 	 */
 	queue(fn){
 		if(Token.isRequest()){
@@ -157,8 +177,8 @@ class Request{
 
 	/**
 	 * 请求数据
-	 * 
-	 * @param {object} options 
+	 *
+	 * @param {object} options
 	 */
 	request(options){
 		const instance = axios.create({timeout});

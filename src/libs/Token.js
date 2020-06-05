@@ -28,20 +28,21 @@ class Token {
 
 				// 其他标签页已变更登录信息
 				if(old_login_time < login_time){
-					store.commit('auth/reload');
+					location.reload();
 				}else{
 					store.commit('auth/reloadToken');
 				}
 			}
 		}
 
-		return store.getters['auth/token'];
+		let token = store.getters['auth/token'];
+		return 'Bearer ' + token;
 	}
 
 	/**
 	 * 更新token
-	 * 
-	 * @param {string} token 
+	 *
+	 * @param {string} token
 	 */
 	static updateToken(token){
 		store.commit('auth/updateToken', token);
@@ -71,35 +72,42 @@ class Token {
 				this.is_request = true;
 				let url = this.getRefreshTokenUrl();
 				let refresh_token = this.getRefreshToken();
-				
-				axios.post(url, {refresh_token}).then(res => {
-					res = res.data;
+
+				axios.post(url, {refresh_token}).then(response => {
+					const result = response.data;
+					const headers = response.headers;
+
+					if(response.status !== 200){
+						return Promise.reject(new Error('token 获取失败'));
+					}
 
 					// 此处判断后端传过来的数据有没有问题
-					if(!res
-						|| typeof(res.status) == 'undefined' 
-						|| res.status != 1
-					){
-						reject(new Error('token获取失败'));
+					if(!result || typeof(result.status) == 'undefined' || result.status != 1){
+						reject(new Error('token 获取失败'));
 					}
 
-					// 保存提交的数据
-					let token = res.result.token || '';
-
-					if(! token){
-						reject(new Error('token获取失败'));
+					// 获取并保存 token
+					if(! headers.hasOwnProperty('token_type') || ! headers.hasOwnProperty('access_token')){
+						reject(new Error('token 获取失败'));
 					}
 
-					this.updateToken(token);
+					if(! headers['access_token'] || headers['token_type'] != 'bearer'){
+						reject(new Error('token 获取失败'));
+					}
+
+					let access_token = headers['access_token'];
+					this.updateToken(access_token);
 
 					// 通知其他地方可以继续执行
-					Observer.emit('refresh_token_end', token);
-					this.is_request = false;
+					Observer.emit('refresh_token_end', access_token);
 
 					// 移除监听事件
 					Observer.remove('refresh_token_end');
+
+					this.is_request = false;
+
 					// 返回数据
-					resolve(token);
+					resolve(access_token);
 				}).catch(e => {
 					reject(e);
 				});

@@ -95,19 +95,8 @@ export default {
 
 				// 存储相关登录信息
 				result.user.avatar = result.config.domain + result.user.avatar;
-				this.$store.commit('auth/setLogin', {
-					user: result.user, 
-					token: result.token,
-					refresh_token: result.refresh_token,
-					refresh_token_url: result.refresh_token_url,
-				});
-
+				this.$store.commit('auth/setLogin', result.user);
 				this.$store.commit('access/set', result.forbid);
-
-				// this.$store.commit('access/set', {
-				// 	data_forbid: result.forbid.data_forbid,	// 数据权限黑名单
-				// 	page_forbid: result.forbid.page_forbid,	// 页面权限黑名单
-				// });
 
 				// 如果有本地记录的重定向记录, 则在登陆后跳转回之前的页面
 				// 注: 此功能未实现

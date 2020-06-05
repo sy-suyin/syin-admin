@@ -28,15 +28,13 @@ const mutations = {
 	/**
 	 * 设置登录
 	 */
-	setLogin(state, data){
+	setLogin(state, user){
 		// 设置登录时间
 		let time = +(new Date());
 		state.login_time = time;
 		Storage.set('login_time', time, false);
 
-		this.commit('auth/updateUser', data.user);
-		this.commit('auth/updateToken', data.token);
-		this.commit('auth/updateRefreshToken', data);
+		this.commit('auth/updateUser', user);
 	},
 
 	/*
@@ -92,9 +90,6 @@ const mutations = {
 		let refresh_token = Cookie.read('auth_refresh_token');
 		let auth_time = Storage.get('auth_time', {json: false, decrypt: false});
 		let refresh_token_url = Storage.get('refresh_token_url', refresh_token_url, {json: false});
-
-		token = token.trim();
-		refresh_token = refresh_token.trim();
 
 		// 如果token一致则不修改
 		if(token == state.token && refresh_token == state.refresh_token){

@@ -53,8 +53,15 @@ class AdminService extends BaseTool {
 			)
 		];
 
+		return $result;
+	}
+
+	/**
+	 * 生成token
+	 */
+	public static function generateToken($admin){
 		// 生成token
-		$result['token'] = TokenService::generateToken([
+		$result['access_token'] = TokenService::generateToken([
 			'uid' => $admin->id
 		]);
 
@@ -64,7 +71,16 @@ class AdminService extends BaseTool {
 
 		$result['refresh_token_url'] = url('index/refreshtoken', '', true, true);
 
+		$result['token_expire'] = self::getTokenExpire();
+
 		return $result;
+	}
+
+	/**
+	 * 获取token有效时间
+	 */
+	public static function getTokenExpire(){
+		return config('auth. token_expire');
 	}
 
 	/**
@@ -267,7 +283,7 @@ class AdminService extends BaseTool {
 	 */
 	public static function refreshToken($params){
 		if(empty($params)){
-			return new RuntimeError('refresh token 异常');
+			return new RuntimeError('refresh_token异常');
 		}
 
 		$refresh_token =  isset($params['refresh_token']) ? $params['refresh_token'] : '';

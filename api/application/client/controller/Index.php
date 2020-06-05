@@ -38,13 +38,16 @@ class Index extends Client {
 	 */
 	public function refreshTokenAction(Request $request){
 		$token = AdminService::refreshToken($request->post());
-
+		$token_expire = AdminService::getTokenExpire(); 
 		if(is_error($token)){
 			return show_error($token->getError());
 		}
 
-		return show_success('', [
-			'token' => $token
-		]);
+		return show_success('请求成功')
+			->header([
+				'access_token' => $token,
+				'token_type'   => 'bearer',
+				'expires'      => $token_expire
+			])->allowCache(false);
 	}
 }

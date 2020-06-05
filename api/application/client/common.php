@@ -12,7 +12,7 @@ load_func('format');
  *
  */
 function show_error($msg, $code = 200){
-	return message(array(
+	return json(array(
 		'status' => 0,
 		'msg'	 => $msg
 	), $code);
@@ -25,15 +25,11 @@ function show_error($msg, $code = 200){
  * @param mixed		$data,	要输出的数据
  */
 function show_success($msg, $data=[]){
-	return message(array(
+	return json(array(
 		'status' => 1,
 		'msg'	 => $msg,
 		'result' => $data
 	));
-}
-
-function message($return_data, $code = 200){
-	return json($return_data, $code);
 }
 
 //----------------------------------------------------------------------

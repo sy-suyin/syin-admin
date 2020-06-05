@@ -12,46 +12,69 @@ class Auth{
 
 	public function handle($request, \Closure $next, $name){
 		// 用户身份验证TOKEN
-		$token = $request->header('token');
+		$token = $request->header('Authorization');
 		$controller = strtolower($request->controller());
 		$action = strtolower($request->action());
-		$is_logged = false;
 
 		// 刷新 token
 		if($controller == 'index' && $action == 'refreshtoken'){
 			return $next($request);
 		}
 
-		if($token != ''){
-			$payload = TokenService::verifyToken($token);
-			$admin = null;
+		$result = $this->tokenVerify($token);
 
-			if($payload && !empty($payload['uid'])){
-				$admin = AdminModel::getById($payload['uid']);
-
-				if(!empty($admin)){
-					$is_logged = true;
-				}
-			}
-		}
-
-		if($is_logged){
-			$request->admin = $admin;
-
-			$verify_res = AdminService::verifyPermission($admin, $controller, $action);
-
-			if(false == $verify_res){
-				return show_error('对不起，您没有权限执行该操作 1');
-			}
-		}else{
+		if($result == false){
 			// 未登录或token已过期
 			$whitelist = config('auth.whitelist');
 
 			if(empty($whitelist) || !isset($whitelist[$controller]) || !in_array($action, $whitelist[$controller])){
-				return json('请在登陆后重试', 401);
+				return json('请在登陆后重试', 401)->header([
+					'WWW-Authenticate' => 'Bearer, error="invalid_token", error_description="The access token expired"'
+				]);
+			}
+		}else{
+			$request->admin = $result;
+
+			// 权限验证
+			$verify_res = AdminService::verifyPermission($result, $controller, $action);
+
+			if(false == $verify_res){
+				return show_error('对不起，您没有权限执行该操作');
 			}
 		}
 
 		return $next($request);
+	}
+
+	/**
+	 * token 验证
+	 */
+	private function tokenVerify($token){
+		if($token == ''){
+			return false;
+		}
+
+		$token = substr($token, 7);
+
+		if(empty($token)){
+			return false;
+		}
+
+		$payload = TokenService::verifyToken($token);
+		$admin = null;
+
+		if($payload && !empty($payload['uid'])){
+			$id = absint($payload['uid']);
+
+			if($id){
+				$admin = AdminModel::getById($id);
+			}
+
+			if(!empty($admin)){
+				return $admin;
+			}
+		}
+
+		return false;
 	}
 }
