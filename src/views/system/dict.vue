@@ -15,7 +15,6 @@
 						tooltip-effect="dark"
 						style="width: 100%"
 						:show-header="false"
-						@selection-change="selectionChange"
 						@cell-click="show"
 						class="dict-table"
 					>
@@ -67,7 +66,6 @@
 						:data="page_data.results"
 						tooltip-effect="dark"
 						style="width: 100%"
-						@selection-change="selectionChange"
 					>
 						<el-table-column prop="data" label="数据名称"></el-table-column>
 						<el-table-column align="center" label="是否内置" width="80">

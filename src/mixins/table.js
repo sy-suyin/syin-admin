@@ -25,10 +25,12 @@ export const table = {
 
 			// 请求数据参数, 取值自 search_args 与 filter_args
 			request_args: {},
+
+			instance: null,
 		}
 	},
 	mounted() {
-		TableInstance = new Table(this);
+		this.instance = TableInstance = new Table(this);
 	},
 	methods: {
 
