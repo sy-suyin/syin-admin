@@ -1,10 +1,15 @@
 <?php
 namespace app\client\service;
 
-use app\common\library\BaseTool;
+use app\common\library\BaseService;
 use app\common\library\RuntimeError;
+use app\common\library\DbTool;
+use app\common\library\Input;
 
-class AdminService extends BaseTool {
+class AdminService extends BaseService {
+
+	use DbTool;
+	use Input;
 
 	/**
 	 * 登录检测
@@ -118,10 +123,11 @@ class AdminService extends BaseTool {
 		}
 
 		if($data['avatar']){
-			$avatar = '/static/common/img/avatar/'.$data['avatar'].'.png';
-
+			$avatar = '/static/api/avatar/'.$data['avatar'].'.png';
 			if(is_file(env('root_path').'public/'.$avatar)){
 				$data['avatar'] = $avatar;
+			}else{
+				$data['avatar'] = '';
 			}
 		}
 

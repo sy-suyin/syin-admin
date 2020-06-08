@@ -13,7 +13,7 @@ export default {
 	props: {
 		className: {
 			type: String,
-			default: 'chart'
+			default: 'bar'
 		},
 		width: {
 			type: String,
@@ -26,24 +26,24 @@ export default {
 	},
 	data() {
 		return {
-		chart: null
+			chart: null
 		}
 	},
 	mounted() {
 		this.$nextTick(() => {
-		this.initChart()
-		})
+			this.initChart();
+		});
 	},
 	beforeDestroy() {
 		if (!this.chart) {
-		return
+			return;
 		}
-		this.chart.dispose()
-		this.chart = null
+		this.chart.dispose();
+		this.chart = null;
 	},
 	methods: {
 		initChart() {
-			this.chart = echarts.init(this.$el, 'macarons')
+			this.chart = echarts.init(this.$el, 'macarons');
 
 			this.chart.setOption({
 				tooltip: {
@@ -97,7 +97,7 @@ export default {
 					data: [30, 28, 27, 25, 26, 21, 20, 18, 19, 20, 16, 14, 12, 12, 12, 10, 9, 8, 7, 8, 8],
 					animationDuration
 				}]
-			})
+			});
 		}
 	}
 }

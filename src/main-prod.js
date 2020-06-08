@@ -5,6 +5,8 @@ import router from './router'
 // import 'element-ui/lib/theme-chalk/index.css'
 import store from './vuex/store'
 import Observer from '@/libs/Observer.js';
+import './icons' // icon
+import './libs/error-log'
 
 // 此优化策略参考链接, 具体待调整
 // https://vincef0ng.cn/post/vue-project-optimization/#%E7%BB%93%E6%9E%9C

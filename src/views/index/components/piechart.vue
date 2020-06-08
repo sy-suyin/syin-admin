@@ -29,24 +29,24 @@ export default {
 	},
 	data() {
 		return {
-		chart: null
+			chart: null
 		}
 	},
 	mounted() {
 		this.$nextTick(() => {
-		this.initChart()
+			this.initChart();
 		})
 	},
 	beforeDestroy() {
 		if (!this.chart) {
-		return
+			return;
 		}
-		this.chart.dispose()
-		this.chart = null
+		this.chart.dispose();
+		this.chart = null;
 	},
 	methods: {
 		initChart() {
-			this.chart = echarts.init(this.$el, 'macarons')
+			this.chart = echarts.init(this.$el, 'macarons');
 
 			this.chart.setOption({
 				grid: {
@@ -66,7 +66,7 @@ export default {
 					normal: {
 						show: true,
 						position: 'inside',
-						formatter: '{d}%',//模板变量有 {a}、{b}、{c}、{d}，分别表示系列名，数据名，数据值，百分比。{d}数据会根据value值计算百分比
+						formatter: '{d}%',
 
 						textStyle : {
 							align : 'center',
@@ -96,7 +96,7 @@ export default {
 							normal: {
 								show: true,
 								position: 'inside',
-								formatter: '{d}%',//模板变量有 {a}、{b}、{c}、{d}，分别表示系列名，数据名，数据值，百分比。{d}数据会根据value值计算百分比
+								formatter: '{d}%',
 								textStyle : {                   
 									align : 'center',
 									baseline : 'middle',
@@ -109,7 +109,7 @@ export default {
 								show: true,
 								position: "right",
 								offset: [30, 40],
-								formatter: '{b} : {c} ({d}%)',
+								formatter: '{c} ({d}%)',
 								textStyle: {
 									color: "#333",
 									fontSize: 18,
@@ -118,7 +118,7 @@ export default {
 						}
 					}
 				]
-			})
+			});
 		}
 	}
 }

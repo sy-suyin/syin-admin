@@ -10,14 +10,12 @@ require('echarts/theme/macarons') // echarts theme
 // https://segmentfault.com/a/1190000022096665
 // https://juejin.im/post/5d88a77f6fb9a06acf2b98f8
 
-const animationDuration = 6000
-
 export default {
 	name: 'linechart',
 	props: {
 		className: {
 			type: String,
-			default: 'pie'
+			default: 'line'
 		},
 		width: {
 			type: String,
@@ -30,27 +28,24 @@ export default {
 	},
 	data() {
 		return {
-		chart: null
+			chart: null
 		}
 	},
 	mounted() {
 		this.$nextTick(() => {
-		this.initChart()
+			this.initChart();
 		})
 	},
 	beforeDestroy() {
 		if (!this.chart) {
-		return
+			return;
 		}
-		this.chart.dispose()
-		this.chart = null
+		this.chart.dispose();
+		this.chart = null;
 	},
 	methods: {
 		initChart() {
-			this.chart = echarts.init(this.$el, 'macarons')
-
-			 // 初始化数据 && 设置窗口自适应大小
-            // this.chart.setOption(this.option, window.onresize = this.chart.resize); 
+			this.chart = echarts.init(this.$el, 'macarons');
 
 			this.chart.setOption({
 				tooltip: {
@@ -77,7 +72,7 @@ export default {
 					}
 				},
 				series: [{
-					name: 'xxx',
+					name: '数据源一',
 					type: 'line',
 					smooth: true, // 平滑
 					itemStyle : {
@@ -90,7 +85,7 @@ export default {
 					},
 					data: [120, 132, 101, 134, 90, 230, 210, 123]
 				}, {
-					name: 'xxx',
+					name: '数据源二',
 					type: 'line',
 					smooth: true, // 平滑
 					itemStyle : {
@@ -103,7 +98,7 @@ export default {
 					},
 					data: [1210, 1132, 1101, 1134, 910, 2310, 2110, 1123]
 				}]
-			})
+			});
 		}
 	}
 }

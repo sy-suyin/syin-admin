@@ -14,16 +14,16 @@ class Admin extends Base{
 		static $fields = [
 			'default' => [
 				'name' 	     => 'string',
-				'login_name' => ['type' => 'string', 'name' => 'login'],
-				'password' 	 => 'string',
-				'roles'		 => ['type' => 'array', 'filter' => 'int'],
+				'login_name' => ['type' => 'string', 'name' => 'login/t'],
+				'password' 	 => ['type' => 'string', 'name' => 'password/t'],
+				'roles'		 => ['type' => 'array', 'name' => 'roles/d'],
 			],
 			'login'   => [
-				'login_name' => ['type' => 'string', 'name' => 'login'],
-				'password' 	 => 'string',
+				'login_name' => ['type' => 'string', 'name' => 'login/t'],
+				'password' 	 => ['type' => 'string', 'name' => 'password/t'],
 			],
 			'profile' => [
-				'login_name' => ['type' => 'string', 'name' => 'login'],
+				'login_name' => ['type' => 'string', 'name' => 'login/t'],
 				'name'		 => 'string',
 				'password'	 => 'string',
 				'confirmpwd' => 'string',

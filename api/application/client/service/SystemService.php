@@ -1,9 +1,14 @@
 <?php
 namespace app\client\service;
 
-use app\common\library\BaseTool;
+use app\common\library\BaseService;
+use app\common\library\DbTool;
+use app\common\library\Input;
 
-class SystemService extends BaseTool {
+class SystemService extends BaseService {
+
+	use DbTool;
+	use Input;
 
 	/**
 	 * 获取管理员列表查询所需条件
@@ -12,8 +17,8 @@ class SystemService extends BaseTool {
  	 * @param bool 	$is_deleted		是否查询被删除的数据
 	 */
 	public static function adminListParams($params, $is_deleted = false){
-		$keyword = isset($params['keyword'])  	? 	urldecode($params['keyword']) 	: '';
-		$num 	 = isset($params['num']) 		? 	absint($params['num']) 			: 0;
+		$keyword = self::stringFilter('keyword', $params, '', 't');
+		$num = self::numberFilter('num', $params, 0);
 		$num     = $num ?: config('common.page_num');
 		$order  = ['sort' => 'asc', 'id' => 'desc'];
 		$hidden = ['password'];
@@ -40,7 +45,7 @@ class SystemService extends BaseTool {
  	 * @param bool 	$is_deleted		是否查询被删除的数据
 	 */
 	public static function roleListParams($params, $is_deleted = false){
-		$keyword = isset($params['keyword']) ? urldecode($params['keyword']) : '';
+		$keyword = self::stringFilter('keyword', $params, '', 't');
 		$order = ['id' => 'desc'];
 		$where = [
 			'is_deleted' => $is_deleted ? 1 : 0
@@ -182,8 +187,8 @@ class SystemService extends BaseTool {
 	 * 角色禁止权限数据检查
 	 */
 	public static function roleForbidCheck($params){
-		$data_forbid = self::input('data_forbid', 'array', null, $params);
-		$page_forbid = self::input('page_forbid', 'array', null, $params);
+		$data_forbid = self::input('data_forbid', 'array', $params, null);
+		$page_forbid = self::input('page_forbid', 'array', $params, null);
 
 		// 处理数据权限
 		if(!empty($data_forbid)){
@@ -209,14 +214,10 @@ class SystemService extends BaseTool {
 		$module = request()->module();
 
 		foreach($data as $controller => $actions){
-			// $controller = self::stringFilter($controller, '');
-
 			if($controller != ''){
 				$set = []; // 判断是否存在相同名的控制器
 
 				foreach($actions as $action){
-					// $action = self::stringFilter($action, '');
-
 					if($action != '' && !isset($set[$action])){
 						$set[$action] = 1;
 						$temp[] = [

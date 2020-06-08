@@ -114,6 +114,8 @@ public目录下offline文件夹, 为单独运行需要的资源文件, 如后期
 	- 指令权限
 	- 权限配置
 
-## 其他
+## License
 
-更多详细文档请查看 **二次开发说明** 目录
+[MIT](https://sysyin.coding.net/p/syin-admin/d/syin-admin/git/tree/master/LICENSE)
+
+Copyright (c) 2020-present 溯隐

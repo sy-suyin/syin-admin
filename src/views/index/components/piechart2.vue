@@ -13,7 +13,7 @@ export default {
 	props: {
 		className: {
 			type: String,
-			default: 'pie'
+			default: 'piechart2'
 		},
 		width: {
 			type: String,
@@ -26,24 +26,24 @@ export default {
 	},
 	data() {
 		return {
-		chart: null
+			chart: null
 		}
 	},
 	mounted() {
 		this.$nextTick(() => {
-		this.initChart()
+			this.initChart();
 		})
 	},
 	beforeDestroy() {
 		if (!this.chart) {
-		return
+			return;
 		}
-		this.chart.dispose()
-		this.chart = null
+		this.chart.dispose();
+		this.chart = null;
 	},
 	methods: {
 		initChart() {
-			this.chart = echarts.init(this.$el, 'macarons')
+			this.chart = echarts.init(this.$el, 'macarons');
 
 			this.chart.setOption({
 				legend: {
@@ -90,7 +90,7 @@ export default {
 						{ value: 18, name: "未及格人数", itemStyle: "#79d2c0" }
 					]
 				}]
-			})
+			});
 		}
 	}
 }

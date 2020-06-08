@@ -2,89 +2,8 @@
 	<div>
 		<div class="content-container">
 			<el-row :gutter="20">
-				<el-col :span="4">
-					<el-card class="indicator">
-						<div class="gains">
-							<span>6%</span>
-							<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><polyline points="3 7 9 13 13 9 21 17"></polyline><polyline points="21 10 21 17 14 17"></polyline></svg>
-						</div>
-						<div class="num">
-							95
-						</div>
-						<div class="describe">
-							New Tickets
-						</div>
-					</el-card>
-				</el-col>
-				<el-col :span="4">
-					<el-card class="indicator">
-						<div class="gains">
-							<span>6%</span>
-							<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><polyline points="3 7 9 13 13 9 21 17"></polyline><polyline points="21 10 21 17 14 17"></polyline></svg>
-						</div>
-						<div class="num">
-							95
-						</div>
-						<div class="describe">
-							New Tickets
-						</div>
-					</el-card>
-				</el-col>
-				<el-col :span="4">
-					<el-card class="indicator">
-						<div class="gains">
-							<span>6%</span>
-							<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><polyline points="3 7 9 13 13 9 21 17"></polyline><polyline points="21 10 21 17 14 17"></polyline></svg>
-						</div>
-						<div class="num">
-							95
-						</div>
-						<div class="describe">
-							New Tickets
-						</div>
-					</el-card>
-				</el-col>
-				<el-col :span="4">
-					<el-card class="indicator">
-						<div class="gains">
-							<span>6%</span>
-							<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><polyline points="3 7 9 13 13 9 21 17"></polyline><polyline points="21 10 21 17 14 17"></polyline></svg>
-						</div>
-						<div class="num">
-							95
-						</div>
-						<div class="describe">
-							New Tickets
-						</div>
-					</el-card>
-				</el-col>
-				<el-col :span="4">
-					<el-card class="indicator">
-						<div class="gains">
-							<span>6%</span>
-							<svg xmlns="http://www.w3.org/2000/svg" class="icon ml-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><polyline points="3 7 9 13 13 9 21 17"></polyline><polyline points="21 10 21 17 14 17"></polyline></svg>
-						</div>
-						<div class="num">
-							95
-						</div>
-						<div class="describe">
-							New Tickets
-						</div>
-					</el-card>
-				</el-col>
-				<el-col :span="4">
-					<el-card class="indicator">
-						<div class="gains">
-							<span>6%</span>
-							<svg xmlns="http://www.w3.org/2000/svg" class="icon ml-1" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><polyline points="3 7 9 13 13 9 21 17"></polyline><polyline points="21 10 21 17 14 17"></polyline></svg>
-						</div>
-						<div class="num">
-							95
-						</div>
-						<div class="describe">
-							New Tickets
-						</div>
-					</el-card>
+				<el-col v-for="item in gains_data" :key="item.id" :span="4">
+					<data-panel :gains="item.gains" :num="item.num" :remark="item.remark"/>
 				</el-col>
 			</el-row>
 
@@ -92,7 +11,7 @@
 				<el-col :span="18">
 					<el-card>
 						<div slot="header" class="header">
-							Development Activity
+							柱状图展示
 						</div>
 						<barchart />
 					</el-card>
@@ -100,7 +19,7 @@
 				<el-col :span="6">
 					<el-card>
 						<div slot="header" class="header">
-							Development Activity
+							地图图表展示
 						</div>
 
 						<mapchart />
@@ -112,7 +31,7 @@
 				<el-col :span="12">
 					<el-card>
 						<div slot="header" class="header">
-							Development Activity
+							折线图展示
 						</div>
 
 						<linechart />
@@ -121,7 +40,7 @@
 				<el-col :span="6">
 					<el-card>
 						<div slot="header" class="header">
-							Chart title
+							饼状图一
 						</div>
 
 						<piechart />
@@ -130,7 +49,7 @@
 				<el-col :span="6">
 					<el-card>
 						<div slot="header" class="header">
-							Chart title
+							饼状图二
 						</div>
 
 						<piechart2 />
@@ -203,6 +122,7 @@
 <script>
 import * as util from '@/libs/util';
 import {common as commonMixin} from "@/mixins/common.js";
+import dataPanel from './components/data-panel'
 import barchart from './components/barchart'
 import mapchart from './components/mapchart'
 import piechart from './components/piechart'
@@ -213,11 +133,50 @@ import echarts from 'echarts'
 export default {
 	name: "home",
 	mixins: [commonMixin],
-	components: {barchart, mapchart, piechart, piechart2, linechart},
+	components: {dataPanel, barchart, mapchart, piechart, piechart2, linechart},
 	mounted(){
 	},
   	data() {
       	return {
+			gains_data: [
+				{
+					id: 1,
+					gains: 11,
+					num: 12,
+					remark: 'testing 1'
+				},
+				{
+					id: 2,
+					gains: -5,
+					num: 7,
+					remark: 'testing 2'
+				},
+				{
+					id: 3,
+					gains: 3,
+					num: 21,
+					remark: 'testing 3'
+				},
+				{
+					id: 4,
+					gains: 11,
+					num: 6,
+					remark: 'testing 4'
+				},
+				{
+					id: 5,
+					gains: 0,
+					num: 22,
+					remark: 'testing 5'
+				},
+				{
+					id: 6,
+					gains: 35,
+					num: 28,
+					remark: 'testing 6'
+				},
+			],
+
         	form: {
           		name: '',
 				region: '',
@@ -262,31 +221,33 @@ export default {
 				}
 			],
 
-			tasks: [{
-				content: 'There is no royal road to learning',
-				time: 'May 01, 2020',
-				comments: 10,
-			}, {
-				content: 'There is no royal road to learning',
-				time: 'May 01, 2020',
-				comments: 32,
-			}, {
-				content: 'Put the cart before the horse',
-				time: 'April 27, 2020',
-				comments: 54,
-			}, {
-				content: 'Everything must have a beginning',
-				time: 'April 19, 2020',
-				comments: 5,
-			}, {
-				content: 'Once a thief, always a thief',
-				time: 'March 15, 2020',
-				comments: 75,
-			}, {
-				content: 'One cannot put back the clock',
-				time: 'March 12, 2020',
-				comments: 43,
-			}]
+			tasks: [
+				{
+					content: 'There is no royal road to learning',
+					time: 'May 01, 2020',
+					comments: 10,
+				}, {
+					content: 'There is no royal road to learning',
+					time: 'May 01, 2020',
+					comments: 32,
+				}, {
+					content: 'Put the cart before the horse',
+					time: 'April 27, 2020',
+					comments: 54,
+				}, {
+					content: 'Everything must have a beginning',
+					time: 'April 19, 2020',
+					comments: 5,
+				}, {
+					content: 'Once a thief, always a thief',
+					time: 'March 15, 2020',
+					comments: 75,
+				}, {
+					content: 'One cannot put back the clock',
+					time: 'March 12, 2020',
+					comments: 43,
+				}
+			]
 		}
 	},
 	methods: {
@@ -297,34 +258,5 @@ export default {
 <style lang="scss">
 	.el-row{
 		margin-bottom: 20px;
-	}
-
-	.indicator{
-		.gains{
-			text-align: right;
-
-			.icon{
-				width: 16px;
-				height: 16px;
-				vertical-align: text-bottom;
-			}
-
-			.text-green{
-				color: #5eba00;
-			}
-		}
-
-		.num{
-			line-height: 1.1428571;
-			font-size: 28px;
-			color: #354052;
-			text-align: center;
-			font-weight: 500;
-		}
-
-		.describe{
-			text-align: center;
-			color: #6e7582;
-		}
 	}
  </style>
