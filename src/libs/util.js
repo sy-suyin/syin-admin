@@ -371,3 +371,29 @@ export function chaining (target, props, def = '') {
 	}, target)
 	return returnVal || def
 }
+
+/**
+ * 配置辅助函数
+ * 如果传入第二个参数, 表示修改配置. 不传表示读取配置数据
+ * 
+ * @param {*} key 	配置键
+ * @param {*} value 配置值, 当为 null 时表示读取数据
+ * @param {*} def 	默认值, 当配置中不存在配置时的默认值
+ */
+export function config(key, value = null, def = false){
+	if(value == null){
+		// 读取
+		const configs = store.getters['config/configs'];
+		if(configs.hasOwnProperty(key)){
+			return configs[key];
+		}else{
+			return def;
+		}
+	}else{
+		// 添加修改
+		store.commit('config/set', {
+			key,
+			value
+		})
+	}
+}

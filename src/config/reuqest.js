@@ -6,7 +6,7 @@ module.exports = {
 	 * @description 路径后面不需要加 /
 	 * @description 当请求的路径第一个字符为 / 时, 系统会自动拼接
 	 */
-	baseUrl: {
+	base_url: {
 		dev: 'http://127.0.0.1:8000/client',
 		pro: 'http://admin.e.syin.top/client'
 	},
@@ -20,6 +20,6 @@ module.exports = {
 	 * 未登录时允许访问的页面
 	 */
 	not_logged_allow: {
-		login: ['index']
+		login: [ 'index' ]
 	} 
 }

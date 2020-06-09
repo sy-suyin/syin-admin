@@ -111,21 +111,21 @@ export default {
 		},
 		filterClick(index){
 			this.selected_index.filter = index;
-			this.$store.dispatch('settings/changeSetting', {
+			this.$store.dispatch('style/changeStyle', {
 				key: 'sidebar_filters_color',
 				value: this.sidebar_filters[index]
 			});
 		},
 		bgProjectClick(projct){
 			this.selected_index.project = projct;
-			this.$store.dispatch('settings/changeSetting', {
+			this.$store.dispatch('style/changeStyle', {
 				key: 'sidebar_background_project',
 				value: this.background_projects[projct]
 			});
 		},
 		bgImgClick(index){
 			this.selected_index.image = index;
-			this.$store.dispatch('settings/changeSetting', {
+			this.$store.dispatch('style/changeStyle', {
 				key: 'sidebar_background_img',
 				value: this.background_imgs[index]
 			});
@@ -134,16 +134,16 @@ export default {
 	computed: {
 		sidebarMini: {
 			get() {
-				return this.$store.state.settings.sidebar_mini;
+				return this.$store.state.style.sidebar_mini;
 			},
 			set(val) {
-				this.$store.dispatch('settings/changeSetting', {
+				this.$store.dispatch('style/changeStyle', {
 					key: 'sidebar_mini',
 					value: val
 				});
 			}
 		},
-		...mapState('settings', {
+		...mapState('style', {
 			filters_color: state =>state.sidebar_filters_color,
 			background_project: state =>state.sidebar_background_project,
 			background_img: state =>state.sidebar_background_img,

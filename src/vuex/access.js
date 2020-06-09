@@ -2,9 +2,6 @@ import {menus as configs} from '@/config/menu';
 import Storage from '@/libs/Storage.js';
 import Menu from '@/libs/menu';
 
-// let MenuClass = new Menu(configs);
-// MenuClass.active('system', 'adminadd');
-
 // 菜单计算类实例
 let MenuInstance = new Menu;
 

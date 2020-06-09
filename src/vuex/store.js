@@ -1,9 +1,11 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-Vue.use(Vuex)
 import auth from './auth'
 import access from './access'
-import settings from './settings'
+import style from './style'
+import config from './config'
+
+Vue.use(Vuex)
 
 export default new Vuex.Store({
 	namespaced: true,
@@ -11,6 +13,7 @@ export default new Vuex.Store({
 	modules: {
 		auth,
 		access,
-		settings
+		config,
+		style
 	}
 })

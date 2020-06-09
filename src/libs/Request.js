@@ -5,8 +5,7 @@
 import Qs from 'qs';
 import axios from 'axios'
 import store from '@/vuex/store';
-import {timeout, not_logged_allow} from '@/config/reuqest';
-import {checkPermission} from '@/libs/util';
+import { checkPermission, config } from '@/libs/util';
 import Token from '@/libs/Token';
 import Observer from '@/libs/Observer.js';
 
@@ -32,6 +31,7 @@ class Request{
 			return true;
 		}
 
+		let not_logged_allow = config('config');
 		let controller = url[1];
 		let action = url[2];
 
@@ -181,6 +181,7 @@ class Request{
 	 * @param {object} options
 	 */
 	request(options){
+		let timeout = config('timeout', 0);
 		const instance = axios.create({timeout});
 		this.interceptors(instance);
 		return this.queue(()=>{return instance(options)});

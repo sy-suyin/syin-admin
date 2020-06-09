@@ -22,6 +22,7 @@ store.commit('auth/reload');
 store.commit('access/reload');
 
 // 读取本地缓存的用户配置
+store.commit('style/init');
 store.commit('settings/init');
 
 new Vue({

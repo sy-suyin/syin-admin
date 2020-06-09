@@ -85,7 +85,7 @@ export default {
 			}
 		},
 
-		...mapState('settings', {
+		...mapState('style', {
 			sidebar_mini: state =>state.sidebar_mini,
 			filters_color: state =>state.sidebar_filters_color,
 			background_project: state =>state.sidebar_background_project,

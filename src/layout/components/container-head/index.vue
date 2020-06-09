@@ -54,7 +54,7 @@ export default {
 	methods: {
 		//  切换侧边栏状态, 最大/最小化
 		toggleSidebar(){
-			this.$store.dispatch('settings/changeSetting', {
+			this.$store.dispatch('style/changeStyle', {
 				key: 'sidebar_mini',
 				value: !this.sidebar_mini
 			})
@@ -84,7 +84,7 @@ export default {
 		},
 	},
 	computed: {
-		...mapState('settings', {
+		...mapState('style', {
 			sidebar_mini: state =>state.sidebar_mini,
 		}),
 	}

@@ -88,7 +88,7 @@ export default {
 		}
 	},
 	computed: {
-		...mapState('settings', {
+		...mapState('style', {
 			filters_color: state =>state.sidebar_filters_color,
 			background_color: state =>state.sidebar_background_color,
 		})

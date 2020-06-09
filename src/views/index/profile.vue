@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import * as util from '@/libs/util';
+import { config } from '@/libs/util';
 import {common as commonMixin} from "@/mixins/common.js";
 import { updateProfile } from '@/api/user';
 
@@ -86,6 +86,7 @@ export default {
 	},
   	data() {
       	return {
+			domain: '',
 			user:{
 				login_name: '',
 				name: '',
@@ -118,6 +119,7 @@ export default {
 		this.form.name = user.name;
 		this.form.avatar_url = user.avatar;
 		this.user = user;
+		this.domain = config('domain');
 	},
 	methods: {
 
@@ -180,7 +182,7 @@ export default {
 		 * 获取头像地址
 		 */
 		getAvatarUrl(id){
-			let url = 'http://admin.e.syin.top/static/api/avatar/' + id + '.png';
+			let url = this.domain+'/static/api/avatar/' + id + '.png';
 			return url;
 		},
 
