@@ -1,6 +1,6 @@
 import {menus as configs} from '@/config/menu';
 import Storage from '@/libs/Storage.js';
-import Menu from '@/libs/menu';
+import Menu from '@/libs/Menu';
 
 // 菜单计算类实例
 let MenuInstance = new Menu;
