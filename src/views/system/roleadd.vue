@@ -8,7 +8,7 @@
 					添加角色
 				</div>
 
-				<el-form ref="form" :model="form" label-width="80px">
+				<el-form :ref="this.form_name" :model="form" :rules="rules" label-width="80px">
 					<el-form-item label="角色名称">
 						<el-input v-model="form.name"></el-input>
 					</el-form-item>
@@ -26,7 +26,7 @@
 					</el-form-item>
 
 					<el-form-item>
-						<el-button type="primary" @click="onSubmit">立即创建</el-button>
+						<el-button type="primary" @click="formSubmit">立即创建</el-button>
 						<el-button>取消</el-button>
 					</el-form-item>
 				</el-form>
@@ -81,19 +81,19 @@
 
 <script>
 import {common as commonMixin} from "@/mixins/common.js";
-import {menus} from '@/config/menu';
+import  validateMixin from "@/mixins/validate.js";
+import { menus } from '@/config/menu';
 import { addRole, getAccessData } from '@/api/system';
 
 export default {
 	name: "system_roleadd",
-	mixins: [commonMixin],
+	mixins: [ commonMixin, validateMixin ],
   	data() {
       	return {
         	form: {
           		name: '',
 				desc: ''
 			},
-
 			dialog:{
 				props: {
 					data: {
@@ -118,11 +118,17 @@ export default {
 					page: []
 				}
 			},
+			rules: {
+				name: [
+					{ required: true, message: '请输入用户名称', trigger: 'blur' },
+				],
+			},
 			redirect_url: '/system/rolelist',
 		}
 	},
 
 	mounted(){
+		this.optimget = 'getParams';
 		this.dialog.data.page = menus;
 		this.init();
 	},
@@ -140,17 +146,21 @@ export default {
 			});
 		},
 
-		onSubmit(formName) {
-			let args = {...this.form};
-			args['data_forbid'] = this.getUnselected(this.dialog.selected.data, this.dialog.data.data);
-			args['page_forbid'] = this.getUnselected(this.dialog.selected.page, this.dialog.data.page);
+		/**
+		 * 获取额外提交参数
+		 */
+		getParams(params){
+			params.args['data_forbid'] = this.getUnselected(this.dialog.selected.data, this.dialog.data.data);
+			params.args['page_forbid'] = this.getUnselected(this.dialog.selected.page, this.dialog.data.page);
+			return params;
+		},
 
-			if(args.name == ''){
-				return this.message('角色名称不能为空');
-			}
-
+		/**
+		 * 提交数据
+		 */
+		submit(params) {
 			this.loading(true);
-			addRole(args).then(res => {
+			addRole(params.args).then(res => {
 				this.$router.push({path: this.redirect_url})
 			}).catch(e => {
 				let msg = e.message || '网络异常, 请稍后重试';
@@ -158,10 +168,6 @@ export default {
 			}).finally(()=>{
 				this.loading(false);
 			});
-		},
-
-		resetForm(formName) {
-			this.$refs[formName].resetFields();
 		},
 
 		dataConfirm(){

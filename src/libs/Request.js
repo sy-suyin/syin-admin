@@ -31,7 +31,7 @@ class Request{
 			return true;
 		}
 
-		let not_logged_allow = config('config');
+		let not_logged_allow = config('not_logged_allow');
 		let controller = url[1];
 		let action = url[2];
 
@@ -93,9 +93,9 @@ class Request{
 							return this.responseSuccess(response);
 						});
 					}).catch(e => {
-						setTimeout(() => {
-							store.commit('auth/logout');
-						}, 1500);
+						// setTimeout(() => {
+						// 	store.commit('auth/logout');
+						// }, 1500);
 
 						return Promise.reject(new Error('账号过期, 请重新登录'));
 					});
@@ -104,8 +104,8 @@ class Request{
 				}
 			}
 
-			return Promise.reject(error)
-		})
+			return Promise.reject(error);
+		});
 	}
 
 	/**
@@ -131,6 +131,8 @@ class Request{
 				if(headers.hasOwnProperty('refresh_token') && headers.hasOwnProperty('refresh_token_url')){
 					let refresh_token = headers['refresh_token'];
 					let refresh_token_url = headers['refresh_token_url'];
+
+					console.log(refresh_token_url);
 
 					store.commit('auth/updateRefreshToken', {
 						refresh_token,

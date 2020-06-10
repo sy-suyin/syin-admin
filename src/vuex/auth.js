@@ -77,6 +77,8 @@ const mutations = {
 	 */
 	updateRefreshToken(state, {refresh_token, refresh_token_url}){
 		state.refresh_token = refresh_token;
+		state.refresh_token_url = refresh_token_url;
+
 		refresh_token = aes_encrypt(refresh_token);
 		Cookie.write('auth_refresh_token', refresh_token, null, null, null, false);
 		Storage.set('refresh_token_url', refresh_token_url, true);

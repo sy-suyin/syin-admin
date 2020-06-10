@@ -38,7 +38,7 @@ const mutations = {
 	 * 存储到本地
 	 */
 	archive(state){
-		Storage.set('config', state.configs, false)
+		Storage.set('config', state.configs, true)
 	},
 
 	/**
@@ -47,17 +47,15 @@ const mutations = {
 	init(state){
 		let configs = Storage.get('config', {
 			json: true,
-			decrypt: false
+			decrypt: true
 		});
 
 		if(configs){
-			if(configs){
-				state.configs = configs;
-			}
+			state.configs = configs;
 		}else{
 			// 将基础样式加入配置中
 
-			this.commit('loadConfig', request);
+			this.commit('config/loadConfig', request);
 		}
 	},
 
@@ -65,11 +63,11 @@ const mutations = {
 	 * 读取其他配置文件
 	 */
 	loadConfig(state, configs){
-		if(!request){
+		if(!configs ){
 			return false;
 		}
 
-		for(key of configs){
+		for(let key in configs){
 			state.configs[key] = configs[key];
 		}
 	}

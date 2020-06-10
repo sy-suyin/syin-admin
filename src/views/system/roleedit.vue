@@ -8,7 +8,7 @@
 					修改角色
 				</div>
 
-				<el-form ref="form" :model="form" label-width="80px">
+				<el-form :ref="this.form_name" :model="form" :rules="rules" label-width="80px">
 					<el-form-item label="角色名称">
 						<el-input v-model="form.name"></el-input>
 					</el-form-item>
@@ -26,7 +26,7 @@
 					</el-form-item>
 
 					<el-form-item>
-						<el-button type="primary" @click="onSubmit">提交修改</el-button>
+						<el-button type="primary" @click="formSubmit">提交修改</el-button>
 						<el-button>取消</el-button>
 					</el-form-item>
 				</el-form>
@@ -84,13 +84,14 @@
 <script>
 // @ is an alias to /src
 import {common as commonMixin} from "@/mixins/common.js";
+import  validateMixin from "@/mixins/validate.js";
 import {menus} from '@/config/menu';
 import { requestAll } from '@/libs/util';
 import { getRole, editRole, getAccessData } from '@/api/system';
 
 export default {
 	name: "system_roleedit",
-	mixins: [commonMixin],
+	mixins: [ commonMixin, validateMixin ],
   	data() {
       	return {
 			id: 0,
@@ -131,13 +132,19 @@ export default {
 				}
 			},
 
+			rules: {
+				name: [
+					{ required: true, message: '请输入用户名称', trigger: 'blur' },
+				],
+			},
+
 			redirect_url: '/system/rolelist',
 		}
 	},
 
 	mounted(){
+		this.optimget = 'getParams';
 		this.dialog.data.page = menus;
-
 		this.init();
 	},
 
@@ -171,26 +178,22 @@ export default {
 			});
 		},
 
-		onSubmit(formName) {
-			let args = {...this.form};
-			args.id = this.id;
-			args.data_forbid_edit = +args.data_forbid_edit;
-			args.page_forbid_edit = +args.page_forbid_edit;
-
-			if(args.data_forbid_edit){
-				args['data_forbid'] = this.getUnselected(this.dialog.selected.data, this.dialog.data.data);
+		getParams(params){
+			if(params.args.data_forbid_edit){
+				params.args['data_forbid'] = this.getUnselected(this.dialog.selected.data, this.dialog.data.data);
 			}
 
-			if(args.page_forbid_edit){
-				args['page_forbid'] = this.getUnselected(this.dialog.selected.page, this.dialog.data.page);
+			if(params.args.page_forbid_edit){
+				params.args['page_forbid'] = this.getUnselected(this.dialog.selected.page, this.dialog.data.page);
 			}
+			return params;
+		},
 
-			if(args.name == ''){
-				return this.message('角色名称不能为空');
-			}
+		submit(params) {
+			params.args.id = this.id;
 
 			this.loading(true);
-			editRole(args).then(res => {
+			editRole(params.args).then(res => {
 				this.$router.push({path: this.redirect_url})
 			}).catch(e => {
 				let msg = e.message || '网络异常, 请稍后重试';
@@ -198,10 +201,6 @@ export default {
 			}).finally(()=>{
 				this.loading(false);
 			});
-		},
-
-		resetForm(formName) {
-			this.$refs[formName].resetFields();
 		},
 
 		dataConfirm(){

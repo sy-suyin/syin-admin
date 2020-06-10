@@ -8,7 +8,7 @@
 					修改管理员
 				</div>
 
-				<el-form ref="form" :model="form" :rules="rules" label-width="80px" @validate="formValidatea">
+				<el-form :ref="this.form_name" :model="form" :rules="rules" label-width="80px">
 					<el-form-item label="登录账号" prop="login">
 						<el-input v-model="form.login"></el-input>
 					</el-form-item>
@@ -37,7 +37,7 @@
 					</el-form-item>
 
 					<el-form-item>
-						<el-button type="primary" @click="onSubmit">提交修改</el-button>
+						<el-button type="primary" @click="formSubmit">提交修改</el-button>
 						<el-button>取消</el-button>
 					</el-form-item>
 				</el-form>
@@ -48,13 +48,13 @@
 
 <script>
 import {common as commonMixin} from "@/mixins/common.js";
-import {detail as detailMixin} from "@/mixins/detail.js";
+import  validateMixin from "@/mixins/validate.js";
 import { debounce, requestAll } from '@/libs/util';
 import { getAdmin, editAdmin, getRoles } from '@/api/system';
 
 export default {
 	name: "system_adminadd",
-	mixins: [commonMixin, detailMixin],
+	mixins: [ commonMixin, validateMixin ],
   	data() {
       	return {
 			id: 0,
@@ -112,57 +112,19 @@ export default {
 			});
 		},
 
-		/**
-		 * 提交前进行数据检查
-		 */
-		validate(form_name, cbfunc){
-			this.$refs[form_name].validate((valid) => {
-				if(!valid){
-					return false;
-				}
-			});
+		submit(params) {
+			params.args.id = this.id;
 
-			cbfunc();
-		},
-
-		onSubmit() {
-			let args = {...this.form};
-			args.id = this.id;
-
-			this.validate('form', ()=>{
-				this.loading(true);
-
-				editAdmin(args).then(res => {
-					this.$router.push({path: this.redirect_url})
-				}).catch(e => {
-					let msg = e.message || '网络异常, 请稍后重试';
-					this.message(msg, 'warning', 3000);
-				}).finally(()=>{
-					this.loading(false);
-				});
+			this.loading(true);
+			editAdmin(params.args).then(res => {
+				this.$router.push({path: this.redirect_url})
+			}).catch(e => {
+				let msg = e.message || '网络异常, 请稍后重试';
+				this.message(msg, 'warning', 3000);
+			}).finally(()=>{
+				this.loading(false);
 			});
 		},
-
-		resetForm(formName) {
-			this.$refs[formName].resetFields();
-		},
-		
-		/**
-		 * 表单验证消息提示, 在页面数据较多时, 默认的的提示方式用户可能会看不见(不在可是区域)
-		 * 此方法会获取表单检验中第一个检验不合格的字段, 并进行提示
-		 *
-		 */
-		formValidatea(field, valid = true, msg = ''){
-			!valid && this.validationTips(msg);
-		},
-
-		/**
-		 * 验证提示
-		 * 150毫秒内, 仅能提示一次
-		 */
-		validationTips: debounce(150, function(msg){
-			this.message(msg);
-		})
     }
 };
 </script>

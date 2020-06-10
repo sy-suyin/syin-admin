@@ -128,6 +128,6 @@ class Base extends Model{
 	 * 根据id获取数据
 	 */
 	public static function getById($id, $field='*'){
-		return self::scope('nodisabled, nodeleted')->field($field)->find($id);
+		return self::scope('nodeleted')->field($field)->find($id);
 	}
 }
