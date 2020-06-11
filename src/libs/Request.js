@@ -93,9 +93,9 @@ class Request{
 							return this.responseSuccess(response);
 						});
 					}).catch(e => {
-						// setTimeout(() => {
-						// 	store.commit('auth/logout');
-						// }, 1500);
+						setTimeout(() => {
+							store.commit('auth/logout');
+						}, 15000);
 
 						return Promise.reject(new Error('账号过期, 请重新登录'));
 					});
@@ -131,8 +131,6 @@ class Request{
 				if(headers.hasOwnProperty('refresh_token') && headers.hasOwnProperty('refresh_token_url')){
 					let refresh_token = headers['refresh_token'];
 					let refresh_token_url = headers['refresh_token_url'];
-
-					console.log(refresh_token_url);
 
 					store.commit('auth/updateRefreshToken', {
 						refresh_token,

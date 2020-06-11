@@ -20,6 +20,6 @@ module.exports = {
 	 * 未登录时允许访问的页面
 	 */
 	not_logged_allow: {
-		login: [ 'index' ]
+		login: [ 'index', 'refresh' ]
 	} 
 }

@@ -1,6 +1,7 @@
 import Storage from '@/libs/Storage.js';
 import Cookie from '@/libs/Cookie';
 import {aes_encrypt, aes_decrypt} from '@/libs/crypto';
+import { tokenLogin } from '@/api/user';
 
 const state = {
 	token:'',
@@ -26,15 +27,30 @@ const getters = {
 const mutations = {
 
 	/**
-	 * 设置登录
+	 * 设置登录信息
 	 */
-	setLogin(state, user){
+	setLogin(state, result){
 		// 设置登录时间
 		let time = +(new Date());
+
+		this.commit('config/set', {
+			key: 'domain',
+			value: result.config.domain,
+		});
+
+		this.commit('style/set', {
+			key: 'sidebar_background_imgs',
+			value: result.config.sidebar_imgs
+		});
+
+		// 存储相关登录信息
 		state.login_time = time;
+		result.user.avatar = result.config.domain + result.user.avatar;
+		this.commit('auth/updateUser', result.user);
 		Storage.set('login_time', time, false);
 
-		this.commit('auth/updateUser', user);
+		// 设置权限数据
+		this.commit('access/set', result.forbid);
 	},
 
 	/*
@@ -69,7 +85,7 @@ const mutations = {
 		Storage.set('auth_time', time, false);
 
 		token = aes_encrypt(token);
-		Cookie.write('auth_token', token, null, null, null, false);
+		Cookie.write('auth_token', token, 86400 * 30, null, null, false);
 	},
 
 	/**
@@ -80,7 +96,7 @@ const mutations = {
 		state.refresh_token_url = refresh_token_url;
 
 		refresh_token = aes_encrypt(refresh_token);
-		Cookie.write('auth_refresh_token', refresh_token, null, null, null, false);
+		Cookie.write('auth_refresh_token', refresh_token, 86400 * 30, null, null, false);
 		Storage.set('refresh_token_url', refresh_token_url, true);
 	},
 
@@ -101,9 +117,9 @@ const mutations = {
 		state.token = '';
 		state.refresh_token = '';
 		state.refresh_token_url = '';
-		state.auth_time = auth_time;
+		state.auth_time = 0;
 
-		if(token == '' || refresh_token == '' || refresh_token_url == ''){
+		if(!token || !refresh_token || !refresh_token_url){
 			return;
 		}
 
@@ -111,35 +127,24 @@ const mutations = {
 		refresh_token = aes_decrypt(refresh_token);
 
 		if(!token || !refresh_token){
+			this.commit('auth/clearToken');
 			return;
 		}
 
 		state.token = token;
+		state.auth_time = auth_time;
 		state.refresh_token = refresh_token;
 		state.refresh_token_url = refresh_token_url;
 	},
 
-	/*
-	 * 重新加载, 从缓存中读取数据
+	/**
+	 * 清除token
 	 */
-	reload(state){
-		this.commit('auth/reloadToken');
-
-		if(state.token == ''){
-			return;
-		}
-
-		let user = Storage.get('login_user', {json: true});
-		let login_time = Storage.get('login_time', {json: false, decrypt: false});
-
-		if(!user){
-			state.token = '';
-			state.refresh_token = '';
-			return;
-		}
-
-		state.login_time = login_time;
-		this.commit('auth/updateUser', user);
+	clearToken(state){
+		state.token = '';
+		state.refresh_token = '';
+		Cookie.remove('auth_token');
+		Cookie.remove('auth_refresh_token');
 	},
 
 	/**
@@ -160,12 +165,43 @@ const mutations = {
 		user.is_lock = false;
 		user.lock_pwd = '';
 		this.commit('auth/updateUser', user);
-	}
+	},
+}
+
+const actions = {
+
+	/*
+	 * 重新加载, 从缓存中读取数据
+	 */
+	reload(state){
+		this.commit('auth/reloadToken');
+
+		if(!state.token){
+			return;
+		}
+
+		let user = Storage.get('login_user', {json: true});
+		let login_time = Storage.get('login_time', {json: false, decrypt: false});
+
+		if(user){
+			state.login_time = login_time;
+			this.commit('auth/updateUser', user);
+		}else{
+			// 使用 token 向后端请求数据, 获取用户信息以及配置信息
+			tokenLogin().then(result => {
+				this.commit('auth/setLogin', result);
+				location.reload();
+			}).catch(e => {
+				this.commit('auth/clearToken');
+			});
+		}
+	},
 }
 
 export default {
 	namespaced: true,
     state,
     getters,
-    mutations
+	mutations,
+	actions
 }

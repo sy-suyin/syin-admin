@@ -54,7 +54,6 @@ export default {
 						this.validateTip(fields);
 						reject();
 					}else{
-						console.log(params);
 						resolve(params);
 					}
 				});
@@ -84,9 +83,8 @@ export default {
 		 * 异常处理
 		 */
 		errorHandle(e){
-			console.log(e);
-			if(! e) return;
 			let msg = e;
+			if(! msg) return;
 
 			if(getType(msg) != 'string'){
 				msg = e.message || '服务器异常, 请稍后重试';

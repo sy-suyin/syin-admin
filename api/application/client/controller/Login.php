@@ -40,4 +40,18 @@ class Login{
 			'expires'       => $token_info['token_expire'],
 		])->allowCache(false);;
 	}
+
+	/**
+	 * 使用token重新发起登录请求
+	 */
+	public function refreshAction(Request $request){
+		if(empty($request->admin)){
+			return show_error('未找到相关数据');
+		}
+
+		$result = AdminService::loginConfig($request->admin);
+		$result['user'] = $request->admin;
+
+		return show_success('', $result);
+	}
 }

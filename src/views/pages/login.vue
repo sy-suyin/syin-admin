@@ -83,19 +83,7 @@ export default {
 		 */
 		loginSuccess(result){
 			// 存储后端返回的相关配置信息
-			config('domain', result.config.domain);
-
-			this.$store.commit('style/set', {
-				key: 'sidebar_background_imgs',
-				value: result.config.sidebar_imgs
-			});
-
-			// 存储相关登录信息
-			result.user.avatar = result.config.domain + result.user.avatar;
-			this.$store.commit('auth/setLogin', result.user);
-
-			// 设置权限数据
-			this.$store.commit('access/set', result.forbid);
+			this.$store.commit('auth/setLogin', result);
 
 			// 如果有本地记录的重定向记录, 则在登陆后跳转回之前的页面
 			// 注: 此功能未实现

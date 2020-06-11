@@ -22,3 +22,15 @@ export const updateProfile = (args) => {
 		data: args,
 	})
 }
+
+/**
+ * 使用 token 获取用户信息
+ * @param {*} args 
+ */
+export const tokenLogin = () => {
+	return request({
+		url: '/login/refresh',
+		method: 'post',
+		dispose: true,
+	});
+}

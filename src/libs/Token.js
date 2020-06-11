@@ -69,9 +69,14 @@ class Token {
 					resolve(token);
 				});
 			}else{
-				this.is_request = true;
 				let url = this.getRefreshTokenUrl();
 				let refresh_token = this.getRefreshToken();
+
+				if(! url || url.length < 2){
+					reject(new Error('token 获取失败')); 
+				}
+
+				this.is_request = true;
 
 				axios.post(url, {refresh_token}).then(response => {
 					const result = response.data;
@@ -83,15 +88,18 @@ class Token {
 
 					// 此处判断后端传过来的数据有没有问题
 					if(!result || typeof(result.status) == 'undefined' || result.status != 1){
+						this.is_request = false;
 						reject(new Error('token 获取失败'));
 					}
 
 					// 获取并保存 token
 					if(! headers.hasOwnProperty('token_type') || ! headers.hasOwnProperty('access_token')){
+						this.is_request = false;
 						reject(new Error('token 获取失败'));
 					}
 
 					if(! headers['access_token'] || headers['token_type'] != 'bearer'){
+						this.is_request = false;
 						reject(new Error('token 获取失败'));
 					}
 
