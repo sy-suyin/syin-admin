@@ -13,7 +13,7 @@ export default {
 			optimget: '',
 
 			// 验证方法数组
-			validate_funcs: [ 'validate' ],
+			validator: [ 'validate' ],
 		}
 	},
 	mounted() {
@@ -24,7 +24,7 @@ export default {
 		 * 表单提交
 		 */
 		formSubmit(){
-			let chains = [...this.validate_funcs, 'submit'];
+			let chains = [...this.validator, 'submit'];
 			let promise = Promise.resolve({
 				args: {...this.form}
 			});

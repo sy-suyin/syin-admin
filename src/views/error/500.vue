@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import {common as commonMixin} from "@/mixins/common.js";
+import commonMixin from "@/mixins/common";
 
 export default {
 	name: "error_500",

@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import {common as commonMixin} from "@/mixins/common.js";
+import commonMixin from "@/mixins/common";
 import svgIcon from '@/components/svg-icon';
 
 export default {

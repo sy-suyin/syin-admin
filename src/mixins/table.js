@@ -6,7 +6,7 @@ import {isEmpty, isSet, debounce, throttle, timestampToTime} from '@/libs/util';
 import Table from '@/libs/Table.js';
 
 let TableInstance = null; 
-export const table = {
+export default {
 	data(){
 		return {
 			// 各跳转链接

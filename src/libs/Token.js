@@ -1,5 +1,5 @@
 import axios from 'axios'
-import store from '@/vuex/store'
+import store from '@/store';
 import Observer from '@/libs/Observer.js';
 
 class Token {

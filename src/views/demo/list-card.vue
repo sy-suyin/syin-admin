@@ -61,7 +61,7 @@
 
 <script>
 import imgCard from "@/components/img-card";
-import {common as commonMixin} from "@/mixins/common.js";
+import commonMixin from "@/mixins/common";
 
 export default {
 	name: 'list_card',

@@ -5,7 +5,7 @@
 
 import { post } from '@/libs/api';
 
-export const page = {
+export default {
 	data(){
 		return {
 

@@ -76,7 +76,7 @@
 
 <script>
 import { config } from '@/libs/util';
-import {common as commonMixin} from "@/mixins/common.js";
+import commonMixin from "@/mixins/common";
 import { updateProfile } from '@/api/user';
 
 export default {

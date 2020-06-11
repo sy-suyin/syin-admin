@@ -66,9 +66,9 @@
 </template>
 
 <script>
-import {page as pageMixin} from "@/mixins/page.js";
-import {table as tableMixin} from "@/mixins/table.js";
-import {common as commonMixin} from "@/mixins/common.js";
+import pageMixin from "@/mixins/page";
+import tableMixin from "@/mixins/table";
+import commonMixin from "@/mixins/common";
 import pageHeader from "@/components/page-header";
 
 export default {

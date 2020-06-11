@@ -121,7 +121,7 @@
 
 <script>
 import * as util from '@/libs/util';
-import {common as commonMixin} from "@/mixins/common.js";
+import commonMixin from "@/mixins/common";
 import dataPanel from './components/data-panel'
 import barchart from './components/barchart'
 import mapchart from './components/mapchart'

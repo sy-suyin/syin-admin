@@ -1,5 +1,5 @@
 // 工具类
-import store from '@/vuex/store'
+import store from '@/store';
 
 /**
  * 判断数据类型

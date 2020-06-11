@@ -47,8 +47,8 @@
 </template>
 
 <script>
-import {common as commonMixin} from "@/mixins/common.js";
-import  validateMixin from "@/mixins/validate.js";
+import commonMixin from "@/mixins/common";
+import validateMixin from "@/mixins/validate";
 import { debounce, requestAll } from '@/libs/util';
 import { getAdmin, editAdmin, getRoles } from '@/api/system';
 

@@ -83,8 +83,8 @@
 
 <script>
 // @ is an alias to /src
-import {common as commonMixin} from "@/mixins/common.js";
-import  validateMixin from "@/mixins/validate.js";
+import commonMixin from "@/mixins/common";
+import validateMixin from "@/mixins/validate";
 import {menus} from '@/config/menu';
 import { requestAll } from '@/libs/util';
 import { getRole, editRole, getAccessData } from '@/api/system';

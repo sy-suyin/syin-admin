@@ -1,4 +1,4 @@
-import store from '@/vuex/store'
+import store from '@/store';
 import {isEmpty, isSet} from '@/libs/util';
 
 export default {

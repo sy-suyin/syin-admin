@@ -3,7 +3,7 @@ import permission from '@/directive/permission/index.js' // 权限判断指令
 import pageHeader from "@/components/page-header";
 import {checkPermission} from '@/libs/util';
 
-export const common = {
+export default {
 
 	// 默认加载指令
 	directives: { permission },

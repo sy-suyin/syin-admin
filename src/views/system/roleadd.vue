@@ -80,8 +80,8 @@
 </template>
 
 <script>
-import {common as commonMixin} from "@/mixins/common.js";
-import  validateMixin from "@/mixins/validate.js";
+import commonMixin from "@/mixins/common";
+import validateMixin from "@/mixins/validate";
 import { menus } from '@/config/menu';
 import { addRole, getAccessData } from '@/api/system';
 

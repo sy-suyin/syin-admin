@@ -4,7 +4,7 @@
 
 import Qs from 'qs';
 import axios from 'axios'
-import store from '@/vuex/store';
+import store from '@/store';;
 import { checkPermission, config } from '@/libs/util';
 import Token from '@/libs/Token';
 import Observer from '@/libs/Observer.js';
