@@ -7,16 +7,15 @@
 
 			<div>
 				<ul class="navbar-right">
+					<error-log />
+
 					<li>
 						<i class="icon el-icon-lock" @click="lock"></i>
 					</li>
-					<li>
-						<i class="icon el-icon-s-unfold"></i>
-					</li>
-					<li>
+					<li class="dropdown-item">
 						<el-dropdown @command="userCommand">
 							<span class="el-dropdown-link">
-								<i class="icon el-dropdown-icon el-icon-user-solid"></i>
+								<svg-icon icon="profilesetting" class-name="el-dropdown-icon"></svg-icon>
 							</span>
 							<el-dropdown-menu slot="dropdown">
 								<el-dropdown-item command="profile">个人中心</el-dropdown-item>
@@ -27,15 +26,20 @@
 					</li>
 				</ul>
 			</div>
+
+			
 		</div>
 	</div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+import svgIcon from '@/components/svg-icon';
+import errorLog from '@/components/error-log';
 
 export default {
 	name: 'container-head',
+	components: { svgIcon, errorLog },
 	props: {
 		user: {
 			type: Object,

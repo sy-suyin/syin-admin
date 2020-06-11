@@ -1,21 +1,21 @@
 const menus = [
 	{
 		name: '工作台',
-		icon: '',
+		icon: 'home',
 		controller: 'index',
 		action: 'index',
 		is_hidden: 0,
 	},
 	{
 		name: '个人中心',
-		icon: '',
+		icon: 'profilesetting',
 		controller: 'index',
 		action: 'profile',
 		is_hidden: 0,
 	},
 	{
 		name: '页面模板',
-		icon: '',
+		icon: 'el-icon-arrow-up',
 		controller: 'demo',
 		action: 'indexman',
 		is_hidden: 0,
@@ -128,7 +128,7 @@ const menus = [
 	},
 	{
 		name: '异常页',
-		icon: '',
+		icon: 'el-icon-arrow-up',
 		controller: 'abnormal',
 		action: 'indexman',
 		is_hidden: 0,
@@ -158,7 +158,7 @@ const menus = [
 	},
 	{
 		name: '系统设置',
-		icon: '',
+		icon: 'setting',
 		controller: 'system',
 		action: 'indexman',
 		is_hidden: 0,

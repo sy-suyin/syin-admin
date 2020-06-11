@@ -93,9 +93,11 @@ class Request{
 							return this.responseSuccess(response);
 						});
 					}).catch(e => {
-						setTimeout(() => {
-							store.commit('auth/logout');
-						}, 15000);
+						if(! window.location.href.includes('/login')){
+							setTimeout(() => {
+								store.commit('auth/logout');
+							}, 15000);
+						}
 
 						return Promise.reject(new Error('账号过期, 请重新登录'));
 					});

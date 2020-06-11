@@ -135,6 +135,7 @@ const mutations = {
 		state.auth_time = auth_time;
 		state.refresh_token = refresh_token;
 		state.refresh_token_url = refresh_token_url;
+
 	},
 
 	/**
@@ -173,7 +174,7 @@ const actions = {
 	/*
 	 * 重新加载, 从缓存中读取数据
 	 */
-	reload(state){
+	reload({state, rootGetters}){
 		this.commit('auth/reloadToken');
 
 		if(!state.token){

@@ -11,7 +11,11 @@
 					:style="{backgroundColor: (item.is_active ? filters_color : 'transparent')}"
 					@click.stop="menuClick(index)"
 				>
-					<i class="menu-item-icon el-icon-s-grid" v-if="level < 1"></i>
+					<span v-if="level < 1">
+						<svg-icon  v-if="item.custom_icon" :icon="item.icon" class-name="menu-item-icon"></svg-icon>
+
+						<i v-else class="menu-item-icon el-icon-s-grid" :class="item.icon"></i>
+					</span>
 					<span class="menu-name">
 						{{item.name}}
 					</span>
@@ -27,9 +31,11 @@
 
 <script>
 import { mapState } from 'vuex'
+import svgIcon from '@/components/svg-icon';
 
 export default {
 	name: 'menu-item',
+	components: { svgIcon },
 	props: ['menus', 'lv'],
 	data(){
 		return {
@@ -41,11 +47,13 @@ export default {
 	created(){
 		this.level = +this.lv || 0;
 
-		this.menus.forEach(val=>{
+		this.menus.forEach((val, index) =>{
 			if(val.hasOwnProperty('is_open') && !!val.is_open){
 				this.opens[val.key] = true;
 			}
 		});
+
+		this.setIcons();
 	},
 	methods:{
 		/**
@@ -85,6 +93,26 @@ export default {
 					this.menus[index].is_open = 0;
 				} 
 			});
+		},
+
+		setIcons(){
+			if(this.level > 0){
+				return;
+			}
+
+			this.menus.forEach((val, index) =>{
+				// 处理图标
+				if(!val.icon || val.icon == ''){
+					this.menus[index].icon = 'el-icon-arrow-up';
+					this.menus[index].custom_icon = false;
+				}else{
+					if(val.icon.substr(0, 2) == 'el'){
+						this.menus[index].custom_icon = false;
+					}else{
+						this.menus[index].custom_icon = true;
+					}
+				}
+			});
 		}
 	},
 	computed: {
@@ -95,7 +123,7 @@ export default {
 	},
 	watch: {
 		menus(data){
-			let flag = true;
+			let flag = false;
 
 			// 如果需要每次点击切换时, 关闭其他已打开的, 只需注释下面代码即可
 
@@ -111,6 +139,8 @@ export default {
 
 				// 在手动切换的情况下不存在子项已打开, 而上级菜单未打开的情况. 故仅在菜单点击时添加新打开记录, 而不在此处判断有无新上级打开记录
 			});
+
+			this.setIcons();
 
 			if(flag){
 				this.menus = data;
