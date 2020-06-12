@@ -196,7 +196,7 @@ class System {
 
 		// 验证提交数据
 		$result = SystemService::requestCheck($model, $params, 'add');
-		$forbid_data = SystemService::roleForbidCheck($params);
+		$blocklist = SystemService::roleBlocklistCheck($params);
 
 		if(is_error($result)){
 			return show_error($result->getError());
@@ -212,7 +212,7 @@ class System {
 
 		// 保存角色权限
 		$data['id'] = $model->id;
-		SystemService::roleForbidSave($data, $forbid_data, false);
+		SystemService::roleBlocklistSave($data, $blocklist, false);
 
 		// 保存日志
 
@@ -225,11 +225,11 @@ class System {
 	 */
 	public function roleEditAction(Request $request, RoleModel $model){
 		// 获取提交数据
-		$params = $request->post();
+		$params = $_POST;
 
 		// 验证提交数据
 		$result = SystemService::requestCheck($model, $params, 'edit');
-		$forbid_data = SystemService::roleForbidCheck($params);
+		$blocklist = SystemService::roleBlocklistCheck($params);
 
 		if(is_error($result)){
 			return show_error($result->getError());
@@ -245,7 +245,7 @@ class System {
 
 		// 保存角色权限
 		$data['id'] = $model->id;
-		SystemService::roleForbidSave($data, $forbid_data, true);
+		SystemService::roleBlocklistSave($data, $blocklist, true);
 
 		// 保存日志
 
@@ -298,11 +298,11 @@ class System {
 		$config = config('access.');
 
 		// 获取角色的禁止权限信息
-		$forbid = SystemService::getRoleForbidData($id, $config);
+		$blocklist = SystemService::getRoleBlocklist($id, $config);
 
 		return show_success('', [
-			'forbid' => $forbid,
-			'config' => $config,
+			'blocklist' => $blocklist,
+			'config' 	=> $config,
 		]);
 	}
 }

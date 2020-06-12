@@ -41,12 +41,12 @@ class AdminService extends BaseService {
 	 * 登录时返回账号相关的配置
 	 */
 	public static function loginConfig($admin){
-		$forbid = self::getForbidData($admin->id);
+		$blocklist = self::getBlocklist($admin->id);
 		$domain = request()->domain();
 		$domain = trim($domain, '/');
 
 		$result = [
-			'forbid' =>	$forbid,
+			'blocklist' => $blocklist,
 			'config' => array(
 				'domain' => $domain,
 				'sidebar_imgs' => [
@@ -143,72 +143,66 @@ class AdminService extends BaseService {
 	 * @param int $admin_id 管理员账号id
 	 *
 	 */
-	public static function getForbidData($admin_id){
+	public static function getBlocklist($admin_id){
 		// 获取关联角色id;
 		$role_ids = db('admin_role_relation')->where('admin_id', $admin_id)->column('role_id');
 
 		// 禁止访问数据权限
-		$forbid = [
-			'data_forbid' => [],
-			'page_forbid' => [],
+		$blocklist = [
+			'data' => [],
+			'page' => [],
 		];
 
 		if(empty($role_ids)){
-			return $forbid;
+			return $blocklist;
 		}
 
-		$forbid_data = db('admin_role_ban')->field('id, controller, action, type')->where('role_id', 'in', $role_ids)->select();
+		$results = db('admin_role_blocklist')->field('id, controller, action, type')->where('role_id', 'in', $role_ids)->select();
 
 		// 计算规则, 整合成多个对象的数据组, 仅当各权限名单中都有的才算禁止(求交集)
-		if(!empty($forbid_data)){
-			$data_forbid = [];
-			$page_forbid = [];
+		if(!empty($results)){
 			$role_count = count($role_ids);
+			$stat = [
+				'data' => '',
+				'page' => '',
+			];
 
-			foreach($forbid_data as $val){
-				$target = '';
-				if($val['type'] == 1){
-					$target = 'data_forbid';
-				}elseif($val['type'] == 2){
-					$target = 'page_forbid';
+			$types = [1 => 'data', 2 => 'page'];
+			foreach($results as $val){
+				$type = $types[$val['type']];
+				$controller = $val['controller'];
+				$action = $val['action'];
+
+				if(isset($stat[$type][$controller])){
+					$stat[$type][$controller] = [];
 				}
 
-				if(! isset($$target[$val['controller']])){
-					$$target[$val['controller']] = [];
+				if(isset($stat[$type][$controller][$action])){
+					$stat[$type][$controller][$action] = 0;
 				}
 
-				if(! isset($$target[$val['controller']][$val['action']])){
-					$$target[$val['controller']][$val['action']] = 0;
-				}
-
-				$$target[$val['controller']][$val['action']] += 1;
+				$stat[$type][$controller][$action] = 1;
 			}
 
 			// 判断是否所有角色都禁止改权限
-			foreach($data_forbid as $controller => $actions){
-				foreach($actions as $action => $count){
-					if($count >= $role_count){
-						if(! isset($forbid['data_forbid'][$controller])){
-							$forbid['data_forbid'][$controller] = [];
-						}
-						$forbid['data_forbid'][$controller][] = $action;
-					}
+			foreach($types as $type){
+				if(empty($stat[$type])){
+					continue;
 				}
-			}
 
-			foreach($page_forbid as $controller => $actions){
-				foreach($actions as $action => $count){
-					if($count >= $role_count){
-						if(! isset($forbid['page_forbid'][$controller])){
-							$forbid['page_forbid'][$controller] = [];
+				foreach($stat[$type] as $controller => $actions){
+					foreach($actions as $action => $total){
+						if($total < $role_count){
+							continue;
 						}
-						$forbid['page_forbid'][$controller][] = $action;
+
+						$blocklist[$type][$controller][] = $action;
 					}
 				}
 			}
 		}
 
-		return $forbid;
+		return $blocklist;
 	}
 
 	/**
@@ -221,7 +215,7 @@ class AdminService extends BaseService {
 	 * @return bool 允许访问为true, 反之为false
 	 */
 	public static function verifyPermission($admin, $controller, $action){
-		static $data_forbid = [];
+		static $blocklist = [];
 
 		// 此处获取用户信息
 		if(is_numeric($admin)){
@@ -243,15 +237,15 @@ class AdminService extends BaseService {
 			return true;
 		}
 
-		if(empty($data_forbid)){
-			$forbid_data = db('admin_role_ban')->field('id, controller, action')->where('type', 1)->where('role_id', 'in', $role_ids)->select();
+		if(empty($blocklist)){
+			$resulst = db('admin_role_blocklist')->field('id, controller, action')->where('type', 1)->where('role_id', 'in', $role_ids)->select();
 
 			// 计算规则, 整合成多个对象的数据组, 仅当各权限名单中都有的才算禁止(求交集)
-			if(!empty($forbid_data)){
+			if(!empty($resulst)){
 				$temp = [];
 				$role_count = count($role_ids);
 
-				foreach($forbid_data as $val){
+				foreach($resulst as $val){
 					if(! isset($temp[$val['controller']])){
 						$temp[$val['controller']] = [];
 					}
@@ -267,17 +261,17 @@ class AdminService extends BaseService {
 				foreach($temp as $controller => $actions){
 					foreach($actions as $action => $count){
 						if($count >= $role_count){
-							if(! isset($data_forbid[$controller])){
-								$data_forbid[$controller] = [];
+							if(! isset($blocklist[$controller])){
+								$blocklist[$controller] = [];
 							}
-							$data_forbid[$controller][] = $action;
+							$blocklist[$controller][] = $action;
 						}
 					}
 				}
 			}
 		}
 
-		if(isset($data_forbid[$controller]) && isset($data_forbid[$controller][$action])){
+		if(isset($blocklist[$controller]) && isset($blocklist[$controller][$action])){
 			return false;
 		}
 

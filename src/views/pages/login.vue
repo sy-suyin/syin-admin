@@ -72,6 +72,7 @@ export default {
 			login(args).then(result => {
 				this.loginSuccess(result);
 			}).catch(e => {
+				console.log(e);
 				this.message('网络异常，请稍后重试');
 			}).finally(()=>{
 				this.is_loading = false;
@@ -106,11 +107,10 @@ export default {
 						'http://localhost:8080/offline/bg-4.jpg',
 					]
 				},
-				forbid: {
-					data_forbid: {
-
+				blocklist: {
+					data: {
 					},
-					page_forbid: {
+					page: {
 						index: ['profile'],
 						system: ['adminlist', 'adminadd', 'adminedit', 'adminrecycle','rolelist', 'roleadd', 'roleedit', 'rolerecycle', 'dict']
 					}
@@ -132,18 +132,10 @@ export default {
 
 			// 存储相关登录信息
 			this.$store.commit('auth/setLogin',result.user);
-			this.$store.commit('access/set', {
-				data_forbid: result.forbid.data_forbid,	// 数据权限黑名单
-				page_forbid: result.forbid.page_forbid,	// 页面权限黑名单
-			});
-
-			// 如果有本地记录的重定向记录, 则在登陆后跳转回之前的页面
-			// 注: 此功能未实现
-			let redirect = localStorage.getItem('user_redirect');
-			localStorage.removeItem('user_redirect');
+			this.$store.commit('access/set', {blocklist: result.blocklist});
 
 			// 登录跳转
-			let redirect_path = redirect ? redirect : this.$store.getters['access/routers'][0].path;
+			let redirect_path = this.$store.getters['access/routers'][0].path;
 			this.$router.replace({path: redirect_path})
 		},
 

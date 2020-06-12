@@ -52,8 +52,6 @@ const actions = {
 	changeStyle({ state, commit }, data){
 		commit('set', data);
 
-		console.log({...state});
-
 		// 此处将数据提交给后端
 	}
 }

@@ -53,7 +53,7 @@ CREATE TABLE `sy_admin_role` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='管理员角色表';
 
-CREATE TABLE `sy_admin_role_ban` (
+CREATE TABLE `sy_admin_role_blocklist` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `role_id` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '角色id',
   `module` varchar(128) NOT NULL DEFAULT '' COMMENT '模块名称',
@@ -62,7 +62,7 @@ CREATE TABLE `sy_admin_role_ban` (
   `type` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '禁止类型; 1: 数据权限, 2: 页面权限',
   PRIMARY KEY (`id`),
   KEY `role_id` (`role_id`)
-) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='管理员权限黑名单表';
+) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='权限禁止名单';
 
 CREATE TABLE `sy_admin_role_relation` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',

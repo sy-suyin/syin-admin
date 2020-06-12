@@ -184,32 +184,41 @@ class SystemService extends BaseService {
 	}
 
 	/**
-	 * 角色禁止权限数据检查
+	 * 角色禁止名单数据检查
 	 */
-	public static function roleForbidCheck($params){
-		$data_forbid = self::input('data_forbid', 'array', $params, null);
-		$page_forbid = self::input('page_forbid', 'array', $params, null);
+	public static function roleBlocklistCheck($params){
+		$blocklist = self::input('blocklist', 'array', $params, null);
+
+		if(empty($blocklist)){
+			return [
+				'data' => [],
+				'page' => [],
+			];
+		}
+
+		$blocklist_data = self::input('data', 'array', $blocklist, null);
+		$blocklist_page = self::input('page', 'array', $blocklist, null);
 
 		// 处理数据权限
-		if(!empty($data_forbid)){
-			$data_forbid = self::forbidDataRepair($data_forbid, 1);
+		if(!empty($blocklist_data)){
+			$blocklist_data = self::roleBlocklistRepair($blocklist_data, 1);
 		}
 
 		// 处理页面权限
-		if(!empty($page_forbid)){
-			$page_forbid = self::forbidDataRepair($page_forbid, 2);
+		if(!empty($blocklist_page)){
+			$blocklist_page = self::roleBlocklistRepair($blocklist_page, 2);
 		}
 
 		return [
-			'data_forbid' => $data_forbid,
-			'page_forbid' => $page_forbid,
+			'data' => $blocklist_data,
+			'page' => $blocklist_page,
 		];
 	}
 
 	/**
-	 * 角色禁止权限数据转换
+	 * 角色禁止名单数据转换
 	 */
-	protected static function forbidDataRepair($data, $type){
+	protected static function roleBlocklistRepair($data, $type){
 		$temp = [];
 		$module = request()->module();
 
@@ -237,70 +246,67 @@ class SystemService extends BaseService {
 	}
 
 	/**
-	 * 角色权限禁止信息保存
+	 * 角色权限禁止名单数据保存
 	 */
-	public static function roleForbidSave($role, $data, $is_edit = false){
-		$bans = [];
+	public static function roleBlocklistSave($role, $data, $is_edit = false){
+		$blocklist = [];
 		$count = 0;
 
-		$data_forbid_edit = $is_edit ? !empty($_POST['data_forbid_edit']) : true;
-		$page_forbid_edit = $is_edit ? !empty($_POST['page_forbid_edit']) : true;
+		$blocklist_data_edit = $is_edit ? !empty($_POST['blocklist_data_edit']) : true;
+		$blocklist_page_edit = $is_edit ? !empty($_POST['blocklist_page_edit']) : true;
 
-		if($data_forbid_edit && !empty($data['data_forbid'])){
+		if($blocklist_data_edit && !empty($data['data'])){
 			$count += 1;
-			foreach($data['data_forbid'] as $val){
+			foreach($data['data'] as $val){
 				$val['role_id'] = $role['id'];
-				$bans[] = $val;
+				$blocklist[] = $val;
 			}
 		}
 
-		if($page_forbid_edit && !empty($data['page_forbid'])){
+		if($blocklist_page_edit && !empty($data['page'])){
 			$count += 10;
-			foreach($data['page_forbid'] as $val){
+			foreach($data['page'] as $val){
 				$val['role_id'] = $role['id'];
-				$bans[] = $val;
+				$blocklist[] = $val;
 			}
 		}
 
-		if(empty($bans)){
+		if(empty($blocklist)){
 			return true;
 		}
 
 		// 直接删除旧数据, 再重新插入新数据
 		if($is_edit){
 			if($count == 1){
-				db('admin_role_ban')->where('role_id', $role['id'])->where('type', 1)->delete();
+				db('admin_role_blocklist')->where('role_id', $role['id'])->where('type', 1)->delete();
 			}else if($count == 10){
-				db('admin_role_ban')->where('role_id', $role['id'])->where('type', 2)->delete();
+				db('admin_role_blocklist')->where('role_id', $role['id'])->where('type', 2)->delete();
 			}else{
-				db('admin_role_ban')->where('role_id', $role['id'])->delete();
+				db('admin_role_blocklist')->where('role_id', $role['id'])->delete();
 			}
 		}
 
-
-		return db('admin_role_ban')->insertAll($bans);
+		return db('admin_role_blocklist')->insertAll($blocklist);
 	}
 
 	/**
-	 * 获取角色的禁止权限信息
+	 * 获取角色的禁止名单信息
 	 */
-	public static function getRoleForbidData($id){
-		$forbid_data = db('admin_role_ban')->where('role_id', $id)->select();
-		$forbid = [
-			'data_forbid' => [],
-			'page_forbid' => [],
+	public static function getRoleBlocklist($id){
+		$results = db('admin_role_blocklist')->where('role_id', $id)->select();
+		$blocklist = [
+			'data' => [],
+			'page' => [],
 		];
 
-		if(!empty($forbid_data)){
-			foreach($forbid_data as $val){
-				if($val['type'] == 1){
-					$forbid['data_forbid'][] = $val;
-				}elseif($val['type'] == 2){
-					$forbid['page_forbid'][] = $val;
-				}
+		if(!empty($results)){
+			foreach($results as $val){
+				$type = $val['type'] == 1 ? 'data' : 'page';
+
+				$blocklist[$type][] = $val;
 			}
 		}
 
-		return $forbid;
+		return $blocklist;
 	}
 }

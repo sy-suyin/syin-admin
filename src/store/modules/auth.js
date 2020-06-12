@@ -50,7 +50,7 @@ const mutations = {
 		Storage.set('login_time', time, false);
 
 		// 设置权限数据
-		this.commit('access/set', result.forbid);
+		this.commit('access/set', result.blocklist);
 	},
 
 	/*
@@ -107,7 +107,7 @@ const mutations = {
 		let token = Cookie.read('auth_token');
 		let refresh_token = Cookie.read('auth_refresh_token');
 		let auth_time = Storage.get('auth_time', {json: false, decrypt: false});
-		let refresh_token_url = Storage.get('refresh_token_url', refresh_token_url, {json: false});
+		let refresh_token_url = Storage.get('refresh_token_url', {json: false});
 
 		// 如果token一致则不修改
 		if(token == state.token && refresh_token == state.refresh_token){

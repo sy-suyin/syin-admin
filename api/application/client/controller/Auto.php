@@ -26,7 +26,7 @@ class Auto extends Client {
 
 		// 自动生成页面时忽略的数据表
 		$ignore_tables = [
-			'admin', 'admin_role', 'admin_role_ban', 'admin_role_relation', 'setting', 'system'
+			'admin', 'admin_role', 'admin_role_blocklist', 'admin_role_relation', 'setting', 'system'
 		];
 
 		// 为忽略的数据表加上前缀

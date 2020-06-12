@@ -21,7 +21,7 @@ export function getType(data) {
  */
 export function checkPermission(controller, action, type='data'){
 	let user = store.getters['auth/user'];
-	let forbid_list = store.getters[`access/${type}_forbid`];
+	let blocklist = store.getters[`access/${type}_forbid`];
 
 	if(!user){
 		return false;
@@ -31,15 +31,15 @@ export function checkPermission(controller, action, type='data'){
 		return true;
 	}
 
-	if(isEmpty(forbid_list)){
+	if(isEmpty(blocklist)){
 		return true;
 	}
 
-	if(! isSet(forbid_list, controller)){
+	if(! isSet(blocklist, controller)){
 		return true;
 	}
 
-	if(-1 == forbid_list[controller].findIndex(val=>{return val==action;})){
+	if(-1 == blocklist[controller].findIndex(val=>{return val==action;})){
 		return true;
 	}
 

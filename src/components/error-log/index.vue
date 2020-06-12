@@ -1,6 +1,6 @@
 <template>
 	<div v-if="errorLogs.length > 0">
-		<li class="bug-icon">
+		<li class="bug-icon" @click="show_error=true">
 			<svg-icon icon="bug" class-name="icon"></svg-icon>
 		</li>
 

@@ -14,11 +14,11 @@
 					</el-form-item>
 
 					<el-form-item label="数据权限">
-						<el-button size="small" @click="dialog.visible.data=true">设置权限</el-button>
+						<permissions :data="permissions.data" @confirm="confirm('data', $event)" />
 					</el-form-item>
 
-					<el-form-item label="访问权限">
-						<el-button size="small" @click="dialog.visible.page=true">设置权限</el-button>
+					<el-form-item label="页面权限">
+						<permissions :data="permissions.page"  @confirm="confirm('page', $event)" />
 					</el-form-item>
 
 					<el-form-item label="备注说明">
@@ -32,49 +32,6 @@
 				</el-form>
 			</el-card>
 
-			<el-dialog
-				title="页面权限"
-				:visible.sync="dialog.visible.page"
-				width="50%">
-
-				<el-tree
-					ref="page_tree"
-					:data="dialog.data.page"
-					:props="dialog.props.page"
-					show-checkbox
-					node-key="path"
-					class="permission-tree"
-					label="name"
-				/>
-
-				<div slot="footer">
-					<el-button type="danger" size="small" @click="dialog.visible.page=false">取消</el-button>
-					<el-button type="primary" size="small" @click="pageConfirm">确认</el-button>
-				</div>
-
-			</el-dialog>
-
-			<el-dialog
-				title="数据权限"
-				:visible.sync="dialog.visible.data"
-				width="50%">
-
-				<el-tree
-					ref="data_tree"
-					:data="dialog.data.data"
-					:props="dialog.props.data"
-					show-checkbox
-					node-key="path"
-					class="permission-tree"
-					label="name"
-				/>
-
-				<div slot="footer">
-					<el-button type="danger" size="small" @click="dialog.visible.data=false">取消</el-button>
-					<el-button type="primary" size="small" @click="dataConfirm">确认</el-button>
-				</div>
-
-			</el-dialog>
 		</div>
 	</div>
 </template>
@@ -84,52 +41,39 @@ import commonMixin from "@/mixins/common";
 import validateMixin from "@/mixins/validate";
 import { menus } from '@/config/menu';
 import { addRole, getAccessData } from '@/api/system';
+import permissions from './components/permissions';
 
 export default {
 	name: "system_roleadd",
 	mixins: [ commonMixin, validateMixin ],
+	components: { permissions },
   	data() {
       	return {
         	form: {
           		name: '',
-				desc: ''
-			},
-			dialog:{
-				props: {
-					data: {
-						children: 'children',
-						label: 'name'
-					},
-					page: {
-						children: 'children',
-						label: 'name'
-					}
-				},
-				visible: {
-					data: false,
-					page: false
-				},
-				data: {
+				desc: '',
+				blocklist: {
 					data: [],
-					page: []
+					page: [],
 				},
-				selected: {
-					data: [],
-					page: []
-				}
 			},
+
+			permissions: {
+				data: [],
+				page: menus,
+			},
+
 			rules: {
 				name: [
 					{ required: true, message: '请输入用户名称', trigger: 'blur' },
 				],
 			},
+
 			redirect_url: '/system/rolelist',
 		}
 	},
 
 	mounted(){
-		this.optimget = 'getParams';
-		this.dialog.data.page = menus;
 		this.init();
 	},
 
@@ -137,22 +81,13 @@ export default {
 		init(){
 			this.loading(true);
 			getAccessData().then(res => {
-				this.dialog.data.data = Object.values(res.config);
+				this.permissions.data = Object.values(res.config);
 			}).catch(e => {
 				let msg = e.message || '网络异常, 请稍后重试';
 				this.message(msg, 'warning', 3000, this.redirect_url);
 			}).finally(()=>{
 				this.loading(false);
 			});
-		},
-
-		/**
-		 * 获取额外提交参数
-		 */
-		getParams(params){
-			params.args['data_forbid'] = this.getUnselected(this.dialog.selected.data, this.dialog.data.data);
-			params.args['page_forbid'] = this.getUnselected(this.dialog.selected.page, this.dialog.data.page);
-			return params;
 		},
 
 		/**
@@ -170,49 +105,12 @@ export default {
 			});
 		},
 
-		dataConfirm(){
-			this.dialog.visible.data = false;
-			this.dialog.selected.data = this.$refs.data_tree.getCheckedNodes();
- 		},
-
-		pageConfirm(){
-			this.dialog.visible.page = false;
-			this.dialog.selected.page = this.$refs.page_tree.getCheckedNodes();
-		},
-
-		// 获取未选择的选项
-		getUnselected(selected, data){
-			let unselected = [];
-
-			do{
-				var next = [];
-				data.forEach((val, key)=> {
-
-					if(val.hasOwnProperty('children') && val.children.length > 0){
-						next.push(...val.children);
-					}else{
-						let is_selected = false;
-						selected.forEach((item, key) => {
-							if(item.controller == val.controller && item.action == val.action){
-								is_selected = true;
-								return false;
-							}
-						});
-
-						if(!is_selected){
-							if(! unselected.hasOwnProperty(val.controller)){
-								unselected[val.controller] = [];
-							}
-
-							unselected[val.controller].push(val.action);
-						}
-					}
-				})
-
-				data = next; 
-			}while(next.length > 0);
-
-			return unselected;
+		/**
+		 * 权限确认选择
+		 */
+		confirm(type, unselected){
+			this.form.blocklist[type] = unselected;
+			this.form[`blocklist_${type}_edit`] = true;
 		},
     }
 };
