@@ -56,7 +56,7 @@ class System {
 	 */
 	public function adminAddAction(Request $request, AdminModel $model){
 		// 验证提交数据
-		$result = SystemService::requestCheck($model, $request->post(), 'add');
+		$result = SystemService::requestCheck($model, $_POST, 'add');
 
 		if(is_error($result)){
 			return show_error($result->getError());
@@ -84,7 +84,7 @@ class System {
 	 */
 	public function adminEditAction(Request $request, AdminModel $model){
 		// 验证提交数据
-		$result = SystemService::requestCheck($model, $request->post(), 'edit');
+		$result = SystemService::requestCheck($model, $_POST, 'edit');
 
 		if(is_error($result)){
 			return show_error($result->getError());
@@ -192,7 +192,7 @@ class System {
 	 */
 	public function roleAddAction(Request $request, RoleModel $model){
 		// 获取提交数据
-		$params = $request->post();
+		$params = $_POST;
 
 		// 验证提交数据
 		$result = SystemService::requestCheck($model, $params, 'add');
@@ -250,7 +250,7 @@ class System {
 		// 保存日志
 
 		// 返回消息
-		return show_success('已成功添加角色');
+		return show_success('已成功修改角色');
 	}
 
 	/**

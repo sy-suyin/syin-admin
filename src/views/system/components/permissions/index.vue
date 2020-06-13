@@ -155,22 +155,16 @@ export default {
 		}
 	},
 	watch: {
-		blocklist(val, old_val){
-			if(val.length > 0){
-				this.init(val);
-			}
+		blocklist(val){
+			this.init(val);
 		},
 		data: {
-			handler(val, old_val){
-				console.log(val);
-
+			handler(val){
 				if(val.length){
 					this.results = this.checkTreeKey(val);
 				}else{
 					this.results = val;
 				}
-
-				console.log(this.results);
 			},
 			immediate: true
 		}

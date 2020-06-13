@@ -6,11 +6,10 @@ import Menu from '@/libs/Menu';
 let MenuInstance = new Menu;
 
 const state = {
-	// 数据访问黑名单
-	data_forbid: {},
-
-	// 页面菜单黑名单
-	page_forbid: {},
+	blocklist: {
+		data: {},
+		page: {},
+	},
 
 	// 是否已对菜单文件进行过计算
 	is_calc: false,
@@ -26,8 +25,7 @@ const state = {
 }
 
 const getters = {
-	data_forbid: state=>state.data_forbid,
-	page_forbid: state=>state.page_forbid,
+	blocklist: state=>state.blocklist,
 	is_calc: state=>state.is_calc,
 	routers: state=>state.routers,
 	menus: state=>state.menus,
@@ -50,12 +48,10 @@ const mutations = {
 	 * 重新加载, 从缓存中读取数据
 	 */
 	reload(state){
-		let data_forbid = Storage.get('data_forbid', {json: true});
-		let page_forbid = Storage.get('page_forbid', {json: true});
+		let blocklist = Storage.get('blocklist', {json: true});
 
-		if(data_forbid && page_forbid){
-			state.data_forbid = data_forbid;
-			state.page_forbid = page_forbid;
+		if(blocklist){
+			state.blocklist = blocklist;
 		}
 
 		this.dispatch('access/calc');
@@ -64,13 +60,10 @@ const mutations = {
 	/*
 	 * 设置页面黑名单和数据黑名单
 	 */
-	set(state, payload){
-		state.data_forbid = payload.data_forbid;
-		state.page_forbid = payload.page_forbid;
+	set(state, blocklist){
+		state.blocklist = blocklist;
 
-		Storage.set('data_forbid', payload.data_forbid);
-		Storage.set('page_forbid', payload.page_forbid);
-
+		Storage.set('blocklist', blocklist);
 		this.dispatch('access/calc');
 	},
 }

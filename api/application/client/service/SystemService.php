@@ -73,6 +73,8 @@ class SystemService extends BaseService {
 
 		if(!empty($data['password'])){
 			$data['password'] = generate_password_hash($data['password']);
+		}else{
+			unset($data['password']);
 		}
 
 		unset($data['roles']);

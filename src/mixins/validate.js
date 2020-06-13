@@ -1,7 +1,6 @@
 /**
  * 封装主要用于 添加/修改 表单验证
  */
-import Chain from '@/libs/Chain';
 import { getType } from '@/libs/util';
 
 export default {
@@ -15,8 +14,6 @@ export default {
 			// 验证方法数组
 			validator: [ 'validate' ],
 		}
-	},
-	mounted() {
 	},
 	methods: {
 
@@ -58,10 +55,6 @@ export default {
 					}
 				});
 			});
-		},
-
-		validate2(){
-
 		},
 
 		/**

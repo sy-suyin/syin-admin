@@ -18,7 +18,7 @@ export default {
 			throw new Error(`need roles! Like v-permission="['admin','index']"`)
 		}
 
-		let forbid_list = store.getters[`access/${type}_forbid`];
+		let blocklist = store.getters[`access/blocklist`][type];
 		let controller = value[0];
 		let action = value[1];
 
@@ -30,15 +30,15 @@ export default {
 			return true;
 		}
 
-		if(isEmpty(forbid_list)){
+		if(isEmpty(blocklist)){
 			return true;
 		}
 
-		if(! isSet(forbid_list, controller)){
+		if(! isSet(blocklist, controller)){
 			return true;
 		}
 
-		if(-1 == forbid_list[controller].indexOf(action)){
+		if(-1 == blocklist[controller].indexOf(action)){
 			return true;
 		}
 

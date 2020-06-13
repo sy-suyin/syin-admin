@@ -21,7 +21,7 @@ export function getType(data) {
  */
 export function checkPermission(controller, action, type='data'){
 	let user = store.getters['auth/user'];
-	let blocklist = store.getters[`access/${type}_forbid`];
+	let blocklist = store.getters[`access/blocklist`][type];
 
 	if(!user){
 		return false;

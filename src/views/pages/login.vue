@@ -27,16 +27,18 @@
 </template>
 
 <script>
-import { config } from '@/libs/util';
 import { login } from '@/api/user';
+import { getType } from '@/libs/util';
 
 export default {
 	name: 'login',
 	data(){
 		return {
 			is_loading: false,
-
 			use_offline: false,
+
+			optimget: 'getParams',
+			validator: [ 'dataVerify', 'offlineVerify'],
 
 			args: {
 				login: '',
@@ -49,34 +51,86 @@ export default {
 		this.args.password = 'asd123';
 	},
 	methods: {
-		login(){
-			if(this.use_offline){
-				// 离线登录
-				return this.offlineLogin();
-			}
 
+		/**
+		 * 登录
+		 */
+		login(){
+			this.loginChains().then(params => {
+				this.is_loading = true;
+
+				login(params.args).then(result => {
+					this.loginSuccess(result);
+				}).catch(e => {
+					let msg = e.message || '网络异常, 请稍后重试';
+					this.message(msg, 'warning');
+				}).finally(()=>{
+					this.is_loading = false;
+				});
+
+			}).catch(e => {
+				if(! e) return;
+
+				let msg = e.message || '服务器异常, 请稍后重试';
+				this.message(msg, 'warning');
+			});
+		},
+
+		/**
+		 * 封装登录操作, 链式调用
+		 */
+		loginChains(){
+			let chains = [this.optimget, ...this.validator];
+			let promise = Promise.resolve({});
+
+			chains.forEach(fn => {
+				promise = promise.then(this[fn], null);
+			});
+
+			// 异常处理
+			promise = promise.then(null, this.errorHandle);
+
+			return promise;
+		},
+
+		/**
+		 * 获取提交所需的参数
+		 */
+		getParams(params){
 			let args = {...this.args};
 			args.login = args.login.trim();
 			args.password = args.password.trim();
 
-			if(args.login == ''){
-				return this.message('请先输入登录账户');
+			params.args = args;
+			return params;
+		},
+
+		/**
+		 * 检查将要提交的数据
+		 */
+		dataVerify(params){
+			if(params.args.login == ''){
+				return Promise.reject(new Error('请先输入登录账户'));
 			}
 
-			if(args.password == ''){
-				return this.message('请先输入登录密码');
+			if(params.args.password == ''){
+				return Promise.reject(new Error('请先输入登录密码'));
 			}
 
-			this.is_loading = true;
+			return params;
+		},
 
-			login(args).then(result => {
-				this.loginSuccess(result);
-			}).catch(e => {
-				console.log(e);
-				this.message('网络异常，请稍后重试');
-			}).finally(()=>{
-				this.is_loading = false;
-			});
+		/**
+		 * 是否采用离线登录
+		 */
+		offlineVerify(params){
+			if(this.use_offline){
+				// 离线登录
+				this.offlineLogin();
+				return Promise.reject();
+			}
+
+			return params;
 		},
 
 		/**
@@ -98,8 +152,9 @@ export default {
 
 		// 离线登录, 不使用任何与后端有关的功能
 		offlineLogin(){
-			let result = {
+			const result = {
 				config: {
+					domain: '',
 					sidebar_imgs: [
 						'http://localhost:8080/offline/bg-1.jpg',
 						'http://localhost:8080/offline/bg-2.jpg',
@@ -124,19 +179,7 @@ export default {
 				}
 			};
 
-			// 存储后端返回的相关配置信息
-			this.$store.commit('settings/set', {
-				key: 'sidebar_background_imgs',
-				value: result.config.sidebar_imgs
-			});
-
-			// 存储相关登录信息
-			this.$store.commit('auth/setLogin',result.user);
-			this.$store.commit('access/set', {blocklist: result.blocklist});
-
-			// 登录跳转
-			let redirect_path = this.$store.getters['access/routers'][0].path;
-			this.$router.replace({path: redirect_path})
+			this.loginSuccess(result);
 		},
 
 		/** 

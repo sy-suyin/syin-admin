@@ -163,8 +163,8 @@ class AdminService extends BaseService {
 		if(!empty($results)){
 			$role_count = count($role_ids);
 			$stat = [
-				'data' => '',
-				'page' => '',
+				'data' => [],
+				'page' => [],
 			];
 
 			$types = [1 => 'data', 2 => 'page'];
@@ -173,11 +173,11 @@ class AdminService extends BaseService {
 				$controller = $val['controller'];
 				$action = $val['action'];
 
-				if(isset($stat[$type][$controller])){
+				if(! isset($stat[$type][$controller])){
 					$stat[$type][$controller] = [];
 				}
 
-				if(isset($stat[$type][$controller][$action])){
+				if(! isset($stat[$type][$controller][$action])){
 					$stat[$type][$controller][$action] = 0;
 				}
 
