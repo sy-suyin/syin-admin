@@ -186,6 +186,15 @@ export default {
 	mounted(){
 		this.addScene(this.urls.list);
 		this.getRequestData();
+
+		// this.request();
+
+		// tableInstance = new Table1();
+
+		// // 删除操作
+		// tableInstance.execute({
+		// 	page: 'del',
+		// });
 	},
 	methods: {
     }

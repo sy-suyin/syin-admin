@@ -5,72 +5,62 @@
 
 class Chain{
 
-	// 事件键, 执行顺序从0开始
-	keys = [];
-
 	// 事件列表
-	binds = {};
+	chains = {};
 
 	/**
-	 * 设置key的执行顺序
-	 * 
-	 * @param {*} keys 
-	 */
-	sort(keys){
-		this.keys = keys;
-	}
-
-	/**
+	 * 添加
 	 * 
 	 * @param {*} key 
 	 * @param {*} resolve 
 	 * @param {*} reject 
 	 */
-	bind(key, resolve = null, reject = null){
+	add(key, resolve = null, reject = null){
 		if(!resolve && !reject){
 			return false;
 		}
 
-		let key_resolve = `${key}_resolve`;
-		let key_reject = `${key}_reject`;
+		this.chains[key] = {
+			resolve,
+			reject
+		};
 
-		this.binds[key_resolve] = resolve;
-		this.binds[key_reject] = reject;
+		console.log(this.chains);
 	}
 
 	/**
 	 * 触发
 	 */
-	commit(param = null){
-		let chain = [];
+	commit(params = {}){
+		console.log('commit');
+		console.log(this.chains);
 
-		if(this.keys.length < 1){
-			return Promise.reject(new Error('未绑定任何键'));
-		}
+		let chain_keys = Object.keys(this.chains);
+		console.log('commit');
 
-		// 排列执行顺序
-		this.keys.forEach(key => {
-			let key_resolve = `${key}_resolve`;
-
-			if(! this.binds.hasOwnProperty(key_resolve)){
-				return;
-			}
-
-			let key_reject = `${key}_reject`;
-			chain.push(this.binds[key_resolve], this.binds[key_reject]);
-		});
-
-		if(chain.length < 1){
+		if(chain_keys.length < 1){
 			return Promise.reject(new Error('未绑定任何方法'));
 		}
 
-		let promise = Promise.resolve();
+		console.log('commit');
+		let promise = Promise.resolve(params);
 
-		while (chain.length) {
-			promise = promise.then(chain.shift(), chain.shift());
+		for(let key in this.chains){
+			let chain = this.chains[key];
+
+			promise = promise.then(chain.resolve, chain.reject);
 		}
 
+		console.log(promise);
+
 		return promise;
+	}
+
+	/**
+	 * 清除
+	 */
+	clear(){
+		this.chains = {};
 	}
 }
 

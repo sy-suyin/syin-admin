@@ -4,6 +4,7 @@
  */
 
 import { post } from '@/libs/api';
+import Chain from '@/libs/Chain';
 
 export default {
 	data(){
@@ -16,7 +17,7 @@ export default {
 			use_scene: false,
 
 			// 当前场景, 当 use_scene 为 true 时才会用到
-			current_scene: ['default'],
+			current_scene: 'default',
 
 			// 表格数据, 通过程序映射后存至此处
 			results: [],
@@ -55,6 +56,9 @@ export default {
 				// 总记录数
 				total: 0,
 
+				// 默认参数
+				params: {},
+
 				// 请求参数
 				args: {},
 			}
@@ -72,7 +76,6 @@ export default {
 		},
 
 		/**
-		 *
 		 * 添加场景, 当添加多个场景时会开启多场景模式
 		 * (除默认场景外, 添加其他场景均会开启多场景模式)
 		 * 除默认场景外, 添加其他场景前需在调用该mixin的组件中添加属性 page_场景名
@@ -80,13 +83,15 @@ export default {
 		 * @param {string} url 		请求地址
 		 * @param {string} mapping  存储返回列表数据的根级响应式属性
 		 * @param {string} scene    场景名称
+		 * @param {object} params   请求时附带的默认参数
 		 */
-		addScene(url, mapping = '', scene = 'default'){
+		addScene(url, scene = 'default', { mapping = '', params = {} } = {}){
 			if(scene == 'default'){
 				this.page_default.url = url;
 
 				if(mapping != ''){
 					this.page_default.mapping = mapping;
+					this.page_default.params = params;
 				}
 			}else{
 				let key = `page_${scene}`;
@@ -103,6 +108,7 @@ export default {
 						maxpage: 1,
 						num: 0,
 						total: 0,
+						params: {},
 						args: {},
 					};
 				}else{
@@ -116,32 +122,127 @@ export default {
 		},
 
 		/**
-		 * 获取请求参数
-		 *
-		 * @param {bool}   reset 是否重置请求
-		 */
-		getRequestParam(reset){
-			let target = null;
+		 * 重置请求
+	 	 */
+		requestReset(params){
+			let {
+				scene = '',
+				reset = false,
+			} = params;
 
-			if(! this.use_scene){
-				target = this.page_default;
-			}else{
-				// 设置默认场景
-				if(this.current_scene == ''){
-					this.current_scene = this.scenes[0];
-				}
-
-				target = this[`page_${this.current_scene}`];
-			}
+			let scene_name = `page_${scene}`;
+			let target = this[scene_name];
 
 			// 重置各种数据
 			if(reset){
 				target.args = {};
 				target.maxpage = 1;
 				target.current = 1;
+
+				if(target.mapping != ''){
+					target.results.splice(0);
+				}else{
+					this[target.mapping].splice(0);
+				}
 			}
 
-			return target;
+			return params;
+		},
+
+		/**
+		 * 获取分页数据
+		 */
+		requestParams(params){
+			let {
+				scene = 'default',
+			} = params;
+
+			let scene_name = `page_${scene}`;
+
+			params.original = {...this[scene_name]};
+
+			params.url = params.original.url;
+			params.args = params.original.args;
+
+			return params;
+		},
+
+		/**
+		 * 检查数据
+		 */
+		requestCheck(params){
+			if(! params.hasOwnProperty('original') || ! params.original.hasOwnProperty('maxpage')){
+				return Promise.reject(new Error('请求数据有误'));
+			}
+
+			if(params.page > 1 && params.page > params.original.maxpage){
+				return Promise.reject(new Error('请求页面超过最大页码'));
+			}
+
+			return params;
+		},
+
+		/**
+		 * 提交请求数据
+		 */
+		requestPost(params){
+			let url = params.original.url;
+			let args = params.original.url;
+
+			return post(url, args, false).then(res => {
+				if(res && typeof(res.status) != 'undefined' && res.status > 0){
+					let result = res.result;
+
+					return result;
+				}
+				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
+					if(retry){
+						params.retry = false;
+						return this.step3(params);
+					}else{
+						return Promise.reject(new Error(res.msg));
+					}
+				}
+				else{
+					return Promise.reject(new Error('服务器未响应，请稍后重试'));
+				}
+			}).catch(e => {
+				return Promise.reject(e);
+			});
+		},
+
+		/**
+		 * 拼接请求链
+		 */
+		requestChain(params = {}){
+			let instance = new Chain;
+
+			// 切换场景
+			if(! params.hasOwnProperty('scene')){
+				params.scene = 'default';
+			}
+
+			// 重置数据
+			if(params.hasOwnProperty('reset') && params.reset){
+				instance.add('reset', this.requestReset);
+			}
+
+			// 获取分页数据
+			instance.add('requestParams', this.requestParams);
+
+			// 获取其他参数
+			instance.add('requestCheck', this.requestCheck);
+
+			// 发送请求
+			instance.add('requestPost', this.requestPost);
+
+			return instance.commit(params).then(result => {
+				this.current_scene = params.scene;
+
+				return result;
+			}).catch(e => {
+				return Promise.reject(e);
+			});
 		},
 
 		/**
@@ -149,51 +250,46 @@ export default {
 		 * 如果需要重写, 只需要在引入该mixin的组件内使用相同名字的方法即可
 		 *
 		 * @param {string} page   分页页码
+		 * @param {string} scene  分页场景
 		 * @param {object} args   请求数据
 		 * @param {bool}   reset  是否重置请求, 与 retry reload 不可同时使用
 		 * @param {bool}   retry  是否在请求失败之后, 重新请求首页数据
-		 * @param {bool}   reload 是否重新请求
 		 *
 		 */
-		getRequestData({page = 1, args = false, reset = false, retry = false, reload = false} = {}){
-			let param = this.getRequestParam(reset);
-			let url = param.url;
-			
-			if(reload){
-				args = {...param.args};
-				args.page = args.page || 1;
-			}else{
-				args = args || {...param.args};
-
-				if(page > 1 && page > param.maxpage){
-					return this.message('请求页面超过最大页码! ', 'warning');
-				}
-
-				args['page'] = page;
-			}
-
+		getRequestData(params){
 			this.loading(true);
-			post(url, args, false).then(res => {
-				if(res && typeof(res.status) != 'undefined' && res.status > 0){
-					let result = res.result;
 
-					// 保存返回的数据
-					this.saveRequestResult(result, args);
+			this.requestChain(params).then(result => {
+				let target = null;
+				let results = result.data;
+
+				if(!results || results.length < 1){
+					results = [];
 				}
-				else if(res && typeof(res.msg) != 'undefined' && res.msg != ''){
-					if(retry){
-						// 重新加载首页数据, 服务器异常等问题不会重新加载
-						this.getRequestData({reset: true});
-					}else{
-						this.$message(res.msg, 'warning');
-					}
+
+				if(! this.use_scene){
+					target = this.page_default;
+				}else{
+					target = this[`page_${this.current_scene}`];
 				}
-				else{
-					this.message('服务器未响应，请稍后重试', 'warning');
+	
+				// 保存返回的数据, 此处可考虑映射
+				if(target.mapping != ''){
+					this[target.mapping] = results;
+				}else{
+					target.results = results;
 				}
+	
+				// target.args = args;
+				target.current = args.page;
+				target.num = result.num * 1;
+				target.total = result.total * 1;
+				target.maxpage = Math.ceil(result.total / result.num);
 			}).catch(e => {
-				let msg = e.message || '网络异常, 请稍后重试';
-				this.$message(msg, 'warning');
+				if(e){
+					let msg = e.message || '网络异常, 请稍后重试';
+					this.$message(msg, 'warning');
+				}
 			}).finally(()=>{
 				this.loading(false);
 			});
@@ -201,7 +297,7 @@ export default {
 
 		/**
 		 * 重新请求数据(刷新当前分页)
-		 * 
+		 *
 		 * @param {bool}   retry 是否在请求失败之后, 重新请求首页数据
 		 */
 		reRequestData(retry = false){
@@ -211,40 +307,6 @@ export default {
 			});
 		},
 
-		/**
-		 * 处理分页数据请求成功之后的数据
-		 *
-		 * @param {object} 	result	后端返回的数据
-		 * @param {object} 	args 	提交请求时的参数
-		 */
-		saveRequestResult(result, args){
-			let target = null;
-			let results = result.data;
-
-			if(!results || results.length < 1){
-				results = [];
-			}
-
-			if(! this.use_scene){
-				target = this.page_default;
-			}else{
-				target = this[`page_${this.current_scene}`];
-			}
-
-			// 保存返回的数据, 此处可考虑映射
-			if(target.mapping != ''){
-				this[target.mapping] = results;
-			}else{
-				target.results = results;
-			}
-
-			target.args = args;
-			target.current = args.page;
-			target.num = result.num * 1;
-			target.total = result.total * 1;
-			target.maxpage = Math.ceil(result.total / result.num);
-		},
-
 		// 每页加载数改变
 		sizeChange(size){
 			size = +size || 1;
@@ -252,7 +314,7 @@ export default {
 			param.args.num = size;
 
 			this.getRequestData({
-				page: 1, 
+				page: 1,
 				args: param.args,
 				reset: true
 			});
