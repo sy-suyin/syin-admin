@@ -164,10 +164,12 @@ export default {
 				list: '/system/rolelist',
 				recycle: '/system/rolerecycle',
 			},
+
+			results: []
 		}
 	},
 	created(){
-		this.addScene(this.urls.list);
+		this.addScene(this.urls.list, 'default', { mapping: 'results' });
 	},
 	mounted(){
 		this.getRequestData();

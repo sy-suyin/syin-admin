@@ -21,23 +21,23 @@ export default {
 		/**
 		 * 表单提交
 		 */
-		formSubmit(){
-			let chains = [...this.validator, 'submit'];
-			let promise = Promise.resolve({
-				args: {...this.form}
-			});
+		submitChain(params = {}){
+			let chains = [...this.validator];
 
 			// 数据处理
 			if(this.optimget){
 				chains.unshift(this.optimget);
+			}else{
+				params.args = {...this.form};
 			}
 
+			let promise = Promise.resolve(params);
 			chains.forEach(fn => {
 				promise = promise.then(this[fn], null);
 			});
 
 			// 异常处理
-			promise = promise.then(null, this.errorHandle);
+			promise.catch( this.errorHandle );
 
 			return promise;
 		},
@@ -60,7 +60,7 @@ export default {
 
 		/**
 		 * element-ui 自带表单验证失败时, 弹窗提示
-		 * 
+		 *
 		 */
 		validateTip(fields){
 			let keys = Object.keys(fields);
@@ -77,9 +77,9 @@ export default {
 		 * 异常处理
 		 */
 		errorHandle(e){
-			let msg = e;
-			if(! msg) return;
+			if(! e) return;
 
+			let msg = e;
 			if(getType(msg) != 'string'){
 				msg = e.message || '服务器异常, 请稍后重试';
 			}

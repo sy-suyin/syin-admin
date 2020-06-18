@@ -26,8 +26,8 @@
 					</el-form-item>
 
 					<el-form-item>
-						<el-button type="primary" @click="formSubmit">提交修改</el-button>
-						<el-button>取消</el-button>
+						<el-button type="primary" @click="submit">提交修改</el-button>
+						<el-button @click="$router.back(-1)">取消</el-button>
 					</el-form-item>
 				</el-form>
 			</el-card>
@@ -121,14 +121,17 @@ export default {
 		 * 提交数据
 		 */
 		submit(params) {
-			this.loading(true);
-			editRole(params.args).then(res => {
-				this.$router.push({path: this.redirect_url})
-			}).catch(e => {
-				let msg = e.message || '网络异常, 请稍后重试';
-				this.message(msg, 'warning', 3000);
-			}).finally(()=>{
-				this.loading(false);
+			this.submitChain().then(params => {
+
+				this.loading(true);
+				editRole(params.args).then(res => {
+					this.$router.push({path: this.redirect_url})
+				}).catch(e => {
+					let msg = e.message || '网络异常, 请稍后重试';
+					this.message(msg, 'warning', 3000);
+				}).finally(()=>{
+					this.loading(false);
+				});
 			});
 		},
 

@@ -37,8 +37,8 @@
 					</el-form-item>
 
 					<el-form-item>
-						<el-button type="primary" @click="formSubmit">提交修改</el-button>
-						<el-button>取消</el-button>
+						<el-button type="primary" @click="submit">提交修改</el-button>
+						<el-button @click="$router.back(-1)">取消</el-button>
 					</el-form-item>
 				</el-form>
 			</el-card>
@@ -57,9 +57,9 @@ export default {
 	mixins: [ commonMixin, validateMixin ],
   	data() {
       	return {
-			id: 0,
 			roles: [],
         	form: {
+				id: 0,
 				login: '',
           		name:  '',
 				password: '',
@@ -95,7 +95,7 @@ export default {
 				let {0: admin, 1: roles} = res;
 
 				// 处理管理员数据
-				this.id = id;
+				this.form.id = id;
 				this.form.login = admin.login_name;
 				this.form.name = admin.name;
 				admin.roles.forEach(val => {
@@ -112,17 +112,18 @@ export default {
 			});
 		},
 
-		submit(params) {
-			params.args.id = this.id;
+		submit() {
+			this.submitChain().then(params => {
 
-			this.loading(true);
-			editAdmin(params.args).then(res => {
-				this.$router.push({path: this.redirect_url})
-			}).catch(e => {
-				let msg = e.message || '网络异常, 请稍后重试';
-				this.message(msg, 'warning', 3000);
-			}).finally(()=>{
-				this.loading(false);
+				this.loading(true);
+				editAdmin(params.args).then(res => {
+					this.$router.push({path: this.redirect_url})
+				}).catch(e => {
+					let msg = e.message || '网络异常, 请稍后重试';
+					this.message(msg, 'warning', 3000);
+				}).finally(()=>{
+					this.loading(false);
+				});
 			});
 		},
     }

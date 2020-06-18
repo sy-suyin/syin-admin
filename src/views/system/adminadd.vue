@@ -35,8 +35,8 @@
 					</el-form-item>
 
 					<el-form-item>
-						<el-button type="primary" @click="formSubmit">立即创建</el-button>
-						<el-button>取消</el-button>
+						<el-button type="primary" @click="submit">立即创建</el-button>
+						<el-button @click="$router.back(-1)">取消</el-button>
 					</el-form-item>
 				</el-form>
 			</el-card>
@@ -93,17 +93,20 @@ export default {
 			});
 		},
 
-		submit(params){
-			this.loading(true);
+		submit(){
+			this.submitChain().then(params => {
 
-			addAdmin(params.args).then(res => {
-				this.$router.push({path: this.redirect_url})
-			}).catch(e => {
-				let msg = e.message || '网络异常, 请稍后重试';
-				this.$message(msg, 'warning');
-			}).finally(()=>{
-				this.loading(false);
+				this.loading(true);
+				addAdmin(params.args).then(res => {
+					this.$router.push({path: this.redirect_url})
+				}).catch(e => {
+					let msg = e.message || '网络异常, 请稍后重试';
+					this.$message(msg, 'warning');
+				}).finally(()=>{
+					this.loading(false);
+				});
 			});
+
 		},
 	},
 };
