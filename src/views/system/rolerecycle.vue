@@ -28,7 +28,7 @@
 				</div>
 
 				<el-table
-					ref="table"
+					ref="page_default.table"
 					:data="results"
 					tooltip-effect="dark"
 					style="width: 100%"
@@ -86,8 +86,10 @@ export default {
 			},
 		}
 	},
-	mounted(){
+	created(){
 		this.addScene(this.urls.recycle);
+	},
+	mounted(){
 		this.getRequestData();
 	},
 	methods: {

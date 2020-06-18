@@ -5,12 +5,9 @@
 import {isEmpty, isSet, debounce, throttle, timestampToTime} from '@/libs/util';
 import Table from '@/libs/Table.js';
 
-let TableInstance = null; 
 export default {
 	data(){
 		return {
-			// 各跳转链接
-			isShowing: false,
 
 			// 表格相关跳转链接, 在被混入的组件重写
 			urls: {},
@@ -20,17 +17,15 @@ export default {
 				keyword: '',
 			},
 
-			// 筛选参数
-			filter_args: {},
-
-			// 请求数据参数, 取值自 search_args 与 filter_args
-			request_args: {},
-
+			// 表格操作类实例
 			instance: null,
+
+			// 表格选中列的id
+			selected: [],
 		}
 	},
 	mounted() {
-		this.instance = TableInstance = new Table(this);
+		// this.instance = new Table(this);
 	},
 	methods: {
 
@@ -41,7 +36,7 @@ export default {
 		/**
 		 * 获取跳转链接
 		 */
-		buildUrl(key, params={}){
+		buildUrl(key, params = false){
 			let url = '';
 			if(this.urls.hasOwnProperty(key)){
 				url = this.urls[key];
@@ -67,7 +62,7 @@ export default {
 		/**
 		 * 页面跳转
 		 */
-		jump(key, params={}){
+		jump(key, params = false){
 			let url = this.buildUrl(key, params);
 			this.$router.push({path: url})
 		},
@@ -75,8 +70,6 @@ export default {
 		// 重置参数
 		reset(){
 			this.search_args = {};
-			this.filter_args = {};
-			this.request_args = {};
 			this.getRequestData({reset: true});
 		},
 
@@ -89,121 +82,73 @@ export default {
 			});
 		},
 
-		// 筛选
-		filter(){
-		},
-
 		///////////////////////////////////////////////////////////
 		// 封装表格的基础操作功能
 		///////////////////////////////////////////////////////////
 
+		execute(params){
+			this.loading(true);
+
+			return Table.execute(params).then(result => {
+				return result;
+			}).catch((e)=>{
+				if(! e) return;
+
+				let msg = e.message || '服务器异常, 请稍后重试';
+				this.message(msg, 'warning');
+
+				return Promise.reject(e);
+			}).finally(()=>{
+				this.is_loading = false;
+			});
+		},
+
 		/**
 		 * 恢复/删除数据
-		 * 
+		 *
 		 * @param {int} id 			需要 恢复/删除 数据的ID. 如果为-1, 则选取表格所有被选中项的id
 		 * @param {int} operate		操作标识, 0: 恢复, 1: 删除
 		 */
 		del(id = -1, operate = 1){
-			let url = this.buildUrl('del');
-			let msg = '你确认要' + 
-				(id == -1 ? '批量' : '') + ['恢复', '删除'][operate] +
-				'数据吗?';
-
-			TableInstance.tip(msg, {
+			let url = this.urls['del'];
+			let operate_msg = operate == 1 ? '删除' : '恢复';
+			let params = {
 				url,
-				data: id,
+				is_confirm: true,
 				mark: {operate}
-			}).then(res => {
-				// 重载当前分页数据, 如果当前分页无数据则加载第一页数据
-				this.getRequestData({reload: true, retry: true});
-			}).catch((e)=>{});
-		},
+			};
 
+			if(id == -1){
+				params.confirm_msg = `你确认要批量${operate_msg}数据吗?`;
+				params.id = this.selected;
+			}else{
+				params.confirm_msg = `你确认要${operate_msg}数据吗?`;
+				params.id = id;
+			}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-		getUrl(page){
-			return this.buildUrl('del');
-		},
-
-
-
-		xxx(){
-
-		},
-		
-		delnew(){
-
-			this.xxx({
-
-				is_tip: false,
-
+			this.execute(params).then(res => {
+				this.getRequestData({
+					retry: true
+				});
 			});
-
-			// 1. 获取请求链接
-
-			// 2. 判断是否弹出确认选项
-
-			// 3. 执行请求
-
 		},
-		
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 		/**
 		 * 启用/禁用数据
-		 * 
+		 *
 		 * @param {int} id 			需要 启用/禁用 数据的ID. 如果为-1, 则选取表格所有被选中项的id
 		 * @param {int} operate		操作标识, 0: 启用, 1: 禁用
 		 */
 		disabled(id = -1, operate = 1){
-			let url = this.buildUrl('dis');
-			TableInstance.execute(url, id, {operate}).then(res => {
-				id = (id == -1 ? res.resquset.id : [res.resquset.id]);
+			let url = this.urls['dis'];
+			id = id == -1 ? this.selected : [ id ];
+			let params = {
+				id,
+				url,
+				mark: {operate}
+			};
+
+			this.execute(params).then(res => {
 				this.results.forEach((item, key)=>{
 					if(id.indexOf(item.id) != -1){
 						this.results[key].is_disabled = operate;
@@ -216,11 +161,15 @@ export default {
 		 * 排序, 需表格数据中有sort与id字段
 		 */
 		sort(){
-			let url = this.buildUrl('sort');
+			let url = this.urls['sort'];
 			let data = this.extract('id, sort');
-			TableInstance.execute(url, data).then(res => {
+
+			this.execute({
+				url,
+				data
+			}).then(res => {
 				this.message('操作成功', 'success');
-			}).catch((e)=>{});
+			});
 		},
 
 		/**
@@ -268,12 +217,18 @@ export default {
 				ids.push(val.id);
 			});
 
-			TableInstance.setSelected(ids);
+			this.selected = ids;
 		}),
 
 		///////////////////////////////////////////////////////////
 		// 表格常用的过滤器
 		///////////////////////////////////////////////////////////
+
+		/**
+		 * 时间过滤器
+		 *
+		 * 应传入10位长度的时间戳
+		 */
 		filterTime(row, column){
 			let time = row[column.property] || '';
 			let time_str = '';

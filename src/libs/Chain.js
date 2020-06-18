@@ -24,25 +24,18 @@ class Chain{
 			resolve,
 			reject
 		};
-
-		console.log(this.chains);
 	}
 
 	/**
 	 * 触发
 	 */
 	commit(params = {}){
-		console.log('commit');
-		console.log(this.chains);
-
 		let chain_keys = Object.keys(this.chains);
-		console.log('commit');
 
 		if(chain_keys.length < 1){
 			return Promise.reject(new Error('未绑定任何方法'));
 		}
 
-		console.log('commit');
 		let promise = Promise.resolve(params);
 
 		for(let key in this.chains){
@@ -50,8 +43,6 @@ class Chain{
 
 			promise = promise.then(chain.resolve, chain.reject);
 		}
-
-		console.log(promise);
 
 		return promise;
 	}

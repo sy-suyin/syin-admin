@@ -10,7 +10,7 @@
 
 					<el-table
 						ref="table"
-						:data="results"
+						:data="page_default.results"
 						border
 						tooltip-effect="dark"
 						style="width: 100%"
@@ -42,8 +42,8 @@
 
 					<div class="pagination">
 						<el-pagination
-							@size-change="defaultPage('sizeChange', $event)"
-							@current-change="defaultPage('pageChange', $event)"
+							@size-change="sizeChange($event)"
+							@current-change="pageChange($event)"
 							:current-page="page_default.current"
 							:page-sizes="[5, 10, 20, 30, 50]"
 							:page-size="page_default.num"
@@ -94,8 +94,8 @@
 
 					<div class="pagination">
 						<el-pagination
-							@size-change="dataPage('sizeChange', $event)"
-							@current-change="dataPage('pageChange', $event)"
+							@size-change="sizeChange($event, 'data')"
+							@current-change="pageChange($event, 'data')"
 							:current-page="page_data.current"
 							:page-sizes="[5, 10, 20, 30, 50]"
 							:page-size="page_data.num"
@@ -113,8 +113,6 @@
 import pageMixin from "@/mixins/page";
 import tableMixin from "@/mixins/table";
 import commonMixin from "@/mixins/common";
-import * as Util from '@/libs/util';
-import {sence} from '@/libs/page.js';
 
 export default {
 	name: "system_adminlist",
@@ -126,7 +124,7 @@ export default {
 	},
 	created(){
 		this.addScene('/dict/list');
-		this.addScene('/dict/dictdata', '', 'data');
+		this.addScene('/dict/dictdata', 'data');
 	},
 	mounted(){
 		this.getRequestData();
@@ -134,24 +132,11 @@ export default {
 	methods: {
 		show(row){
 			let args = {id: row.id};
-			this.changeScene('data');
 			this.getRequestData({
 				args,
+				scene: 'data',
 				reset: true
 			});
-		},
-
-		defaultPage: sence('default'),
-		dataPage: sence('data'),
-
-		// 目前暂不考虑实现这三个按钮的前后端交互效果
-		add(id){
-		},
-
-		edit(id){
-		},
-
-		del(id){
 		},
 	}
 }
@@ -166,7 +151,6 @@ export default {
     border-top: none;
     border-bottom: 1px solid #dee2e6;
 }
-
 
 .dict-table{
 	td{

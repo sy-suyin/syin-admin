@@ -116,7 +116,7 @@ class System {
 		if($result['status']){
 			return show_success('操作成功, 共'.$result['msg']);
 		}else{
-			return show_success('操作失败：'.$result['msg']);
+			return show_error('操作失败：'.$result['msg']);
 		}
 	}
 
@@ -129,7 +129,7 @@ class System {
 		if($result['status']){
 			return show_success('操作成功, 共'.$result['msg']);
 		}else{
-			return show_success('操作失败：'.$result['msg']);
+			return show_error('操作失败：'.$result['msg']);
 		}
 	}
 
@@ -142,11 +142,9 @@ class System {
 		if($result['status']){
 			return show_success('操作成功, 共'.$result['msg']);
 		}else{
-			return show_success('操作失败：'.$result['msg']);
+			return show_error('操作失败：'.$result['msg']);
 		}
 	}
-
-
 
 	/**
 	 * 角色管理 - 列表
@@ -262,7 +260,7 @@ class System {
 		if($result['status']){
 			return show_success('操作成功, 共'.$result['msg']);
 		}else{
-			return show_success('操作失败：'.$result['msg']);
+			return show_error('操作失败：'.$result['msg']);
 		}
 	}
 
@@ -275,7 +273,7 @@ class System {
 		if($result['status']){
 			return show_success('操作成功, 共'.$result['msg']);
 		}else{
-			return show_success('操作失败：'.$result['msg']);
+			return show_error('操作失败：'.$result['msg']);
 		}
 	}
 

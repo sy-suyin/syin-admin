@@ -50,7 +50,7 @@
 
 				<el-table
 					ref="table"
-					:data="results"
+					:data="page_default.results"
 					tooltip-effect="dark"
 					style="width: 100%"
 					@selection-change="selectionChange"
@@ -166,8 +166,10 @@ export default {
 			},
 		}
 	},
-	mounted(){
+	created(){
 		this.addScene(this.urls.list);
+	},
+	mounted(){
 		this.getRequestData();
 	},
 	methods: {

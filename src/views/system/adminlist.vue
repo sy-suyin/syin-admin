@@ -164,7 +164,6 @@
 import pageMixin from "@/mixins/page";
 import tableMixin from "@/mixins/table";
 import commonMixin from "@/mixins/common";
-// import * as Util from '@/libs/util';
 
 export default {
 	name: "system_adminlist",
@@ -181,20 +180,15 @@ export default {
 				recycle: '/system/adminrecycle',
 				sort: '/system/adminsort'
 			},
+
+			results: []
 		}
 	},
+	created(){
+		this.addScene(this.urls.list, 'default', { mapping: 'results' });
+	},
 	mounted(){
-		this.addScene(this.urls.list);
 		this.getRequestData();
-
-		// this.request();
-
-		// tableInstance = new Table1();
-
-		// // 删除操作
-		// tableInstance.execute({
-		// 	page: 'del',
-		// });
 	},
 	methods: {
     }

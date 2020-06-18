@@ -61,14 +61,17 @@ export function isEmpty(data) {
 
 	let bool = false;
 	switch(type){
-		case 'string': {
-			bool = data.length < 1;
-		}
-		case 'array': {
-			bool = data.length < 1;
-		}
 		case 'object': {
 			bool = Object.keys(data).length < 1;
+			break;
+		}
+		case 'string':
+		case 'array':{
+			bool = data.length < 1;
+			break;
+		}
+		default: {
+			bool = true;
 		}
 	}
 

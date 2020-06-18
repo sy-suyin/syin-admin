@@ -399,7 +399,7 @@ class MenuItem extends MenuInterface{
 			let router = {
 				path: `/${controller}/${action}${params}`,
 				name: `${controller}_${action}`,
-				component: () => import(/* webpackChunkName: "AutoPage" */ `../views/${controller}/${action}.vue`),
+				component: () => import( `../views/${controller}/${action}.vue`),
 				meta: {
 					controller: controller,
 					action: action,

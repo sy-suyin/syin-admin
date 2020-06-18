@@ -2,6 +2,7 @@
  * 封装主要用于 添加/修改 表单验证
  */
 import { getType } from '@/libs/util';
+import Chain from '@/libs/Chain';
 
 export default {
 	data(){
