@@ -81,29 +81,31 @@ class Request{
 			return this.responseSuccess(response);
 		}, error => {
 			if(error.hasOwnProperty('isAxiosError') && error.isAxiosError){
-				const { response: { status, statusText, data: { msg = '服务器未响应，请稍后重试' } }} = error;
+				if(error.response != undefined){
+					const { response: { status, statusText, data: { msg = '服务器未响应，请稍后重试' } }} = error;
 
-				if(status == 401){
-					// token 过期, 获取新 token
-					return	Token.refreshToken().then(token => {
-						let config = error.config;
-						config.headers['Authorization'] = 'Bearer ' + token;
+					if(status == 401){
+						// token 过期, 获取新 token
+						return	Token.refreshToken().then(token => {
+							let config = error.config;
+							config.headers['Authorization'] = 'Bearer ' + token;
 
-						return axios.request(config).then(response => {
-							return this.responseSuccess(response);
+							return axios.request(config).then(response => {
+								return this.responseSuccess(response);
+							});
+						}).catch(e => {
+							if(! window.location.href.includes('/login')){
+								setTimeout(() => {
+									store.commit('auth/logout');
+								}, 15000);
+							}
+
+							return Promise.reject(new Error('账号过期, 请重新登录'));
 						});
-					}).catch(e => {
-						if(! window.location.href.includes('/login')){
-							setTimeout(() => {
-								store.commit('auth/logout');
-							}, 15000);
-						}
-
-						return Promise.reject(new Error('账号过期, 请重新登录'));
-					});
-				}else if(status != 200){
-					return Promise.reject(new Error('服务器未响应，请稍后重试'));
+					}
 				}
+
+				return Promise.reject(new Error('服务器未响应，请稍后重试'));
 			}
 
 			return Promise.reject(error);

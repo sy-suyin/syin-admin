@@ -9,13 +9,13 @@ import { post } from '@/libs/api.js';
 import Chain from '@/libs/Chain';
 
 class Table{
-	ids = [];
 
 	/**
 	 * 执行相应表单操作并使用POST提交数据
 	 *
 	 * @param {string} url 	提交链接
-	 * @param {mixed}  data 提交的数据, 当为-1时使用表格选中栏的id数组
+	 * @param {*} 	   id 	id
+	 * @param {mixed}  data 提交的数据, 不为空时将仅传该数据并无视id与mark
 	 * @param {mixed}  mark 操作标示, 可传入两种数据, 字符串或对象. 为字符串时会转换为对象, 转化后键为 mark
 	 */
 	static execute(params){
@@ -41,7 +41,6 @@ class Table{
 	 */
 	static requestCheck(params){
 		let args = {};
-		console.log(params);
 
 		if( !params.hasOwnProperty('url') || !params.url ){
 			return Promise.reject(new Error('未找到请求链接'));
@@ -106,7 +105,6 @@ class Table{
 	 * 提交数据
 	 */
 	static requestPost(params){
-		console.log(params);
 		let { url, args } = params;
 
 		return post(url, args, true).then((res) => {

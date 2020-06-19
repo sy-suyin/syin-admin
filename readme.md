@@ -1,7 +1,18 @@
-<h1>
+<h1 align="center">
 	syin Admin
-    <h3>个人自用后台管理系统, 仅供学习交流</h3>
 </h1>
+
+<p align="center">
+  <a href="https://github.com/vuejs/vue">
+    <img src="https://img.shields.io/badge/vue-2.6.11-brightgreen.svg" alt="vue">
+  </a>
+  <a href="https://github.com/ElemeFE/element">
+    <img src="https://img.shields.io/badge/element--ui-2.13.0-brightgreen.svg" alt="element-ui">
+  </a>
+  <a href="https://github.com/PanJiaChen/vue-element-admin/blob/master/LICENSE">
+    <img src="https://img.shields.io/github/license/mashape/apistatus.svg" alt="license">
+  </a>
+</p>
 
 ## 参考项目
 
@@ -19,14 +30,14 @@
 
 - [在线预览](http://admin.e.syin.top)
 
-## 开发
+## 运行
 
 ```bash
 # 克隆项目
 git clone https://e.coding.net/sysyin/syin-admin/syin-admin.git
 
 # 进入项目目录
-cd vue-element-admin
+cd syin-admin
 
 # 安装依赖
 npm install
@@ -40,48 +51,9 @@ npm run serve
 
 浏览器访问 http://localhost:8080/
 
-## 发布
+## 开发
 
-```bash
-# 构建测试环境
-npm run build:stage
-
-# 构建生产环境
-npm run build:prod
-```
-
-## 接口支持
-
-> 不需要查看后台的, 可以通过修改相关配置即可
->
-> 在使用接口前 需先将数据库文件导入数据库
-
-- 方法一
-
-```bash
-# 使用此方法需PHP为全局变量
-
-# 进入api目录
-cd api
-
-# 使用php内置服务器启动
-php think run
-```
-
-- 方法二
-
-	> 使用如 phpStudy 之类的工具部署后台, 运行目录为 api/public 目录
-
-
-## 单独允许
-
-> 不启动PHP服务器, 只是简单体验
-
-找到 **src/views/pages/login.vue** 文件, 修改 ```use_offline``` 为 **true**
-
-即可正常登录体验, 但如果想获得完整体验, 请运行PHP服务
-
-public目录下offline文件夹, 为单独运行需要的资源文件, 如后期不需要可直接删除
+详细请查看同目录下的二次开发说明
 
 ## 功能
 
@@ -94,9 +66,9 @@ public目录下offline文件夹, 为单独运行需要的资源文件, 如后期
 - 前后端交互封装
 	- 管理员功能
 	- 角色功能
-	- 数据字典
 	- 表格自动操作
 	- 分页操作封装
+	- token
 
 - 全局功能
 	- 多种动态换肤
@@ -116,6 +88,6 @@ public目录下offline文件夹, 为单独运行需要的资源文件, 如后期
 
 ## License
 
-[MIT](https://sysyin.coding.net/p/syin-admin/d/syin-admin/git/tree/master/LICENSE)
+[MIT](https://sysyin.coding.net/public/syin-admin/syin-admin/git/files/master/LICENSE)
 
 Copyright (c) 2020-present 溯隐

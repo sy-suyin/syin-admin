@@ -12,6 +12,9 @@ export default {
 			// 表格相关跳转链接, 在被混入的组件重写
 			urls: {},
 
+			// 表格数据
+			results: [],
+
 			// 搜索参数
 			search_args: {
 				keyword: '',
@@ -67,13 +70,17 @@ export default {
 			this.$router.push({path: url})
 		},
 
-		// 重置参数
+		/**
+		 * 重置参数
+		 */
 		reset(){
 			this.search_args = {};
 			this.getRequestData({reset: true});
 		},
 
-		// 搜索
+		/**
+		 * 搜索
+		 */
 		search(){
 			this.request_args.keyword = this.search_args.keyword.trim();
 			this.getRequestData({
@@ -86,6 +93,11 @@ export default {
 		// 封装表格的基础操作功能
 		///////////////////////////////////////////////////////////
 
+		/**
+		 * 执行表格操作
+		 * 
+		 * @param {*} params 
+		 */
 		execute(params){
 			this.loading(true);
 
@@ -176,11 +188,11 @@ export default {
 		 * 提取表格数据, 默认会获取id
 		 *
 		 * @param {string}   fields  需要提取数据的字段, 可不传. 当不传数据时返回数据为包含id的一维数组
-		 * @param {function} filter  自定义过滤器, 当返回false时, 该项数据将不会加入提取数据中, 传入过滤器的数据格式为 filter( { 字段名: 字段值 } , 索引 )
+		 * @param {function} filter  自定义过滤器, 当返回false时, 该项数据将不会加入提取数据中, 传入过滤器的数据格式为 filter( { 字段名: 字段值 } )
 		 *
 		 * @returns {array}
 		 */
-		extract(fields = '', filter = null){
+		extract(fields = '', filter = false){
 			fields = fields.split(',');
 			let field_len = fields.length;
 			let results = [];
@@ -201,7 +213,13 @@ export default {
 						}
 					});
 
-					results.push(data);
+					if(filter){
+						if(false !== filter(data)){
+							results.push(data);
+						}
+					}else{
+						results.push(data);
+					}
 				}
 			});
 

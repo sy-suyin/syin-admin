@@ -50,7 +50,7 @@
 
 				<el-table
 					ref="table"
-					:data="page_default.results"
+					:data="results"
 					tooltip-effect="dark"
 					style="width: 100%"
 					@selection-change="selectionChange"
@@ -164,8 +164,6 @@ export default {
 				list: '/system/rolelist',
 				recycle: '/system/rolerecycle',
 			},
-
-			results: []
 		}
 	},
 	created(){
