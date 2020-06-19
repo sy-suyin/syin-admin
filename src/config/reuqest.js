@@ -7,7 +7,7 @@ module.exports = {
 	 * @description 当请求的路径第一个字符为 / 时, 系统会自动拼接
 	 */
 	base_url: {
-		dev: 'http://admin.api.syout.top/client',
+		dev: 'http://127.0.0.1:8000/client',
 		pro: 'http://admin.e.syin.top/client'
 	},
 
