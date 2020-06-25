@@ -72,8 +72,6 @@ class Request{
 			}
 
 			return config;
-		}, error => {
-			return Promise.reject(error);
 		});
 
 		// 响应拦截
@@ -86,7 +84,7 @@ class Request{
 
 					if(status == 401){
 						// token 过期, 获取新 token
-						return	Token.refreshToken().then(token => {
+						return Token.refreshToken().then(token => {
 							let config = error.config;
 							config.headers['Authorization'] = 'Bearer ' + token;
 
@@ -97,7 +95,7 @@ class Request{
 							if(! window.location.href.includes('/login')){
 								setTimeout(() => {
 									store.commit('auth/logout');
-								}, 15000);
+								}, 3000);
 							}
 
 							return Promise.reject(new Error('账号过期, 请重新登录'));

@@ -121,7 +121,7 @@ export default {
 		 * @param {int} id 			需要 恢复/删除 数据的ID. 如果为-1, 则选取表格所有被选中项的id
 		 * @param {int} operate		操作标识, 0: 恢复, 1: 删除
 		 */
-		del(id = -1, operate = 1){
+		del({id = -1, operate = 1} = {}){
 			let url = this.urls['del'];
 			let operate_msg = operate == 1 ? '删除' : '恢复';
 			let params = {

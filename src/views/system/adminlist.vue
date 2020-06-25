@@ -138,7 +138,7 @@
 								size="mini"
 								type="text" 
 								@click="del(scope.row.id, 1)"
-								v-permission:page="['system', 'admindel']"
+								v-permission:data="['system', 'admindel']"
 							>删除</el-button>
 						</template>
 					</el-table-column>

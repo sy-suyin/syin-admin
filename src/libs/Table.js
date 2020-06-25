@@ -104,9 +104,7 @@ class Table{
 	/**
 	 * 提交数据
 	 */
-	static requestPost(params){
-		let { url, args } = params;
-
+	static requestPost({ url, args }){
 		return post(url, args, true).then((res) => {
 			return res;
 		});

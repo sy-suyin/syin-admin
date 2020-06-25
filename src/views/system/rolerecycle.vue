@@ -44,7 +44,12 @@
 
 					<el-table-column align="right" label="操作">
 						<template slot-scope="scope">
-							<el-button size="mini" type="text" @click="del(scope.row.id, 0)">恢复</el-button>
+							<el-button
+								size="mini"
+								type="text" 
+								@click="del(scope.row.id, 0)"
+								v-permission:data="['system', 'roledel']"
+							>恢复</el-button>
 						</template>
 					</el-table-column>
 				</el-table>

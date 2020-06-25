@@ -150,7 +150,9 @@ export default {
 			this.$router.replace({path: redirect_path})
 		},
 
-		// 离线登录, 不使用任何与后端有关的功能
+		/**
+		 * 离线登录, 不使用任何与后端有关的功能
+		 */
 		offlineLogin(){
 			const result = {
 				config: {

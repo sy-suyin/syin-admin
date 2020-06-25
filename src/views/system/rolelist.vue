@@ -9,6 +9,59 @@
 		</page-header>
 
 		<div class="content-container" v-loading="is_loading">
+			<sy-table 
+				:data="results"
+				:columns="columns"
+				:operates="operates"
+				:pagination="page_default"
+				@handle="handle"
+			>
+
+				<template #append>
+					<el-table-column label="状态" width="120">
+						<template slot-scope="scope">
+							<div v-if="checkPermission('system', 'roledis', 'data')">
+								<el-tag
+									class="disabled-btn"
+									type="success"
+									effect="dark"
+									size="mini"
+									@click="disabled(scope.row.id, 1)"
+									v-if="scope.row.is_disabled < 1"
+								>启用</el-tag>
+
+								<el-tag
+									class="disabled-btn"
+									type="danger"
+									effect="dark"
+									size="mini"
+									@click="disabled(scope.row.id, 0)"
+									v-else
+								>禁用</el-tag>
+							</div>
+							<div v-else>
+								<el-tag
+									class="disabled-btn"
+									type="success"
+									effect="dark"
+									size="mini"
+									v-if="scope.row.is_disabled < 1"
+								>启用</el-tag>
+
+								<el-tag
+									class="disabled-btn"
+									type="danger"
+									effect="dark"
+									size="mini"
+									v-else
+								>禁用</el-tag>
+							</div>
+						</template>
+					</el-table-column>
+				</template>
+
+			</sy-table>
+
 			<el-card>
 				<div slot="header" class="clearfix">
 					<div class="table-search">
@@ -123,7 +176,7 @@
 								size="mini"
 								type="text"
 								@click="del(scope.row.id, 1)"
-								v-permission:page="['system', 'roledel']"
+								v-permission:data="['system', 'roledel']"
 							>删除</el-button>
 						</template>
 					</el-table-column>
@@ -149,10 +202,12 @@
 import pageMixin from "@/mixins/page";
 import tableMixin from "@/mixins/table";
 import commonMixin from "@/mixins/common";
+import syTable from "@/components/sy-table";
 
 export default {
 	name: "system_rolelist",
 	mixins: [commonMixin, pageMixin, tableMixin],
+	components: { syTable },
   	data() {
       	return {
 			// 各跳转链接
@@ -164,6 +219,53 @@ export default {
 				list: '/system/rolelist',
 				recycle: '/system/rolerecycle',
 			},
+
+			columns: [
+				{
+					prop: 'selection',
+				},
+				{
+					prop: 'id',
+					label: '编号',
+				},
+				{
+					prop: 'name',
+					label: '角色名称',
+					width: 200,
+				},
+				{
+					prop: 'label',
+					labels: [
+						{
+							prop: 'is_disabled',
+						}
+					]
+				},
+				{
+					prop: 'add_time',
+					label: '添加时间',
+					width: 180,
+					formatter: this.filterTime
+				}
+			],
+
+			operates: [
+				{
+					type: 'btn',
+					name: '删除',
+					target: 'del',
+					permission: ['system', 'roledel'],
+					params: {
+						operate: 1,
+					}
+				},
+				{
+					type: 'url',
+					name: '修改',
+					target: 'edit',
+					permission: ['system', 'roleedit'],
+				},
+			],
 		}
 	},
 	created(){
@@ -173,7 +275,12 @@ export default {
 		this.getRequestData();
 	},
 	methods: {
-
+		handle(func, ...params){
+			console.log(func);
+			console.log(params);
+			console.log(this[func]);
+			this[func] && this[func].apply(this, params);
+		}
     }
 };
 </script>

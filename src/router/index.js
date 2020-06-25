@@ -45,20 +45,24 @@ router.beforeEach((to, from, next) => {
 		}else{
 			if(is_calc){
 				// 在初次添加路由时, 此写法能直接跳转到正确页面
-				next({ path: to.path });
+				next({ ...to, replace: true })
 			}else{
 				next();
 			}
 		}
-	}else if(NOT_LOGGED_PAGES.findIndex((value)=>{return value==path}) == -1){
-		// 在未登录的情况下, 访问非登录允许访问的页面时, 跳转回登录页面
-		next({
-			replace: true,
-			name: 'login'
-		});
-	}
-
-	next();
+	}else {
+		if(NOT_LOGGED_PAGES.includes(to.name)){
+			// 如果在未登录允许访问的页面中, 直接进入
+			next();
+		}else{
+			// 触发退出登录
+			// store.commit('auth/logout');
+			next({
+				replace: true,
+				name: 'login'
+			});
+		}
+	} 
 });
 
 router.afterEach((to) => {
