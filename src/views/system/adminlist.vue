@@ -60,7 +60,7 @@
 					<el-table-column type="selection" width="46" align="center"></el-table-column>
 
 					<el-table-column label="排序" width="86">
-						<template slot-scope="{row}">
+						<template v-slot="{row}">
 							<el-input v-model="row.sort" type="number" size="mini" max="99" min="0"/>
 						</template>
 					</el-table-column>
@@ -72,7 +72,7 @@
 					<el-table-column prop="login_name" label="登录账号"></el-table-column>
 
 					<el-table-column label="状态" width="120">
-						<template slot-scope="scope">
+						<template v-slot="scope">
 
 							<div v-if="checkPermission('system', 'admindis', 'data')">
 								<el-tag 
