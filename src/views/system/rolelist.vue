@@ -12,7 +12,8 @@
 			<db-table 
 				:data="results"
 				:columns="columns"
-				:operates="operates"
+				:toolbar="toolbar"
+				:actionbar="actionbar"
 				:pagination="page_default"
 				@handle="handle"
 			>
@@ -25,12 +26,10 @@
 import pageMixin from "@/mixins/page";
 import tableMixin from "@/mixins/table";
 import commonMixin from "@/mixins/common";
-import dbTable from "@/components/db-table";
 
 export default {
 	name: "system_rolelist",
 	mixins: [commonMixin, pageMixin, tableMixin],
-	components: { dbTable },
   	data() {
       	return {
 			// 各跳转链接
@@ -56,9 +55,6 @@ export default {
 					prop: 'name',
 					label: '角色名称',
 					width: 200,
-				},
-				{
-					slot: 'disabled',
 				},
 				{
 					prop: 'disabled',
@@ -96,7 +92,7 @@ export default {
 				}
 			],
 
-			operates: [
+			actionbar: [
 				{
 					type: 'btn',
 					name: '删除',
@@ -113,6 +109,43 @@ export default {
 					access: ['system', 'roleedit'],
 				},
 			],
+
+			toolbar: [
+				{
+					type: 'btn',
+					name: '刷新',
+					target: 'reload',
+					icon: "el-icon-refresh-left",
+					color: 'primary',
+				},
+				{
+					type: 'url',
+					name: '添加',
+					target: 'add',
+					icon: "el-icon-plus",
+					color: 'primary',
+					access: ['system', 'roleadd'],
+				},
+				{
+					type: 'url',
+					name: '回收站',
+					target: 'recycle',
+					color: 'warning',
+					icon: "el-icon-s-promotion",
+					access: ['system', 'rolerecycle'],
+				},
+				{
+					type: 'btn',
+					name: '删除',
+					target: 'del',
+					color: 'danger',
+					icon: "el-icon-delete",
+					access: ['system', 'roledel'],
+					params: {
+						operate: 1,
+					}
+				},
+			]
 		}
 	},
 	created(){
@@ -122,15 +155,6 @@ export default {
 		this.getRequestData();
 	},
 	methods: {
-		handle(func, ...params){
-			this[func] && this[func].apply(this, params);
-		},
-
-		filter(args){
-			this.getRequestData({
-				args
-			});
-		}
     }
 };
 </script>

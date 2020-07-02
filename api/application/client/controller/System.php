@@ -110,7 +110,7 @@ class System {
 	/**
 	 * 管理员管理 - 删除
 	 */
-	public function admindelAction(AdminModel $model){
+	public function adminDelAction(AdminModel $model){
 		$result = SystemService::deletedItemLogically($model, '管理员');
 		
 		if($result['status']){
@@ -123,7 +123,7 @@ class System {
 	/**
 	 * 管理员管理 - 禁用
 	 */
-	public function admindisAction(AdminModel $model){
+	public function adminDisAction(AdminModel $model){
 		$result = SystemService::disableItem($model, '管理员');
 
 		if($result['status']){
@@ -254,7 +254,7 @@ class System {
 	/**
 	 * 角色管理 - 删除
 	 */
-	public function roledelAction(RoleModel $model){
+	public function roleDelAction(RoleModel $model){
 		$result = SystemService::deletedItemLogically($model, '角色');
 
 		if($result['status']){
@@ -267,7 +267,7 @@ class System {
 	/**
 	 * 角色管理 - 禁用
 	 */
-	public function roledisAction(RoleModel $model){
+	public function roleDisAction(RoleModel $model){
 		$result = SystemService::disableItem($model, '角色');
 
 		if($result['status']){

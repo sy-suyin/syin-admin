@@ -41,15 +41,12 @@
 					</el-table>
 
 					<div class="pagination">
-						<el-pagination
-							@size-change="sizeChange($event)"
-							@current-change="pageChange($event)"
-							:current-page="page_default.current"
-							:page-sizes="[5, 10, 20, 30, 50]"
-							:page-size="page_default.num"
-							layout="total, sizes, prev, pager, next"
-							:total="page_default.total">
-						</el-pagination>
+						<table-page 
+							:pagination="page_default"
+							:config="list_page"
+						 	@handle="handle"
+						>
+						</table-page>
 					</div>
 				</el-card>
 			</el-col>
@@ -93,15 +90,12 @@
 					</el-table>
 
 					<div class="pagination">
-						<el-pagination
-							@size-change="sizeChange($event, 'data')"
-							@current-change="pageChange($event, 'data')"
-							:current-page="page_data.current"
-							:page-sizes="[5, 10, 20, 30, 50]"
-							:page-size="page_data.num"
-							layout="total, sizes, prev, pager, next, jumper"
-							:total="page_data.total">
-						</el-pagination>
+						<table-page 
+							:pagination="page_data"
+							:config="data_page"
+						 	@handle="handle"
+						>
+						</table-page>
 					</div>
 				</el-card>
 			</el-col>
@@ -113,13 +107,24 @@
 import pageMixin from "@/mixins/page";
 import tableMixin from "@/mixins/table";
 import commonMixin from "@/mixins/common";
+import tablePage from "@/components/table-page";
 
 export default {
 	name: "system_adminlist",
 	mixins: [commonMixin, pageMixin, tableMixin],
+	components: { tablePage },
   	data() {
 		return {
-			page_data: null
+			page_data: null,
+			list_page: {
+				layout: 'total, prev, pager, next',
+				scene: 'default',
+			},
+			data_page: {
+				layout: 'total, sizes, prev, pager, next, jumper',
+				sizes: [5, 10, 20, 30, 50],
+				scene: 'data',
+			}
 		}
 	},
 	created(){

@@ -4,8 +4,10 @@
 
 import {isEmpty, isSet, debounce, throttle, timestampToTime} from '@/libs/util';
 import Table from '@/libs/Table.js';
+import dbTable from "@/components/db-table";
 
 export default {
+	components: { dbTable },
 	data(){
 		return {
 
@@ -16,19 +18,14 @@ export default {
 			results: [],
 
 			// 搜索参数
-			search_args: {
-				keyword: '',
-			},
+			search_args: {},
 
-			// 表格操作类实例
-			instance: null,
+			// 筛选参数
+			filter_args: {},
 
 			// 表格选中列的id
 			selected: [],
 		}
-	},
-	mounted() {
-		// this.instance = new Table(this);
 	},
 	methods: {
 
@@ -75,18 +72,50 @@ export default {
 		 */
 		reset(){
 			this.search_args = {};
+			this.filter_args = {};
 			this.getRequestData({reset: true});
+		},
+
+		/**
+		 * 重新加载
+		 */
+		reload(){
+			this.getRequestData();
 		},
 
 		/**
 		 * 搜索
 		 */
-		search(){
-			this.request_args.keyword = this.search_args.keyword.trim();
+		search(args){
+			this.search_args = args;
+			this.getRequestData({
+				args: args,
+				reset: true
+			});
+		},
+
+		/**
+		 * 筛选
+		 */
+		filter(args){
+			// 筛选时, 应包含搜索的结果
+			args = { args, ...this.search_args };
+
+			this.filter_args = args;
 			this.getRequestData({
 				args: this.request_args,
 				reset: true
 			});
+		},
+
+		/**
+		 * 事件处理中转
+		 *
+		 * @param {*} func 方法名
+		 * @param  {...any} params 传给方法的参数
+		 */
+		handle(func, ...params){
+			this[func] && this[func].apply(this, params);
 		},
 
 		///////////////////////////////////////////////////////////
@@ -95,8 +124,8 @@ export default {
 
 		/**
 		 * 执行表格操作
-		 * 
-		 * @param {*} params 
+		 *
+		 * @param {*} params
 		 */
 		execute(params){
 			this.loading(true);
@@ -121,7 +150,7 @@ export default {
 		 * @param {int} id 			需要 恢复/删除 数据的ID. 如果为-1, 则选取表格所有被选中项的id
 		 * @param {int} operate		操作标识, 0: 恢复, 1: 删除
 		 */
-		del({id = -1, operate = 1} = {}){
+		del({id = -1, operate = -1} = {}){
 			let url = this.urls['del'];
 			let operate_msg = operate == 1 ? '删除' : '恢复';
 			let params = {
@@ -151,9 +180,14 @@ export default {
 		 * @param {int} id 			需要 启用/禁用 数据的ID. 如果为-1, 则选取表格所有被选中项的id
 		 * @param {int} operate		操作标识, 0: 启用, 1: 禁用
 		 */
-		disabled(id = -1, operate = 1){
+		disabled({id = -1, is_disabled = 0, operate = -1}){
 			let url = this.urls['dis'];
 			id = id == -1 ? this.selected : [ id ];
+
+			if(operate == -1){
+				operate = +!is_disabled;
+			}
+
 			let params = {
 				id,
 				url,

@@ -9,63 +9,15 @@
 		</page-header>
 
 		<div class="content-container" v-loading="is_loading">
-			<el-card>
-				<div slot="header" class="clearfix">
-					<div class="table-search">
-						<el-input
-							placeholder="请输入搜索内容"
-							v-model="search_args.keyword"
-							size="mini"
-						>
-							<i slot="suffix" class="el-input__icon el-icon-search search-btn" @click="search"></i>
-						</el-input>
-					</div>
-
-					<div class="table-toolbar">
-						<el-button size="mini" type="primary" icon="el-icon-s-promotion" @click="jump('list')" v-permission:page="['system', 'adminlist']">列表</el-button>
-						<el-button size="mini" type="success" icon="el-icon-delete" @click="del(-1, 0)">还原</el-button>
-					</div>
-				</div>
-
-				<el-table
-					ref="table"
-					:data="page_default.results"
-					tooltip-effect="dark"
-					style="width: 100%"
-					@selection-change="selectionChange"
-				>
-					<el-table-column type="selection" width="46" align="center"></el-table-column>
-
-					<el-table-column prop="id" label="编号" width="60"></el-table-column>
-
-					<el-table-column prop="name" label="名称" width="200"></el-table-column>
-
-					<el-table-column prop="add_time" label="添加时间" width="180" :formatter="filterTime"></el-table-column>
-
-					<el-table-column align="right" label="操作">
-						<template slot-scope="scope">
-							<el-button
-								size="mini"
-								type="text" 
-								@click="del(scope.row.id, 0)"
-								v-permission:data="['system', 'admindel']"
-							>恢复</el-button>
-						</template>
-					</el-table-column>
-				</el-table>
-
-				<div id="pagination">
-					<el-pagination
-						@size-change="sizeChange"
-						@current-change="pageChange"
-						:current-page="page_default.current"
-						:page-sizes="[10, 20, 30, 50]"
-						:page-size="page_default.num"
-						layout="total, sizes, prev, pager, next, jumper"
-						:total="page_default.total">
-					</el-pagination>
-				</div>
-			</el-card>
+			<db-table 
+				:data="results"
+				:columns="columns"
+				:actionbar="actionbar"
+				:pagination="page_default"
+				:toolbar="toolbar"
+				@handle="handle"
+			>
+			</db-table>
 		</div>
 	</div>
 </template>
@@ -91,6 +43,73 @@ export default {
 				list: '/system/adminlist',
 				recycle: '/system/adminrecycle',
 			},
+
+			columns: [
+				{
+					prop: 'selection',
+				},
+				{
+					prop: 'id',
+					label: '编号',
+					width: 60,
+				},
+				{
+					prop: 'name',
+					label: '名称',
+					width: 200,
+				},
+				{
+					prop: 'login_name',
+					label: '登录账号',
+				},
+				{
+					prop: 'add_time',
+					label: '添加时间',
+					width: 160,
+					formatter: this.filterTime
+				}
+			],
+
+			actionbar: [
+				{
+					type: 'btn',
+					name: '还原',
+					target: 'del',
+					access: ['system', 'admindel'],
+					params: {
+						operate: 0,
+					}
+				},
+			],
+
+			toolbar: [
+				{
+					type: 'btn',
+					name: '刷新',
+					target: 'reload',
+					icon: "el-icon-refresh-left",
+					color: 'primary',
+				},
+				{
+					type: 'url',
+					name: '列表',
+					target: 'list',
+					color: 'primary',
+					icon: "el-icon-s-promotion",
+					access: ['system', 'adminlist'],
+				},
+				{
+					type: 'btn',
+					name: '还原',
+					target: 'del',
+					color: 'success',
+					icon: "el-icon-delete",
+					access: ['system', 'admindel'],
+					params: {
+						operate: 0,
+					}
+				},
+			]
 		}
 	},
 	created(){

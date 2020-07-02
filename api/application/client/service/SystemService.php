@@ -27,7 +27,7 @@ class SystemService extends BaseService {
 		];
 
 		if($keyword){
-			$where[] = ['name|login', 'like', '%'.$keyword.'%'];
+			$where['name|login'] = ['like', '%'.$keyword.'%'];
 		}
 
 		return [
@@ -52,7 +52,7 @@ class SystemService extends BaseService {
 		];
 
 		if($keyword){
-			$where[] = ['name', 'like', '%'.$keyword.'%'];
+			$where['name'] = ['like', '%'.$keyword.'%'];
 		}
 
 		return [

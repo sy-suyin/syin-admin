@@ -37,7 +37,7 @@ router.beforeEach((to, from, next) => {
 		}
 
 		// 在已登录的情况下, 访问登录注册页面时, 跳转到后台首页 
-		if(NOT_LOGGED_PAGES.findIndex((value)=>{return value==path}) !== -1){
+		if(NOT_LOGGED_PAGES.findIndex((value)=>{return value == path}) !== -1){
 			next({
 				replace: true,
 				path: router_configs[0].path

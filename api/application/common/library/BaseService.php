@@ -2,7 +2,7 @@
 namespace app\common\library;
 
 use \app\common\library\RuntimeError;
-use think\Validate;
+use think\db\Where;
 
 class BaseService{
 
@@ -43,6 +43,10 @@ class BaseService{
 		$visible = isset($params['visible']) 	? $params['visible'] 	: [];
 		$order 	 = isset($params['order']) 		? $params['order'] 		: [];
 		$num   	 = isset($params['num']) 		? $params['num'] 		: 10;
+
+		if(!empty($where) && !($where instanceof Where)){
+			$where = new Where($where);
+		}
 
 		$data = $model
 			->where($where)

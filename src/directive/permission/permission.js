@@ -14,7 +14,11 @@ export default {
 			type = 'page';
 		}
 
-		if(isEmpty(value) || value.length != 2){
+		if(isEmpty(value)){
+			return true;
+		}
+		
+		if(value.length != 2){
 			throw new Error(`need roles! Like v-permission="['admin','index']"`)
 		}
 

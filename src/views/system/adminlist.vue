@@ -9,153 +9,30 @@
 		</page-header>
 
 		<div class="content-container" v-loading="is_loading">
-			<el-card>
-				<div slot="header" class="clearfix">
-					<div class="table-search">
-						<el-input
-							placeholder="请输入搜索内容"
-							v-model="search_args.keyword"
-							size="mini"
-						>
-							<i slot="suffix" class="el-input__icon el-icon-search search-btn" @click="search"></i>
-						</el-input>
-					</div>
-
-					<div class="table-toolbar">
-						<el-button
-							size="mini" 
-							type="primary" 
-							icon="el-icon-plus"
-							@click="jump('add')"
-							v-permission:page="['system', 'adminadd']"
-						>添加</el-button>
-
-						<el-button size="mini" type="success" icon="el-icon-sort" @click="sort">排序</el-button>
-
-						<el-button 
-							size="mini"
-							type="warning" 
-							icon="el-icon-s-promotion" 
-							@click="jump('recycle')" 
-							v-permission:page="['system', 'adminrecycle']"
-						>回收站</el-button>
-
-						<el-button 
-							size="mini" 
-							type="danger" 
-							icon="el-icon-delete" 
-							@click="del(-1, 1)"
-							v-permission:page="['system', 'admindel']"
-						>删除</el-button>
-					</div>
-				</div>
-
-				<el-table
-					ref="table"
-					:data="results"
-					tooltip-effect="dark"
-					style="width: 100%"
-					@selection-change="selectionChange"
-				>
-					<el-table-column type="selection" width="46" align="center"></el-table-column>
-
+			<db-table 
+				:data="results"
+				:columns="columns"
+				:actionbar="actionbar"
+				:pagination="page_default"
+				:toolbar="toolbar"
+				@handle="handle"
+			>
+				<template #sort>
 					<el-table-column label="排序" width="86">
 						<template v-slot="{row}">
 							<el-input v-model="row.sort" type="number" size="mini" max="99" min="0"/>
 						</template>
 					</el-table-column>
+				</template>
 
-					<el-table-column prop="id" label="编号" width="60"></el-table-column>
-
-					<el-table-column prop="name" label="名称" width="200"></el-table-column>
-
-					<el-table-column prop="login_name" label="登录账号"></el-table-column>
-
-					<el-table-column label="状态" width="120">
-						<template v-slot="scope">
-
-							<div v-if="checkPermission('system', 'admindis', 'data')">
-								<el-tag 
-									class="disabled-btn" 
-									type="success" 
-									effect="dark" 
-									size="mini" 
-									@click="disabled(scope.row.id, 1)" 
-									v-if="scope.row.is_disabled < 1"
-								>启用</el-tag>
-
-								<el-tag 
-									class="disabled-btn" 
-									type="danger" 
-									effect="dark" 
-									size="mini" 
-									@click="disabled(scope.row.id, 0)" 
-									v-else
-								>禁用</el-tag>
-							</div>
-							<div v-else>
-								
-								<el-tag 
-									class="disabled-btn" 
-									type="success" 
-									effect="dark" 
-									size="mini" 
-									v-if="scope.row.is_disabled < 1"
-								>启用</el-tag>
-
-								<el-tag 
-									class="disabled-btn" 
-									type="danger" 
-									effect="dark" 
-									size="mini" 
-									v-else
-								>禁用</el-tag>
-
-							</div>
-
-						</template>
-					</el-table-column>
-
+				<template #roles>
 					<el-table-column label="角色">
 						<template slot-scope="scope">
 							<el-tag class="role-tag" effect="plain" type="info" size="mini" v-for="item in scope.row.roles" :key="item.id">{{item.name}}</el-tag>
 						</template>
 					</el-table-column>
-
-					<el-table-column prop="add_time" label="添加时间" width="180" :formatter="filterTime"></el-table-column>
-
-					<el-table-column align="right" label="操作">
-						<template slot-scope="scope">
-							<el-button
-								size="mini" type="text" 
-								@click="jump('edit', {id: scope.row.id})"
-								v-permission:page="['system', 'adminedit']"
-							>修改</el-button>
-
-							<el-divider direction="vertical"></el-divider>
-
-							<el-button
-								size="mini"
-								type="text" 
-								@click="del(scope.row.id, 1)"
-								v-permission:data="['system', 'admindel']"
-							>删除</el-button>
-						</template>
-					</el-table-column>
-				</el-table>
-
-				<div id="pagination">
-					<el-pagination
-						@size-change="sizeChange"
-						@current-change="pageChange"
-						:current-page="page_default.current"
-						:page-sizes="[10, 20, 30, 50]"
-						:page-size="page_default.num"
-						layout="total, sizes, prev, pager, next, jumper"
-						:total="page_default.total">
-					</el-pagination>
-				</div>
-			</el-card>
+				</template>
+			</db-table>
 		</div>
 	</div>
 </template>
@@ -181,7 +58,132 @@ export default {
 				sort: '/system/adminsort'
 			},
 
-			results: []
+			columns: [
+				{
+					prop: 'selection',
+				},
+				{
+					prop: 'slot',
+					slot: 'sort',
+					label: '排序',
+				},
+				{
+					prop: 'id',
+					label: '编号',
+					width: 60,
+				},
+				{
+					prop: 'name',
+					label: '名称',
+					width: 200,
+				},
+				{
+					prop: 'login_name',
+					label: '登录账号',
+				},
+				{
+					prop: 'disabled',
+					label: '状态',
+					tags: [
+						{
+							prop: 'is_disabled',
+							class: 'disabled-btn',
+							access: {
+								controller: 'system',
+								action: 'admindis',
+								type: 'data'
+							},
+							data: {
+								0: {
+									val: '启用',
+									type: 'success'
+								},
+								1: {
+									val: '禁用',
+									type: 'danger',
+									class: 'disabled'
+								}
+							},
+							handle: 'disabled',
+							no_access_show: true,
+						}
+					]
+				},
+				{
+					prop: 'slot',
+					slot: 'roles',
+					label: '角色',
+				},
+				{
+					prop: 'add_time',
+					label: '添加时间',
+					width: 160,
+					formatter: this.filterTime
+				}
+			],
+
+			actionbar: [
+				{
+					type: 'btn',
+					name: '删除',
+					target: 'del',
+					access: ['system', 'admindel'],
+					params: {
+						operate: 1,
+					}
+				},
+				{
+					type: 'url',
+					name: '修改',
+					target: 'edit',
+					access: ['system', 'adminedit'],
+				},
+			],
+
+			toolbar: [
+				{
+					type: 'btn',
+					name: '刷新',
+					target: 'reload',
+					icon: "el-icon-refresh-left",
+					color: 'primary',
+				},
+				{
+					type: 'url',
+					name: '添加',
+					target: 'add',
+					icon: "el-icon-plus",
+					color: 'primary',
+					access: ['system', 'adminadd'],
+				},
+				{
+					type: 'btn',
+					name: '排序',
+					target: 'sort',
+					icon: "el-icon-sort",
+					color: 'success',
+					access: ['system', 'adminsort'],
+				},
+				{
+					type: 'url',
+					name: '回收站',
+					target: 'recycle',
+					color: 'warning',
+					icon: "el-icon-s-promotion",
+					access: ['system', 'adminrecycle'],
+				},
+				{
+					type: 'btn',
+					name: '删除',
+					target: 'del',
+					color: 'danger',
+					icon: "el-icon-delete",
+					access: ['system', 'admindel'],
+					params: {
+						operate: 1,
+					}
+				},
+			]
 		}
 	},
 	created(){
