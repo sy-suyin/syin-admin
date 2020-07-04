@@ -6,7 +6,7 @@
 			<div class="table-search">
 				<slot name="table_search">
 					<el-input
-						placeholder="请输入搜索内容"
+						:placeholder="params.search_tip"
 						v-model="search_args.keyword"
 						size="mini"
 					>
@@ -67,37 +67,39 @@
 				<slot v-else-if="column.prop == 'slot'" :name="column.slot"></slot>
 
 				<!-- 标签栏 -->
-				<template v-else-if="column.tags">
-					<el-table-column :label="column.label" width="120" :key="index">
-						<template v-slot="{row}">
-							<div class="tag-group" v-for="tag in column.tags" :key="tag.disabled">
-								<span v-if="checkPermission(tag.access)" :key="tag.prop">
-									<el-tag
-										class="tag-btn"
-										:class="tag.class"
-										:type=" (tag.data[row[tag.prop]] || tag.data[0]).type || 'success'"
-										effect="dark"
-										size="mini"
-										@click="handle(tag.handle, row)"
-									>
-									{{ (tag.data[row[tag.prop]] || tag.data[0]).val || tag.optimget(row) }}
-									</el-tag>
-								</span>
-								<span v-else-if="tag.no_access_show" :key="tag.prop">
-									<el-tag
-										class="tag-btn"
-										:class="tag.class"
-										:type=" (tag.data[row[tag.prop]] || tag.data[0]).type || 'success'"
-										effect="dark"
-										size="mini"
-									>
-									{{ (tag.data[row[tag.prop]] || tag.data[0]).val }}
-									</el-tag>
-								</span>
-							</div>
-						</template>
-					</el-table-column>
-				</template>
+				<el-table-column
+					v-else-if="column.prop == 'tag'"
+					:label="column.label" width="120" 
+					:key="index"
+				>
+					<template v-slot="{row}">
+						<div class="tag-group" v-for="tag in column.tags" :key="tag.disabled">
+							<span v-if="checkPermission(tag.access)" :key="tag.prop">
+								<el-tag
+									class="tag-btn"
+									:class="tag.class"
+									:type=" (tag.data[row[tag.prop]] || tag.data[0]).type || 'success'"
+									effect="dark"
+									size="mini"
+									@click="handle(tag.handle, row)"
+								>
+								{{ (tag.data[row[tag.prop]] || tag.data[0]).val }}
+								</el-tag>
+							</span>
+							<span v-else-if="tag.no_access_show" :key="tag.prop">
+								<el-tag
+									class="tag-btn"
+									:class="tag.class"
+									:type=" (tag.data[row[tag.prop]] || tag.data[0]).type || 'success'"
+									effect="dark"
+									size="mini"
+								>
+								{{ (tag.data[row[tag.prop]] || tag.data[0]).val }}
+								</el-tag>
+							</span>
+						</div>
+					</template>
+				</el-table-column>
 
 				<!-- 内容区域 -->
 				<el-table-column
@@ -119,8 +121,8 @@
 
 			<!-- 操作栏 -->
 			<el-table-column
-				v-if="actionbar.length"
 				align="right" 
+				v-if="actionbar.length"
 				:label="params.actionbar_name" 
 				:width="params.actionbar_width || null"
 			>
@@ -194,6 +196,7 @@ export default {
 			actionbar_width: null,
 			actionbar_name: '操作',
 			slot_append: false,
+			search_tip: '请输入搜索内容',
 		};
 
 		this.params = { ...def_config, ...this.config};
@@ -219,7 +222,3 @@ export default {
     }
 }
 </script>
-
-<style lang="scss">
-@import "@/assets/style/table-filter.scss";
-</style>

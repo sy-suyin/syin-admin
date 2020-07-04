@@ -1,5 +1,5 @@
 <template>
-	<div class="table-filter">
+	<div class="data-table">
 		<page-header>
 			<template #breadcrumb-after>
 				<div>
@@ -201,5 +201,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import "../../assets/style/table-filter.scss";
+@import "../../assets/style/table.scss";
 </style>

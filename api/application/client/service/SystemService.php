@@ -18,7 +18,15 @@ class SystemService extends BaseService {
 	 */
 	public static function adminListParams($params, $is_deleted = false){
 		$keyword = self::stringFilter('keyword', $params, '', 't');
+
+		// 筛选
+		$name = self::stringFilter('name', $params, '', 't');
+		$time = self::numberFilter('time', $params, 0, 'p');
+		$status = self::numberFilter('status', $params, 0, 'p');
+		
+		// 页面显示数据条数
 		$num = self::numberFilter('num', $params, 0);
+
 		$num     = $num ?: config('common.page_num');
 		$order  = ['sort' => 'asc', 'id' => 'desc'];
 		$hidden = ['password'];
@@ -26,8 +34,20 @@ class SystemService extends BaseService {
 			'is_deleted' => $is_deleted ? 1 : 0
 		];
 
+		if($name){
+			$keyword = $name;
+		}
+
+		if($time){
+			$where['add_time'] = ['>', $time];
+		}
+
+		if($status){
+			$where['is_disabled'] = $status == 1 ? 1 : 0;
+		}
+
 		if($keyword){
-			$where['name|login'] = ['like', '%'.$keyword.'%'];
+			$where['name|login_name'] = ['like', '%'.$keyword.'%'];
 		}
 
 		return [

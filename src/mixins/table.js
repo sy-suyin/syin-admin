@@ -99,11 +99,11 @@ export default {
 		 */
 		filter(args){
 			// 筛选时, 应包含搜索的结果
-			args = { args, ...this.search_args };
+			args = { ...args, ...this.search_args };
 
 			this.filter_args = args;
 			this.getRequestData({
-				args: this.request_args,
+				args,
 				reset: true
 			});
 		},

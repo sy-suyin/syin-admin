@@ -1,5 +1,5 @@
 <template>
-	<div class="table-base">
+	<div class="data-table">
 		<page-header>
 			<template #breadcrumb-after>
 				<div>
@@ -9,7 +9,10 @@
 		</page-header>
 
 		<div class="content-container" v-loading="is_loading">
-			<table-filter></table-filter>
+			<table-filter
+				:fields="filter_fields"
+				@handle="handle"
+			></table-filter>
 
 			<db-table 
 				:data="results"
@@ -86,7 +89,7 @@ export default {
 					label: '登录账号',
 				},
 				{
-					prop: 'disabled',
+					prop: 'tag',
 					label: '状态',
 					tags: [
 						{
@@ -105,7 +108,6 @@ export default {
 								1: {
 									val: '禁用',
 									type: 'danger',
-									class: 'disabled'
 								}
 							},
 							handle: 'disabled',
@@ -187,7 +189,65 @@ export default {
 						operate: 1,
 					}
 				},
-			]
+			],
+
+			filter_fields: [
+				{
+					type: 'input',
+					model: 'name',
+					params: {
+						label: '管理名称',
+						show_label: true,
+					},
+					attrs: {
+						placeholder: '请输入管理员名称', 
+					},
+					props: {
+						size: 'mini',
+					}
+				},
+				{
+					type: 'date',
+					model: 'time',
+					params: {
+						label: '添加时间',
+						show_label: true,
+					},
+					attrs: {
+						placeholder: '选择日期时间', 
+					},
+					props: {
+						type: 'datetime',
+						size: 'mini',
+						valueFormat: 'timestamp'
+					}
+				},
+				{
+					type: 'select',
+					model: 'status',
+					params: {
+						label: '状态',
+						show_label: true,
+					},
+					data: [
+						{
+							label: '--',
+							value: 0,
+						},
+						{
+							label: '禁用',
+							value: 1,
+						},
+						{
+							label: '启用',
+							value: 2,
+						},
+					],
+					props: {
+						size: 'mini'
+					}
+				},
+			],
 		}
 	},
 	created(){
@@ -202,7 +262,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "@/assets/style/table-base.scss";
+@import "@/assets/style/table.scss";
 
 .role-tag{
 	margin-right: 4px;

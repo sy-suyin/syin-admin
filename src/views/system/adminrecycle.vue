@@ -1,5 +1,5 @@
 <template>
-	<div class="table-base">
+	<div class="data-table">
 		<page-header>
 			<template #breadcrumb-after>
 				<div>
@@ -124,7 +124,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import "@/assets/style/table-base.scss";
+@import "@/assets/style/table.scss";
 
 .role-tag{
 	margin-right: 4px;

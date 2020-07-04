@@ -1,62 +1,27 @@
 <template>
 	<!-- 筛选 -->
 	<el-card class="filter-box">
-		<el-form ref="filter_form" :model="filter" label-width="80px">
+		<el-form ref="filter_form" :model="filter_args" label-width="80px">
 			<el-row>
-				<el-col :xs="12" :sm="8" :xl="6">
-					<el-form-item label="筛选输入" prop="name">
-						<form-element element="input" placeholder="请输入活动区域" size="mini" v-model="filter.name"></form-element>
-						<!-- <el-input v-model="filter.name" size="mini"></el-input> -->
-					</el-form-item>
-				</el-col>
-
-				<el-col :xs="12" :sm="8" :xl="6">
-					<el-form-item label="筛选下拉" prop="region">
-						
-						<form-element element="select" placeholder="请选择活动区域" v-model="filter.region" size="mini" :results="select_data">
-							<el-option label="区域一" value="shanghai"></el-option>
-							<el-option label="区域二" value="beijing"></el-option>
-							<!-- <form-element element="option" label="区域一" value="shanghai"></form-element> -->
-						</form-element>
-
-						<!-- <el-select v-model="filter.region" placeholder="请选择活动区域" size="mini">
-							<el-option label="区域一" value="shanghai"></el-option>
-							<el-option label="区域二" value="beijing"></el-option>
-						</el-select> -->
-					</el-form-item>
-				</el-col>
-
-				<el-col :xs="12" :sm="8" :xl="6">
-					<el-form-item label="筛选下拉" prop="region">
-						<el-select v-model="filter.region" placeholder="请选择活动区域" size="mini">
-							<el-option label="区域一" value="shanghai"></el-option>
-							<el-option label="区域二" value="beijing"></el-option>
-						</el-select>
-					</el-form-item>
-				</el-col>
-
-				<el-col :xs="12" :sm="8" :xl="6">
-					<el-form-item label="筛选时间" prop="time">
-						<el-date-picker
-							v-model="filter.time"
-							type="daterange"
-							range-separator="至"
-							start-placeholder="开始日期"
-							end-placeholder="结束日期" size="mini"
-						>
-						</el-date-picker>
-					</el-form-item>
-				</el-col>
-
-				<el-col :xs="12" :sm="8" :xl="6">
-					<el-form-item label="筛选输入" prop="name2">
-						<el-input v-model="filter.name2" size="mini"></el-input>
-					</el-form-item>
+				<el-col
+					v-for="item in fields"
+					:key="item.model"
+				 	:xs="12" :sm="8"
+					:xl="6"
+				>
+					<form-element
+						:type="item.type"
+						:params="item.params"
+						:attrs="item.attrs"
+						:props="item.props"
+						:results="item.data"
+						v-model="filter_args[item.model]"
+					></form-element>
 				</el-col>
 
 				<el-col class="filter-toolbar" :xs="{offset: 12,span: 12}" :sm="{offset: 16,span: 8}" :xl="{offset: 18,span: 6}">
-					<el-button size="mini" type="primary" @click="filtera">查询</el-button>
-					<el-button size="mini" type="danger" @click="resetForm('filter_form')">重置</el-button>
+					<el-button size="mini" type="primary" @click="filter">查询</el-button>
+					<el-button size="mini" type="danger" @click="reset">重置</el-button>
 				</el-col>
 			</el-row>
 		</el-form>
@@ -69,48 +34,112 @@ import formElement from "@/components/form-element";
 export default {
 	name: "table_filter",
 	components: { formElement },
+	props: {
+		fields: Array,
+		filter_func: {
+			type: String,
+			default: 'filter',
+		}
+	},
 	data(){
 		return {
-			filter: {
-          		name: '',
-				region: '',
-				time: '',
-				name2: ''
-			},
+			// 存储搜索结果
+			filter_args: {},
 
-			select_data: [
-			]
+			// 时间处理标记
+			time_filters: []
 		}
 	},
 
-	mounted(){
-		setTimeout(() => {
-			this.select_data = [
-				{
-					label: 'aaa',
-					value: '1',
-				},
-				{
-					label: 'bbb',
-					value: '2',
-				},
-				{
-					label: 'ccc',
-					value: '3',
-				}
-			];
-		}, 5000);
+	created(){
+		this.fields.forEach(item => {
+			// 添加 v-model 所需的字段
 
-		console.log({...this.select_data});
+			// 针对 element-ui 的时间选择器, 进行时间处理转换
+		});
+
+		this.init();
 	},
 
 	methods: {
-		filtera(){
-			console.log({
-				...this.filter
+
+		/**
+		 * 初始化
+		 */
+		init(){
+			this.fields.forEach(item => {
+				// 添加 v-model 所需的字段
+				this.$set(this.filter_args, item.model, '');
+
+				// 针对 element-ui 的时间选择器, 进行时间处理转换
+				if(item.hasOwnProperty('type') && item.type == 'date'){
+					if(item.hasOwnProperty('props')
+						&& item.props.hasOwnProperty('valueFormat')
+					){
+						if(item.props.valueFormat == 'timestamp'){
+							this.time_filters.push({
+								key: item.model,
+								format: 'timestamp',
+							});
+						} else {
+							// 其他处理方式, 由上层自行处理
+						}
+					}else{
+						this.time_filters.push({
+							key: item.model,
+							format: 'original',
+						});
+					}
+				}
 			});
 		},
 
+		/**
+		 * 提交筛选操作
+		 */
+		filter(){
+			let args = {
+				...this.filter_args
+			};
+
+			args = this.timeFilter(args);
+			this.handle(this.filter_func, args);
+		},
+
+		/**
+		 * 重置筛选
+		 */
+		reset(){
+			let keys = Object.keys(this.filter_args);
+			keys.forEach(key => {
+				this.filter_args[key] = '';
+			});
+		},
+
+		/**
+		 * 对时间选择结果进行处理
+		 */
+		timeFilter(args){
+			if(this.time_filters.length){
+				this.time_filters.forEach(item => {
+					if(! args[item.key]){
+						return;
+					}
+
+					if(item.format != 'timestamp'){
+						args[item.key] = +(new Date());
+					}
+
+					args[item.key] /= 1000;
+				});
+			}
+
+			return args;
+		},
+
+		/**
+		 * 事件中转提交
+		 */
 		handle(...params){
 			params.unshift('handle');
 			this.$emit.apply(this, params);
@@ -118,40 +147,3 @@ export default {
 	}
 }
 </script>
-
-<style lang="scss">
-.filter-box{
-	margin-bottom: 24px;
-
-	.el-form-item{
-		padding-left: 12px;
-
-		.el-select{
-			width: 100%;
-		}
-
-		.el-date-editor{
-			width: 100%;
-		}
-
-		.el-range-separator{
-			width: 20px;
-		}
-	
-		&:nth-child(4n+0){
-			padding-left: 20px;
-		}
-
-
-	}
-	
-	.el-col:nth-child(4n+1) .el-form-item{
-		padding-left: 0;
-	}
-
-
-	.filter-toolbar{
-		text-align: right;
-	}
-}
-</style>

@@ -1,24 +1,32 @@
 <script>
 export default {
 	functional: true,
-	props: ['element', 'results'],
-    render: function (h, context) {
-		// <el-input v-model="filter.name" size="mini"></el-input>
-  		let self = this;
+	props: {
+		type: String,
+		model: String,
+		params: Object,
+		results: Array,
+		attrs: Object,
+		props: Object
+	},
+    render: function (h, { data, props }) {
+		let {
+			show_label = false,
+			label = '',
+		} = props.params;
 
-		let element = context.props.element || '';
+		let element = '';
 		let childrens = [];
+		data.attrs = { ...data.attrs, ...props.attrs };
+		data.props = { ...data.props, ...props.props };
 
-		switch(element){
+		switch(props.type){
 			case 'select':{
 				element = 'el-select';
-
-				let results = [...context.props.results];
-				console.log(context);
+				let results = [...props.results];
 
 				if(results){
 					results.forEach(item => {
-						// console.log(item);
 						let children = h('el-option', {
 							props: {
 								...item
@@ -28,9 +36,10 @@ export default {
 					});
 				}
 
-				console.log(context);
-				console.log(childrens);
-
+				break;
+			}
+			case 'time': {
+				element = 'el-time-select';
 				break;
 			}
 			case 'date':{
@@ -42,39 +51,23 @@ export default {
 			}
 		}
 
-		if(element == 'options'){
-			h('el-option', {
-				attrs: {
-					label: "区域一",
+		let node = h(element, data, childrens);
 
-					// label: item.label,
-					// value: item.value,
+		// 判断是否加入外围的标签
+		if( show_label ){
+			let parent = h('el-form-item', {
+				props: {
+					label: label,
+					prop: props.model
 				}
-			});
+			}, [node]);
+
+			return parent;
+		}else{
+			return node;
 		}
 
-		let data = context.data;
-
-		// data.domProps = {
-		// 	value: context.props.value
-		// };
-
-		//  data.model = {
-		// 	prop: 'value',
-		// 	event: 'change.value'
-		// };
-
-		// data.on = {
-		// 	input: function (value) {
-		// 		console.log(event);
-		// 		context.listeners.input(value);
-		// 		// self.$emit('input', event.target.value)
-		// 	}
-		// }
-
-		// console.log(childrens);
-
-		return h(element, data, childrens);
+		return parent;
 	}
 }
 </script>
