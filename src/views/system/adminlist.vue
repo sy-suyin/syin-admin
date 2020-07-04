@@ -9,6 +9,8 @@
 		</page-header>
 
 		<div class="content-container" v-loading="is_loading">
+			<table-filter></table-filter>
+
 			<db-table 
 				:data="results"
 				:columns="columns"
@@ -41,10 +43,12 @@
 import pageMixin from "@/mixins/page";
 import tableMixin from "@/mixins/table";
 import commonMixin from "@/mixins/common";
+import tableFilter from "@/components/table-filter";
 
 export default {
 	name: "system_adminlist",
-	mixins: [commonMixin, pageMixin, tableMixin],
+	components: { tableFilter },
+	mixins: [ commonMixin, pageMixin, tableMixin ],
   	data() {
       	return {
 			// 各跳转链接
