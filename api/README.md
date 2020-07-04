@@ -9,7 +9,6 @@ composer install
 启动服务
 
 ~~~
-cd sy-schedule
 php think run
 ~~~
 

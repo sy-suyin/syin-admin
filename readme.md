@@ -9,7 +9,7 @@
   <a href="https://github.com/ElemeFE/element">
     <img src="https://img.shields.io/badge/element--ui-2.13.0-brightgreen.svg" alt="element-ui">
   </a>
-  <a href="https://sysyin.coding.net/public/syin-admin/syin-admin/git/files/master/LICENSE">
+  <a href="https://github.com/sy-suyin/syin-admin/blob/master/LICENSE">
     <img src="https://img.shields.io/github/license/mashape/apistatus.svg" alt="license">
   </a>
 </p>
@@ -34,7 +34,7 @@
 
 ```bash
 # 克隆项目
-git clone https://e.coding.net/sysyin/syin-admin/syin-admin.git
+git clone https://github.com/sy-suyin/syin-admin.git
 
 # 进入项目目录
 cd syin-admin
@@ -88,6 +88,6 @@ npm run serve
 
 ## License
 
-[MIT](https://sysyin.coding.net/public/syin-admin/syin-admin/git/files/master/LICENSE)
+[MIT](https://github.com/sy-suyin/syin-admin/blob/master/LICENSE)
 
 Copyright (c) 2020-present 溯隐
