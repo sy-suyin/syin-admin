@@ -122,8 +122,8 @@ export default {
 		 */
 		submit(params) {
 			this.submitChain().then(params => {
-
 				this.loading(true);
+
 				editRole(params.args).then(res => {
 					this.$router.push({path: this.redirect_url})
 				}).catch(e => {

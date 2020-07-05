@@ -1,5 +1,5 @@
 <h1 align="center">
-	syin Admin
+	Syin Admin
 </h1>
 
 <p align="center">
@@ -26,9 +26,9 @@
 
 ## 简介
 
-[syin-admin](http://admin.e.syin.top) 是一个后台前后端解决方案，它基于 [vue](https://github.com/vuejs/vue) 和 [element-ui](https://github.com/ElemeFE/element)实现。根据个人项目开发经验, 对过往业务代码进行提取整合, 封装前后端常用功能(后端代码见 API 文件夹), 未集成其他可能用不到功能, 适合当基础模板来进行二次开发. 如需其他功能, 可以参考vue-element-admin
+[syin-admin](https://admin.e.syin.top) 是一个后台前后端解决方案，它基于 [vue](https://github.com/vuejs/vue) 和 [element-ui](https://github.com/ElemeFE/element)实现。根据个人项目开发经验, 对过往业务代码进行提取整合, 封装前后端常用功能(后端代码见 API 文件夹), 未集成其他可能用不到功能, 适合当基础模板来进行二次开发.
 
-- [在线预览](http://admin.e.syin.top)
+- [在线预览](https://admin.e.syin.top)
 
 ## 运行
 
@@ -53,7 +53,7 @@ npm run serve
 
 ## 开发
 
-详细请查看同目录下的二次开发说明
+[开发前请先阅读docs目录下的文档](https://github.com/sy-suyin/syin-admin/tree/master/docs)
 
 ## 功能
 

@@ -10,7 +10,7 @@
 
 				<el-row>
 					<el-col :span="12">
-						<el-form ref="form" :model="form" :rules="rules" label-width="80px">
+						<el-form :ref="this.form_name" :model="form" :rules="rules" label-width="80px">
 							<el-form-item label="登录账号" prop="login">
 								<el-input v-model="form.login"></el-input>
 							</el-form-item>
@@ -36,7 +36,7 @@
 							<el-divider></el-divider>
 
 							<el-form-item>
-								<el-button type="primary" @click="onSubmit('form')">提交</el-button>
+								<el-button type="primary" @click="submit">提交</el-button>
 								<el-button>取消</el-button>
 							</el-form-item>
 						</el-form>
@@ -64,11 +64,10 @@
 			center>
 			<div>
 				<ul class="user-avatar">
-					<li v-for="i in 110" @click="updateAvatar(i)" :key="i">
-						<img :src="getAvatarUrl(i)" alt="">
+					<li v-for="item in avatars" @click="updateAvatar(item)" :key="item.id">
+						<img :src="item.url" alt="">
 					</li>
 				</ul>
-
 			</div>
 		</el-dialog>
 	</div>
@@ -77,11 +76,12 @@
 <script>
 import { config } from '@/libs/util';
 import commonMixin from "@/mixins/common";
+import validateMixin from "@/mixins/validate";
 import { updateProfile } from '@/api/user';
 
 export default {
 	name: "home",
-	mixins: [commonMixin],
+	mixins: [ commonMixin, validateMixin ],
 	mounted(){
 	},
   	data() {
@@ -109,58 +109,84 @@ export default {
 					{ required: true, message: '请输入用户名称', trigger: 'blur' },
 				],
 			},
+			avatars: [],
 			show_dialog: false
 		}
 	},
 	mounted(){
 		let user = this.$store.getters['auth/user'];
 
-		this.form.login = user.login_name;
-		this.form.name = user.name;
-		this.form.avatar_url = user.avatar;
-		this.user = user;
-		this.domain = config('domain');
+		// 初始化
+		this.init(user);
+		// 添加新的验证方法
+		this.validator.push('dataCheck');
 	},
 	methods: {
 
 		/**
-		 * 提交数据
+		 * 初始化
 		 */
-		onSubmit(formName){
-			let args = {...this.form};
+		init(user){
+			this.user = user;
+			this.form.name = user.name;
+			this.form.login = user.login_name;
+			this.form.avatar_url = user.avatar;
+			this.domain = config('domain');
+
+			// 初始化可选数组列表
+			for(let i = 1, len = 110; i <= len; i++){
+				let avatar_url = this.getAvatarUrl(i);
+				this.avatars.push({
+					id: i,
+					url: avatar_url
+				});
+			}
+		},
+
+		/**
+		 * 额外检查数据
+		 */
+		dataCheck(params){
+			let args = params.args;
 			args.password = args.password.trim();
 			args.oldpwd = args.oldpwd.trim();
 			delete args.avatar_url;
 
-			this.$refs[formName].validate((valid) => {
-				if(!valid){
-					return false;
+			if(args.password.trim() != ''){
+				if(args.password !== args.confirmpwd){
+					return Promise.reject('确认密码不一致');
 				}
 
-				if(args.password.trim() != ''){
-					if(args.password !== args.confirmpwd){
-						return this.message('确认密码不一致');
-					}
-
-					if(args.oldpwd == ''){
-						return this.message('原始密码不能为空');
-					}
-
-					if(args.oldpwd == args.password){
-						return this.message('新密码和原始密码不能一样');
-					}
+				if(args.oldpwd == ''){
+					return Promise.reject('原始密码不能为空');
 				}
 
+				if(args.oldpwd == args.password){
+					return Promise.reject('新密码和原始密码不能一样');
+				}
+			}
+
+			params.args = args;
+			return params;
+		},
+
+		/**
+		 * 提交数据
+		 */
+		submit() {
+			this.submitChain().then(({ args }) => {
 				this.loading(true);
+
 				updateProfile(args).then(res => {
 					this.updateUser(args);
 					this.message('数据更新成功', 'success');
 				}).catch(e => {
 					let msg = e.message || '网络异常, 请稍后重试';
 					this.message(msg, 'warning', 3000);
-				}).finally(()=>{
+				}).finally((e)=>{
 					this.loading(false);
 				});
+			}).catch((e) => {
 			});
 		},
 
@@ -175,7 +201,7 @@ export default {
 				this.user.avatar = this.getAvatarUrl(args.avatar);
 			}
 
-			this.$store.commit('auth/setLogin', this.user);
+			this.$store.commit('auth/updateUser', this.user);
 		},
 
 		/**
@@ -189,9 +215,9 @@ export default {
 		/**
 		 * 修改用户头像
 		 */
-		updateAvatar(id){
+		updateAvatar({id, url} = {}){
 			this.form.avatar = id;
-			this.form.avatar_url = this.getAvatarUrl(id); 
+			this.form.avatar_url = url;
 			this.show_dialog = false;
 		}
 	}

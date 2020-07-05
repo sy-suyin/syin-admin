@@ -94,6 +94,12 @@ export default {
 
 			actionbar: [
 				{
+					type: 'url',
+					name: '修改',
+					target: 'edit',
+					access: ['system', 'roleedit'],
+				},
+				{
 					type: 'btn',
 					name: '删除',
 					target: 'del',
@@ -101,13 +107,7 @@ export default {
 					params: {
 						operate: 1,
 					}
-				},
-				{
-					type: 'url',
-					name: '修改',
-					target: 'edit',
-					access: ['system', 'roleedit'],
-				},
+				}
 			],
 
 			toolbar: [

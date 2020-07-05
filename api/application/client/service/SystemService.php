@@ -277,26 +277,28 @@ class SystemService extends BaseService {
 		$blocklist_data_edit = $is_edit ? !empty($_POST['blocklist_data_edit']) : true;
 		$blocklist_page_edit = $is_edit ? !empty($_POST['blocklist_page_edit']) : true;
 
-		if($blocklist_data_edit && !empty($data['data'])){
+		if($blocklist_data_edit){
 			$count += 1;
-			foreach($data['data'] as $val){
-				$val['role_id'] = $role['id'];
-				$blocklist[] = $val;
+
+			if(!empty($data['data'])){
+				foreach($data['data'] as $val){
+					$val['role_id'] = $role['id'];
+					$blocklist[] = $val;
+				}
 			}
 		}
 
-		if($blocklist_page_edit && !empty($data['page'])){
+		if($blocklist_page_edit){ 
 			$count += 10;
-			foreach($data['page'] as $val){
-				$val['role_id'] = $role['id'];
-				$blocklist[] = $val;
+
+			if(!empty($data['page'])){
+				foreach($data['page'] as $val){
+					$val['role_id'] = $role['id'];
+					$blocklist[] = $val;
+				}
 			}
 		}
-
-		if(empty($blocklist)){
-			return true;
-		}
-
+		
 		// 直接删除旧数据, 再重新插入新数据
 		if($is_edit){
 			if($count == 1){
@@ -306,6 +308,10 @@ class SystemService extends BaseService {
 			}else{
 				db('admin_role_blocklist')->where('role_id', $role['id'])->delete();
 			}
+		}
+
+		if(empty($blocklist)){
+			return true;
 		}
 
 		return db('admin_role_blocklist')->insertAll($blocklist);

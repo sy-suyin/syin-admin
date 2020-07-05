@@ -8,7 +8,7 @@ module.exports = {
 	 */
 	base_url: {
 		dev: 'http://127.0.0.1:8000/client',
-		pro: 'http://admin.e.syin.top/client'
+		pro: 'https://admin.e.syin.top/client'
 	},
 
 	/**
