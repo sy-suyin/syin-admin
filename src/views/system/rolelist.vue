@@ -57,7 +57,7 @@ export default {
 					width: 200,
 				},
 				{
-					prop: 'disabled',
+					prop: 'tag',
 					label: '状态',
 					tags: [
 						{

@@ -288,8 +288,6 @@ export default {
 				time_str = timestampToTime(time);
 			}
 
-			console.log(time_str);
-
 			return time_str ? time_str : '';
 		}
 	},
