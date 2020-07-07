@@ -12,43 +12,36 @@ const router = new VueRouter({
 
 // 是否已添加动态路由
 let is_router_add = false;
-// 
+// 未登录时允许直接访问的页面
 const NOT_LOGGED_PAGES = ['login', 'register'];
 
 router.beforeEach((to, from, next) => {
 	let is_logged = !!store.state.auth.user;
-	let path = to.path;
-
-	path = path ? path.substr(1) : '';
 
 	if(is_logged){
-		// 在此处动态添加路由
-		// is_calc 用于next修正路由后, 解决第二次路由加载时又会修正的问题
-		let is_calc = false;
-		let router_configs = store.state.access.routers;
-
 		if(!is_router_add){
+			// 在此处动态添加路由
+
 			if(! store.state.access.is_calc){
 				store.commit('access/reload');
 			}
 
-			router.addRoutes(router_configs);
-			is_router_add = is_calc = true;
+			router.addRoutes(store.state.access.routers);
+			is_router_add = true;
+
+			// 在初次添加路由时, 此写法能直接跳转到正确页面
+			next({ ...to, replace: true });
+			return;
 		}
 
-		// 在已登录的情况下, 访问登录注册页面时, 跳转到后台首页 
-		if(NOT_LOGGED_PAGES.findIndex((value)=>{return value == path}) !== -1){
+		if(to.name && NOT_LOGGED_PAGES.includes(to.name)){
+			// 在已登录的情况下, 访问登录注册页面时, 跳转到后台首页 
 			next({
 				replace: true,
-				path: router_configs[0].path
+				path: store.state.access.routers[0].path
 			});
-		}else{
-			if(is_calc){
-				// 在初次添加路由时, 此写法能直接跳转到正确页面
-				next({ ...to, replace: true })
-			}else{
-				next();
-			}
+		} else {
+			next();
 		}
 	}else {
 		if(NOT_LOGGED_PAGES.includes(to.name)){

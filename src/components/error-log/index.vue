@@ -10,14 +10,16 @@
 			width="80%"
 			append-to-body
 		>
-
+			<div slot="title">
+				<span class="dialog-title">Error Log</span>
+				<el-button size="mini" type="primary" icon="el-icon-delete" @click="clearAll">Clear All</el-button>
+			</div>
 			<el-table
 				ref="table"
 				:data="errorLogs"
 				tooltip-effect="dark"
 				style="width: 100%"
 			>
-
 				<el-table-column label="Message">
 					<template slot-scope="{row}">
 						<div class="cell">
@@ -44,9 +46,7 @@
 						{{row.err.stack}}
 					</template>
 				</el-table-column>
-
 			</el-table>
-
 		</el-dialog>
 	</div>
 </template>
@@ -59,6 +59,11 @@ export default {
 			show_error: false
 		}
 	},
+	methods: {
+		clearAll(){
+			this.$store.dispatch('errorLog/clearErrorLog');
+		},
+	},
 	computed: {
 		errorLogs() {
 			return this.$store.getters['errorLog/logs']
@@ -68,9 +73,14 @@ export default {
 </script>
 
 <style lang="scss">
+.dialog-title{
+	margin-right: 10px;
+	font-size: 16px;
+}
+
 .msg-title{
+	margin-right: 10px;
 	font-weight: 600;
 	font-size: 16px;
-	margin-right: 10px;
 }
 </style>

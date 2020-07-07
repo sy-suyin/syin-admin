@@ -44,9 +44,6 @@ export default {
 				router = router.children[0];
 			}
 
-			// 触发路由改变事件, 关闭异常页面显示
-			this.$event.emit('routeChange', router.name, router.meta);
-
 			// 跳转到首页
 			this.$router.push({path: router.path})
 		}

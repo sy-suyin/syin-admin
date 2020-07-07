@@ -19,6 +19,7 @@ import layoutAside from "./components/aside";
 import settingPanel from "./components/setting-panel";
 import containerHead from "./components/container-head";
 import errorPage from "./components/error-page";
+import { config } from '@/libs/util';
 
 export default {
 	name: "base-layout",
@@ -58,6 +59,7 @@ export default {
 			this.user = user;
 			// 处理路由信息
 			this.routeChange(this.$route.name, this.$route.meta);
+
 			// 绑定页面切换处理
 			this.$event.on('routeChange', (name, meta)=>{
 				this.routeChange(name, meta);
@@ -95,6 +97,13 @@ export default {
 					msg: meta.msg || ''
 				};
 			}
+		}
+	},
+
+	// 监听,当路由发生变化的时候执行
+	watch:{
+		$route({name, meta}, from){
+			this.routeChange(name, meta);
 		}
 	},
 };

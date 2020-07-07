@@ -74,8 +74,6 @@ export default {
 				if(current.controller != menu.controller || current.action != menu.action){
 					// 激活路由
 					this.opens[menu.key] = true;
-					// 触发路由改变
-					this.$event.emit('routeChange', menu.name, menu);
 					// 跳转到相应页面
 					this.$router.push(`/${menu.controller}/${menu.action}`);
 				}else{

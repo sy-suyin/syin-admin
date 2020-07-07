@@ -67,7 +67,6 @@ export default {
 				}).finally(()=>{
 					this.is_loading = false;
 				});
-
 			}).catch(e => {
 				if(! e) return;
 

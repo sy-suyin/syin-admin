@@ -42,8 +42,8 @@
 					<el-table-column label="状态" width="120">
 						<template slot-scope="scope">
 
-							<el-tag type="success" effect="dark" size="mini" @click="disabled" v-if="scope.row.is_disabled < 1">启用</el-tag>
-							<el-tag type="danger" effect="dark" size="mini" @click="disabled" v-else>禁用</el-tag>
+							<el-tag type="success" effect="dark" size="mini" v-if="scope.row.is_disabled < 1">启用</el-tag>
+							<el-tag type="danger" effect="dark" size="mini" v-else>禁用</el-tag>
 
 						</template>
 					</el-table-column>
@@ -124,21 +124,6 @@ export default {
 		}
 	},
 	methods: {
-		onSubmit(formName) {
-			this.$refs[formName].validate((valid) => {
-				if (valid) {
-					alert('submit!');
-				} else {
-					console.log('error submit!!');
-					return false;
-				}
-			});
-		},
-
-		resetForm(formName) {
-			this.$refs[formName].resetFields();
-		},
-
 		handleSizeChange(val) {
 			console.log(`每页 ${val} 条`);
 		},
@@ -147,8 +132,12 @@ export default {
 			console.log(`当前页: ${val}`);
 		},
 
-		disabled(){
+		handleEdit(){
+			console.log('修改');
+		},
 
+		handleDelete(){
+			console.log('删除');
 		}
     }
 };

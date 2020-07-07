@@ -69,9 +69,7 @@
 					<div class="table-toolbar">
 						<el-button size="mini" type="primary" icon="el-icon-plus">添加</el-button>
 						<el-button size="mini" type="danger" icon="el-icon-delete">删除</el-button>
-						<!-- <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button> -->
 					</div>
-
 				</div>
 
 				<el-table
@@ -173,29 +171,25 @@ export default {
 		}
 	},
 	methods: {
-		onSubmit(formName) {
-			this.$refs[formName].validate((valid) => {
-				if (valid) {
-					alert('submit!');
-				} else {
-					console.log('error submit!!');
-					return false;
-				}
-			});
-		},
-		resetForm(formName) {
-			this.$refs[formName].resetFields();
-		},
 		handleSizeChange(val) {
 			console.log(`每页 ${val} 条`);
 		},
+
 		handleCurrentChange(val) {
 			console.log(`当前页: ${val}`);
 		},
 
 		resetForm(formName) {
         	this.$refs[formName].resetFields();
-      	}
+		},
+
+		handleEdit(){
+			console.log('修改');
+		},
+
+		handleDelete(){
+			console.log('删除');
+		}
     }
 };
 </script>

@@ -51,6 +51,10 @@ npm run serve
 
 浏览器访问 http://localhost:8080/
 
+## 目录结构
+
+[点击查看目录结构, 文件较多在此不方便展示](https://github.com/sy-suyin/syin-admin/blob/master/docs/intro/目录结构.md)
+
 ## 开发
 
 [开发前请先阅读docs目录下的文档](https://github.com/sy-suyin/syin-admin/tree/master/docs)
@@ -90,4 +94,4 @@ npm run serve
 
 [MIT](https://github.com/sy-suyin/syin-admin/blob/master/LICENSE)
 
-Copyright (c) 2020-present 溯隐
+Copyright (c) 2020-present [溯隐](https://github.com/sy-suyin/syin-admin/settings)
