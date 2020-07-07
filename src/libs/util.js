@@ -167,10 +167,16 @@ export function timeAgo (timestamp) {
 	return text;
 }
 
+function zerofill(num){
+	if(num * 1 < 10){
+		return '0' + num;
+	}else{
+		return num;
+	}
+}
 
 /**
  * 时间戳转换为时间
- * @link https://qishaoxuan.github.io/js_tricks/date/
  *
  * @param string timestamp 时间戳
  * @param bool   isMs	   isMs为时间戳是否为毫秒
@@ -181,7 +187,15 @@ export function timestampToTime(timestamp = Date.parse(new Date()), isMs = false
 	if(date == 'Invalid Date'){
 		return false;
 	}
-	return `${date.getFullYear()}-${date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+
+	let year = date.getFullYear();
+	let month = zerofill(date.getMonth() + 1);
+	let day = zerofill(date.getDate());
+	let hour = zerofill(date.getHours());
+	let minute = zerofill(date.getMinutes());
+	let second = zerofill(date.getSeconds());
+
+	return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
 }
 
 /**

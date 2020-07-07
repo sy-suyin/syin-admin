@@ -118,6 +118,9 @@ export default {
 
 		// 初始化
 		this.init(user);
+
+		this.generateSimpleAvatars();
+
 		// 添加新的验证方法
 		this.validator.push('dataCheck');
 	},
@@ -132,7 +135,12 @@ export default {
 			this.form.login = user.login_name;
 			this.form.avatar_url = user.avatar;
 			this.domain = config('domain');
+		},
 
+		/**
+		 * 生成头像列表 - 110张
+		 */	
+		generateAvatars(){
 			// 初始化可选数组列表
 			for(let i = 1, len = 110; i <= len; i++){
 				let avatar_url = this.getAvatarUrl(i);
@@ -141,6 +149,32 @@ export default {
 					url: avatar_url
 				});
 			}
+		},
+
+		/**
+		 * 生成头像列表 - 简版(20张头像)
+		 */
+		generateSimpleAvatars(){
+			// 初始化可选数组列表
+			let ids = [];
+			for(let i = 1, len = 110; i <= len; i++){
+				ids.push(i);
+			}
+
+			ids = ids.sort(() => {
+				return Math.random()>.5 ? -1 : 1;
+			});
+			
+			ids = ids.splice(0, 24);
+
+			ids.forEach(id => {
+				let avatar_url = this.getAvatarUrl(id);
+
+				this.avatars.push({
+					id,
+					url: avatar_url
+				});
+			});
 		},
 
 		/**

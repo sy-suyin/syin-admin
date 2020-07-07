@@ -39,14 +39,14 @@ class Admin extends Base{
 		$validation = [
 			'rules' => [
 				'login' => [
-					'login_name'   	=> 'require',
+					'login_name'   	=> 'require|alphaNum',
 					'password'   	=> function($value, $rule){
 						return $this->checkPassword($value, $rule, 'login');
 					},
 				],
 				'add' => [
 					'name'      	=> 'require|unique:admin',
-					'login_name'   	=> 'require',
+					'login_name'   	=> 'require|alphaNum',
 					'password'   	=> function($value, $rule){
 						return $this->checkPassword($value, $rule, 'add');
 					},
@@ -54,7 +54,7 @@ class Admin extends Base{
 				],
 				'edit' => [
 					'name'      	=> 'require|unique:admin',
-					'login_name'   	=> 'require',
+					'login_name'   	=> 'require|alphaNum',
 					'password'   	=> function($value, $rule){
 						return $this->checkPassword($value, $rule, 'edit');
 					},
@@ -70,6 +70,7 @@ class Admin extends Base{
 					'name.require' 	 => '请先输入名称',
 					'name.unique' 	 => '名称已被占用',
 					'login_name.require' => '请先输入登录账号名称',
+					'login_name.alphaNum'=> '登录账号只能是字母和数字',
 					'password.require'   => '登录密码不能为空',
 					'roles.array'	 => '角色数据有误',
 					'roles.min'	 	 => '请先选择角色',
