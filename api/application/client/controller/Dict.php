@@ -1,8 +1,8 @@
 <?php
 namespace app\client\controller;
 
-use app\client\model\Dict as DictModel;
-use app\client\model\DictData as DictDataModel;
+use app\client\repository\DictRepository;
+use app\client\repository\DictDataRepository;
 use app\client\service\DictService;
 use think\Request;
 
@@ -11,12 +11,12 @@ class Dict {
 	/**
 	 * 数据字典
 	 */
-	public function listAction(Request $request, DictModel $model){
+	public function index(DictRepository $repository){
 		// 1. 获取查询参数
-		$params = DictService::dictListParams($request->post());
+		$params = DictService::getListParams($_POST);
 
 		// 2. 查询数据
-		$result = DictService::page($model, $params);
+		$result = $repository->paginate($params);
 
 		return show_success('', $result);
 	}
@@ -24,12 +24,12 @@ class Dict {
 	/** 
 	 * 获取字典内容
 	 */
-	public function dictDataAction(Request $request, DictDataModel $model){
+	public function dictData(DictDataRepository $repository){
 		// 1. 获取查询参数
-		$params = DictService::dictDataListParams($request->post());
+		$params = DictService::dictDataListParams($_POST);
 
 		// 2. 查询数据
-		$result = DictService::page($model, $params);
+		$result = $repository->paginate($params);
 
 		return show_success('', $result);
 	}

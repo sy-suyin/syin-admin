@@ -8,55 +8,6 @@ use app\common\library\Input;
 class SystemService extends BaseService {
 
 	use DbTool;
-	use Input;
-
-	/**
-	 * 获取管理员列表查询所需条件
-	 *
- 	 * @param bool 	$params			数据数组
- 	 * @param bool 	$is_deleted		是否查询被删除的数据
-	 */
-	public static function adminListParams($params, $is_deleted = false){
-		$keyword = self::stringFilter('keyword', $params, '', 't');
-
-		// 筛选
-		$name = self::stringFilter('name', $params, '', 't');
-		$time = self::numberFilter('time', $params, 0, 'p');
-		$status = self::numberFilter('status', $params, 0, 'p');
-		
-		// 页面显示数据条数
-		$num = self::numberFilter('num', $params, 0);
-
-		$num     = $num ?: config('common.page_num');
-		$order  = ['sort' => 'asc', 'id' => 'desc'];
-		$hidden = ['password'];
-		$where  = [
-			'is_deleted' => $is_deleted ? 1 : 0
-		];
-
-		if($name){
-			$keyword = $name;
-		}
-
-		if($time){
-			$where['add_time'] = ['>', $time];
-		}
-
-		if($status){
-			$where['is_disabled'] = $status == 1 ? 1 : 0;
-		}
-
-		if($keyword){
-			$where['name|login_name'] = ['like', '%'.$keyword.'%'];
-		}
-
-		return [
-			'num'	=> $num,
-			'where' => $where,
-			'order' => $order,
-			'hidden'=> $hidden
-		];
-	}
 
 	/**
 	 * 获取角色列表查询所需条件
@@ -65,20 +16,58 @@ class SystemService extends BaseService {
  	 * @param bool 	$is_deleted		是否查询被删除的数据
 	 */
 	public static function roleListParams($params, $is_deleted = false){
-		$keyword = self::stringFilter('keyword', $params, '', 't');
-		$order = ['id' => 'desc'];
-		$where = [
-			'is_deleted' => $is_deleted ? 1 : 0
+		return self::getListParams($params, $is_deleted);
+	}
+
+	/**
+	 * 检查提交的数据
+	 */
+	public static function checkRequest($params, $model = null) {
+		$is_edit = is_null($model) ? false : true;
+		$fields = [
+			'name',
+			'login_name' => 'login',
+			'password',
+			'roles/a'	 => ['filter' => 'int'],
 		];
 
-		if($keyword){
-			$where['name'] = ['like', '%'.$keyword.'%'];
+		$validation = [
+			'rules' => [
+				'name'      	=> 'require|unique:admin',
+				'login_name'   	=> 'require|alphaNum',
+				'roles'			=> 'array|min:1'
+			],
+			'msgs'  => [
+				'name.require' 	 => '请先输入名称',
+				'name.unique' 	 => '名称已被占用',
+				'login_name.require' => '请先输入登录账号名称',
+				'login_name.alphaNum'=> '登录账号只能是字母和数字',
+				'password.require'   => '登录密码不能为空',
+				'roles.array'	 => '角色数据有误',
+				'roles.min'	 	 => '请先选择角色',
+			]
+		];
+
+		if(! $is_edit){
+			$validation['rules']['password'] = 'require';
 		}
 
-		return [
-			'where' => $where,
-			'order' => $order
-		];
+		$args = self::checkParams($params, $fields, $validation);
+
+		$args['update_time'] = time();
+		if(! $is_edit){
+			$args['add_time'] = $args['update_time'];
+			$args['avatar']   = '/static/common/imgs/avatar/'.mt_rand(1,110).'.png';
+		}
+		
+		// 此处检查密码并对密码进行加密
+		if(!empty($args['password'])){
+			$args['password'] = generate_password_hash($args['password']);
+		}else{
+			unset($args['password']);
+		}
+
+		return $args;
 	}
 
 	/**
@@ -107,44 +96,25 @@ class SystemService extends BaseService {
 	 * @param array $data 		 需要进行转换的数据
 	 */
 	public static function adminMultiRelationRoles($data){
-		$ids = [];
-		$role_ids = [];
+		$admin_ids = [];
+		// 桶
+		$barrel	   = [];
 
-		// 1. 先获取管理员id
+		// 取管理员id
 		foreach($data as $key => $val){
-			$ids[] = $val['id'];
-			$data[$key]['roles'] = [];
+			$admin_ids[$val['id']] = $key;
 		}
 
-		$relations = db('admin_role_relation')->where('admin_id', 'in', $ids)->select();
+		$roles = db('admin_role_relation')->where('admin_id', 'in', array_keys($admin_ids))->select();
 
-		// 2. 获取对应角色id
-		$mapping = [];
-		foreach($relations as $key => $val){
-			if(!isset($mapping[$val['admin_id']])){
-				$mapping[$val['admin_id']] = [];
-			}
-
-			$mapping[$val['admin_id']][] = $val['role_id'];
-			$role_ids[$val['role_id']] = 1;
+		foreach($roles as $role){
+			$barrel[$role['role_id']][] = $admin_ids[$role['admin_id']];
 		}
 
-		// 3. 获取角色信息, 并赋给管理, 角色信息可以缓存
-		$role_ids = array_keys($role_ids);
-		$roles = db('admin_role')->where('id', 'IN', $role_ids)->column('id, name');
-
-		if(!empty($roles)){
-			foreach($data as $key => $val){
-				if(isset($mapping[$val['id']])){
-					foreach($mapping[$val['id']] as $rid){
-						if(isset($roles[$rid])){
-							$data[$key]['roles'][] = [
-								'id'   => $rid,
-								'name' => $roles[$rid]
-							];
-						}
-					}
-				}
+		$roles = db('admin_role')->field('id, name, description')->where('id', 'in', array_keys($barrel))->select();
+		foreach($roles as $role){
+			foreach($barrel[$role['id']] as $admin_index){
+				$data[$admin_index]['roles'][] = $role;
 			}
 		}
 
@@ -198,7 +168,7 @@ class SystemService extends BaseService {
 		}
 
 		if($is_edit){
-			// 先接触绑定,再建立新的绑定
+			// 先解除绑定,再建立新的绑定
 			db('admin_role_relation')->where('admin_id', $admin->id)->delete();
 		}
 
@@ -298,7 +268,7 @@ class SystemService extends BaseService {
 				}
 			}
 		}
-		
+
 		// 直接删除旧数据, 再重新插入新数据
 		if($is_edit){
 			if($count == 1){

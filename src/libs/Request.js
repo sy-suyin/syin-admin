@@ -62,6 +62,7 @@ class Request{
 			config.url = this.buildUrl(config.url);
 
 			config.headers = {
+				'X-Requested-With': 'XMLHttpRequest',
 				'Authorization': Token.getToken(),
 			};
 

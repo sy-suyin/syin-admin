@@ -3,153 +3,6 @@
 //----------------------------------------------------------------------
 
 /**
- * 清理缩略图
- *
- * @param string $filepath,	原始文件完整路径
- *
- * @return int,	清理的文件数量
- */
-function clear_image_thumb($filepath){
-	$info	= pathinfo($filepath);
-	$files	= glob($info['dirname'].'/'.$info['filename'].'*.'.$info['extension']);
-	$num	= 0;
-
-	if(!empty($files)){
-		foreach($files as $file){
-			if(!is_file($file))
-				continue;
-
-			unlink($file);
-			$num += 1;
-		}
-	}
-
-	return $num;
-}
-
-//----------------------------------------------------------------------
-
-/**
- * 获取图片url
- *
- * @param string	$path,		图片相对路径
- *
- * @return mixed
- */
-function get_img_url($path){
-	$base_path = env('root_path').'public/';
-	if(!$path){
-		return '';
-	}
-	
-	// 当是完整路径时, 直接返回
-	if(substr($path,0,4) == 'http'){
-		return $path;
-	}
-
-	if(is_file($base_path.$path)){
-		return request()->domain().'/'.$path;
-	}
-
-	if(is_file($base_path.'uploads'.'/'.$path)){
-		return request()->domain().'/'.'uploads'.'/'.$path;
-	}
-	
-	return '';
-}
-
-//----------------------------------------------------------------------
-
-/**
- * 获取指定分类的所有子分类
- *
- * @param int		$pid,		指定需要获取子分类的父ID，特殊的设置为0将获取所有分类
- * @param array		$category,	提前查询到的所有分类
- * @param string	$field,		指定返回字段值
- *
- * @return array
- */
-function get_cate_children($pid, $category, $field=''){
-	$children = array();
-
-	foreach($category as $k => $cate){
-		if($cate['parent_id'] != $pid)
-			continue;
-
-		$children[] = (!empty($field) && isset($cate[$field])) ? $cate[$field] : $cate;
-
-		unset($category[$k]);
-
-		$tmp = get_cate_children($cate['id'], $category, $field);
-
-		if(!empty($tmp))
-			$children = array_merge($children, $tmp);
-	}
-
-	return $children;
-}
-
-/** 
- * 发送站内信
- */
-function send_user_message($uid, $role='user', $title = '', $content=''){
-	$add = db('message')->insertGetId(array(
-		'role' => $role,
-		'role_id' => $uid,
-		'title'   => $title,
-		'content' => $content,
-		'is_read' => 0,
-		'add_time'=> time(),
-		'update_time'=> time(),
-	));
-
-	return $add ? true : false;
-}
-
-/** 
- * 加载函数文件
- * 
- * @param string $filename 函数文件名称 
- */
-function load_func($filename){
-	static $functions = array();
-
-	$path = Env::get('app_path');
-
-	$filename	= str_replace('\\', '/', $filename);
-	$filename	= trim($filename, '/');
-
-	if(stripos($filename, '.php') === false){
-		$filename .= '.php';
-	}
-
-	if(strpos($filename, '/') === false){
-		$filename = 'function/'.$filename;
-	}else{
-		$filename = $filename;
-	}
-
-	$hash = md5($filename);
-
-	if(isset($functions[$hash])){
-		return;
-	}
-
-	$dirname = request()->module() .'/';
-	if(!is_file($path.$dirname.$filename)){
-		$dirname = 'common/';
-
-		if(!is_file($path.$dirname.$filename)){
-			return;
-		}
-	}
-
-	$functions[$hash] = include($path.$dirname.$filename);
-}
-
-//----------------------------------------------------------------------
-
-/**
  * 调试函数
  *
  * @param mixed	$data,	要输出的数据
@@ -190,9 +43,34 @@ function is_error($var){
 	return $var instanceof \app\common\library\RuntimeError;
 }
 
-/** 
- * 添加系统日志
+/**
+ * 强制转换为正整数
+ *
+ * @param mixed $value,	需要转换的数值
+ *
+ * @return int
  */
-function add_system_log(){
-	
+function absint($value){
+	if(!is_scalar($value))
+		return 0;
+
+	return abs((int)$value);
+}
+
+
+/**
+ * 获取参数
+ * 当$name不为字符串时, 方法将根据第一个参数设置后续获取数据时, 所需用到的数据集
+ * 
+ * @param string|array $name 	数据键
+ * @param mixed 	   $default 默认数据,
+ * @param string|array $filter 	过滤方法, 多个过滤方法可以使用逗号分隔或者传入数组
+ * @param array 	   $params	获取参数时所需的数据集, 默认为 $_POST
+ */
+function obtain($name = '', $default = null, $filter = '', $params = null){
+	if(! is_string($name)){
+		return \syin\Input::getInstance()->bind($name);
+	}else{
+		return \syin\Input::get($name, $default, $filter, $params);
+	}
 }

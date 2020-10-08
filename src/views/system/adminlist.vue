@@ -9,19 +9,21 @@
 		</page-header>
 
 		<div class="content-container" v-loading="is_loading">
-			<table-filter
-				:fields="filter_fields"
-				@handle="handle"
-			></table-filter>
-
 			<db-table 
 				:data="results"
 				:columns="columns"
 				:actionbar="actionbar"
-				:pagination="page_default"
-				:toolbar="toolbar"
+				:urls="urls"
+				:pages="pages"
 				@handle="handle"
 			>
+				<template #filter>
+					<table-filter
+						:fields="filter_fields"
+						@handle="handle"
+					></table-filter>
+				</template>
+
 				<template #sort>
 					<el-table-column label="排序" width="86">
 						<template v-slot="{row}">
@@ -37,6 +39,13 @@
 						</template>
 					</el-table-column>
 				</template>
+
+				<template #footer>
+					<table-page
+						:pagination="page_default"
+						@handle="handle"
+					></table-page>
+				</template>
 			</db-table>
 		</div>
 	</div>
@@ -47,207 +56,22 @@ import pageMixin from "@/mixins/page";
 import tableMixin from "@/mixins/table";
 import commonMixin from "@/mixins/common";
 import tableFilter from "@/components/table-filter";
+import config from '@/assets/build/adminlist';
+import tablePage from '@/components/table-page';
+
+// console.log(config);
 
 export default {
 	name: "system_adminlist",
-	components: { tableFilter },
+	components: { tableFilter, tablePage },
 	mixins: [ commonMixin, pageMixin, tableMixin ],
   	data() {
-      	return {
-			// 各跳转链接
-			urls: {
-				add: '/system/adminadd',
-				del: '/system/admindel',
-				dis: '/system/admindis',
-				edit: '/system/adminedit/:id',
-				list: '/system/adminlist',
-				recycle: '/system/adminrecycle',
-				sort: '/system/adminsort'
-			},
-
-			columns: [
-				{
-					prop: 'selection',
-				},
-				{
-					prop: 'slot',
-					slot: 'sort',
-					label: '排序',
-				},
-				{
-					prop: 'id',
-					label: '编号',
-					width: 60,
-				},
-				{
-					prop: 'name',
-					label: '名称',
-					width: 200,
-				},
-				{
-					prop: 'login_name',
-					label: '登录账号',
-				},
-				{
-					prop: 'tag',
-					label: '状态',
-					tags: [
-						{
-							prop: 'is_disabled',
-							class: 'disabled-btn',
-							access: {
-								controller: 'system',
-								action: 'admindis',
-								type: 'data'
-							},
-							data: {
-								0: {
-									val: '启用',
-									type: 'success'
-								},
-								1: {
-									val: '禁用',
-									type: 'danger',
-								}
-							},
-							handle: 'disabled',
-							no_access_show: true,
-						}
-					]
-				},
-				{
-					prop: 'slot',
-					slot: 'roles',
-					label: '角色',
-				},
-				{
-					prop: 'add_time',
-					label: '添加时间',
-					width: 160,
-					formatter: this.filterTime
-				}
-			],
-
-			actionbar: [
-				{
-					type: 'url',
-					name: '修改',
-					target: 'edit',
-					access: ['system', 'adminedit'],
-				},
-				{
-					type: 'btn',
-					name: '删除',
-					target: 'del',
-					access: ['system', 'admindel'],
-					params: {
-						operate: 1,
-					}
-				},
-			],
-
-			toolbar: [
-				{
-					type: 'btn',
-					name: '刷新',
-					target: 'reload',
-					icon: "el-icon-refresh-left",
-					color: 'primary',
-				},
-				{
-					type: 'url',
-					name: '添加',
-					target: 'add',
-					icon: "el-icon-plus",
-					color: 'primary',
-					access: ['system', 'adminadd'],
-				},
-				{
-					type: 'btn',
-					name: '排序',
-					target: 'sort',
-					icon: "el-icon-sort",
-					color: 'success',
-					access: ['system', 'adminsort'],
-				},
-				{
-					type: 'url',
-					name: '回收站',
-					target: 'recycle',
-					color: 'warning',
-					icon: "el-icon-s-promotion",
-					access: ['system', 'adminrecycle'],
-				},
-				{
-					type: 'btn',
-					name: '删除',
-					target: 'del',
-					color: 'danger',
-					icon: "el-icon-delete",
-					access: ['system', 'admindel'],
-					params: {
-						operate: 1,
-					}
-				},
-			],
-
-			filter_fields: [
-				{
-					type: 'input',
-					model: 'name',
-					params: {
-						label: '管理名称',
-						show_label: true,
-					},
-					attrs: {
-						placeholder: '请输入管理员名称', 
-					},
-					props: {
-						size: 'mini',
-					}
-				},
-				{
-					type: 'date',
-					model: 'time',
-					params: {
-						label: '添加时间',
-						show_label: true,
-					},
-					attrs: {
-						placeholder: '选择日期时间', 
-					},
-					props: {
-						type: 'datetime',
-						size: 'mini',
-						valueFormat: 'timestamp'
-					}
-				},
-				{
-					type: 'select',
-					model: 'status',
-					params: {
-						label: '状态',
-						show_label: true,
-					},
-					data: [
-						{
-							label: '--',
-							value: 0,
-						},
-						{
-							label: '禁用',
-							value: 1,
-						},
-						{
-							label: '启用',
-							value: 2,
-						},
-					],
-					props: {
-						size: 'mini'
-					}
-				},
-			],
+		return {
+			urls: config.urls,
+			pages: config.pages,
+			columns: config.columns,
+			actionbar: config.actionbar,
+			filter_fields: config.filter_fields,
 		}
 	},
 	created(){

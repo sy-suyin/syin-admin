@@ -10,11 +10,12 @@ use think\exception\HttpException;
 
 class Runtime extends Handle{
 	public function render(Exception $e){
-		$status = 200;
+        $status = 200;
+        
         if (is_error($e)) {
             $status = $e->getStatusCode();
-			$error_msg = $e->getError();
-			
+            $error_msg = $e->getError();
+            
             if(request()->isAjax()){
                 return json(array(
                     'status' => 0,

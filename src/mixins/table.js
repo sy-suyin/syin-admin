@@ -14,6 +14,8 @@ export default {
 			// 表格相关跳转链接, 在被混入的组件重写
 			urls: {},
 
+			pages: {},
+
 			// 表格数据
 			results: [],
 
@@ -36,10 +38,12 @@ export default {
 		/**
 		 * 获取跳转链接
 		 */
-		buildUrl(key, params = false){
+		buildUrl(key, type = 'url', params = false){
 			let url = '';
-			if(this.urls.hasOwnProperty(key)){
-				url = this.urls[key];
+			let urls = this[type == 'page' ? 'pages' : 'urls'];
+
+			if(urls.hasOwnProperty(key)){
+				url = urls[key];
 			}
 
 			if(url != '' && !isEmpty(params)){
@@ -63,7 +67,9 @@ export default {
 		 * 页面跳转
 		 */
 		jump(key, params = false){
-			let url = this.buildUrl(key, params);
+			let url = this.buildUrl(key, 'page', params);
+			console.log(key);
+			console.log(url);
 			this.$router.push({path: url})
 		},
 

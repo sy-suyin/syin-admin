@@ -12,7 +12,7 @@ class RuntimeError extends \RuntimeException
      * @param mixed $error 错误消息
      * @param int $code 状态码
      */
-    public function __construct($error, $code=500)
+    public function __construct($error, $code=200)
     {
         $this->error   = $error;
         $this->code   = $code;

@@ -1,11 +1,11 @@
 <?php
 namespace app\client\controller;
 
-use app\common\controller\Client;
 use app\client\service\AdminService;
+use syin\Builder;
 use think\Request;
 
-class Index extends Client {
+class Index {
 
 	/**
      * 个人中心
@@ -49,5 +49,10 @@ class Index extends Client {
 				'token_type'   => 'bearer',
 				'expires'      => $token_expire
 			])->allowCache(false);
+	}
+
+	public function buildAction(){
+		$builder = new Builder();
+		$builder->build('test');
 	}
 }

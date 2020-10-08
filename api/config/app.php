@@ -70,7 +70,7 @@ return [
     // 操作方法前缀
     'use_action_prefix'      => false,
     // 操作方法后缀
-    'action_suffix'          => 'Action',
+    'action_suffix'          => '',
     // 自动搜索控制器
     'controller_auto_search' => false,
 
@@ -130,11 +130,11 @@ return [
     'route_cache_option'     => [],
 
     // 默认跳转页面对应的模板文件
-    'dispatch_success_tmpl'  => Env::get('think_path') . 'tpl/dispatch_jump.tpl',
-    'dispatch_error_tmpl'    => Env::get('think_path') . 'tpl/dispatch_jump.tpl',
+    'dispatch_success_tmpl'  => env('think_path') . 'tpl/dispatch_jump.tpl',
+    'dispatch_error_tmpl'    => env('think_path') . 'tpl/dispatch_jump.tpl',
 
     // 异常页面的模板文件
-    'exception_tmpl'         => Env::get('think_path') . 'tpl/think_exception.tpl',
+    'exception_tmpl'         => env('think_path') . 'tpl/think_exception.tpl',
 
     // 错误显示信息,非调试模式有效
     'error_message'          => '页面错误！请稍后再试～',

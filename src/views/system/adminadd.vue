@@ -22,7 +22,7 @@
 					</el-form-item>
 
 					<el-form-item label="权限角色" prop="roles">
-						<el-select v-model="form.roles" placeholder="请选择活动区域" multiple>
+						<el-select v-model="form.roles" placeholder="请选择权限角色" multiple>
 
 							<el-option
 								v-for="item in roles"

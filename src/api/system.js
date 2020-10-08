@@ -3,7 +3,7 @@ import { request } from '@/libs/api';
 // 获取管理员数据
 export const getAdmin = ( id ) => {
 	return request({
-		url: '/system/adminData',
+		url: '/admin/detail',
 		method: 'get',
 		params: { id },
 		dispose: true,
@@ -13,7 +13,7 @@ export const getAdmin = ( id ) => {
 // 添加管理员数据
 export const addAdmin = ( args ) => {
 	return request({
-		url: '/system/adminadd',
+		url: '/admin/add',
 		method: 'post',
 		dispose: true,
 		data: args,
@@ -23,7 +23,7 @@ export const addAdmin = ( args ) => {
 // 修改管理员数据
 export const editAdmin = ( args ) => {
 	return request({
-		url: '/system/adminedit',
+		url: '/admin/edit',
 		method: 'post',
 		dispose: true,
 		data: args,
@@ -33,7 +33,7 @@ export const editAdmin = ( args ) => {
 // 获取角色数据
 export const getRole = ( id ) => {
 	return request({
-		url: '/system/roleData',
+		url: '/role/detail',
 		method: 'get',
 		params: { id },
 		dispose: true,
@@ -43,7 +43,7 @@ export const getRole = ( id ) => {
 // 添加角色数据
 export const addRole = ( args ) => {
 	return request({
-		url: '/system/roleadd',
+		url: '/role/add',
 		method: 'post',
 		dispose: true,
 		data: args,
@@ -53,7 +53,7 @@ export const addRole = ( args ) => {
 // 修改角色数据
 export const editRole = ( args ) => {
 	return request({
-		url: '/system/roleedit',
+		url: '/role/edit',
 		method: 'post',
 		dispose: true,
 		data: args,
@@ -63,7 +63,7 @@ export const editRole = ( args ) => {
 // 获取所有角色
 export const getRoles = () => {
 	return request({
-		url: '/system/roleAll',
+		url: '/role/all',
 		method: 'get',
 		dispose: true,
 	})

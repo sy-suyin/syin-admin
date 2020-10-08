@@ -128,7 +128,7 @@ export default {
 		}
 	},
 	created(){
-		this.addScene('/dict/list');
+		this.addScene('/dict/index');
 		this.addScene('/dict/dictdata', 'data');
 	},
 	mounted(){

@@ -15,12 +15,27 @@
 	}
 
 	.table-toolbar{
-		float: right;
-	}
-
-	.table-search{
 		float: left;
+
+		.el-button+.el-button{
+			margin-left: 4px;
+		}
+
+		.el-button--mini, .el-button--mini.is-round{
+			padding: 7px 10px;
+		}
+	}
+	
+	.table-features{
+		float: right;
 		padding-left: 16px;
+
+		.table-search{
+			width: 200px;
+			display: inline-block;
+			margin-right: 6px;
+		}
+
 	}
 
 	#pagination{
@@ -70,5 +85,7 @@
 
 	.filter-toolbar{
 		text-align: right;
+		height: 40px;
+		line-height: 40px;
 	}
 }

@@ -1,313 +1,197 @@
 <?php
 namespace app\client\service;
 
-use app\common\library\BaseService;
 use app\common\library\RuntimeError;
+use app\common\library\BaseService;
 use app\common\library\DbTool;
-use app\common\library\Input;
 
 class AdminService extends BaseService {
 
 	use DbTool;
-	use Input;
 
 	/**
-	 * 登录检测
+	 * 获取管理员列表查询所需条件
+	 *
+ 	 * @param bool 	$params			数据数组
+ 	 * @param bool 	$is_deleted		是否查询被删除的数据
 	 */
-	public static function login($model, $data){
-		$admin = $model
-			->scope('nodeleted')
-			->where('login_name', $data['login_name'])
-			->find();
+	public static function adminListParams($params, $is_deleted = false){
+		obtain($params);
 
-		if(empty($admin)){
-			return new RuntimeError('登录账号或密码错误1');
+		$where  = [];
+		$time   = obtain('time/s', 0, 'time');
+		$status = obtain('status/d');
+
+		if($time){
+			$where['add_time'] = ['>', $time];
 		}
 
-		if(!check_password_hash($data['password'], $admin->password)){
-			return new RuntimeError('登录账号或密码错误');
+		if($status){
+			$where['is_disabled'] = $status == 1 ? 1 : 0;
 		}
 
-		if($admin->is_disabled > 0){
-			return new RuntimeError('登录账号已被禁用, 请联系管理');
-		}
-
-		request()->admin = $admin;
-
-		return $admin;
+		$params = self::getListParams($params, $is_deleted, $where);
+		$params['hidden'] = ['password'];
+		return $params;
 	}
 
 	/**
-	 * 登录时返回账号相关的配置
+	 * 检查提交的数据
 	 */
-	public static function loginConfig($admin){
-		$blocklist = self::getBlocklist($admin->id);
-		$domain = request()->domain();
-		$domain = trim($domain, '/');
-
-		$result = [
-			'blocklist' => $blocklist,
-			'config' => array(
-				'domain' => $domain,
-				'sidebar_imgs' => [
-					$domain.'/static/api/sidebar/bg-1.jpg',
-					$domain.'/static/api/sidebar/bg-2.jpg',
-					$domain.'/static/api/sidebar/bg-3.jpg',
-					$domain.'/static/api/sidebar/bg-4.jpg',
-				],
-			)
+	public static function checkRequest($model = null) {
+		$is_edit = is_null($model) ? false : true;
+		$fields = [
+			'name',
+			'password',
+			'login' 	 => 'login_name',
+			'roles/a'	 => ['filter' => 'int'],
 		];
 
-		return $result;
-	}
+		$validation = [
+			'rules' => [
+				'name'      	=> 'require|unique:admin',
+				'login_name'   	=> 'require|alphaNum',
+				'roles'			=> 'array|min:1'
+			],
+			'msgs'  => [
+				'name.require' 	 => '请先输入名称',
+				'name.unique' 	 => '名称已被占用',
+				'login_name.require' => '请先输入登录账号名称',
+				'login_name.alphaNum'=> '登录账号只能是字母和数字',
+				'password.require'   => '登录密码不能为空',
+				'roles.array'	 => '角色数据有误',
+				'roles.min'	 	 => '请先选择角色',
+			]
+		];
 
-	/**
-	 * 生成token
-	 */
-	public static function generateToken($admin){
-		// 生成token
-		$result['access_token'] = TokenService::generateToken([
-			'uid' => $admin->id
-		]);
-
-		$result['refresh_token'] = TokenService::generateRefreshToken([
-			'uid' => $admin->id
-		]);
-
-		$result['refresh_token_url'] = url('index/refreshtoken', '', true, true);
-
-		$result['token_expire'] = self::getTokenExpire();
-
-		return $result;
-	}
-
-	/**
-	 * 获取token有效时间
-	 */
-	public static function getTokenExpire(){
-		return config('auth. token_expire');
-	}
-
-	/**
-	 * 获取登录时的角色信息
-	 */
-	public static function profileParams($model, $params, $scene){
-		$result = self::requestCheck($model, $params, $scene);
-
-		if(is_error($result)){
-			return $result;
+		if(! $is_edit){
+			$validation['rules']['password'] = 'require';
 		}
 
-		list($data, $model) = $result;
+		// 数据筛选过滤
+		$args = self::filterParmas($fields, $_POST);
+
+		// 验证参数
+		$is_edit && $args['id'] = $model->id;
+		$valid = self::validate($args, $validation['rules'], $validation['msgs']);
+
+		if(! $is_edit){
+			$args['avatar']   = '/static/common/imgs/avatar/'.mt_rand(1,110).'.png';
+		}
+
+		// 此处检查密码并对密码进行加密
+		if(!empty($args['password'])){
+			$args['password'] = generate_password_hash($args['password']);
+		}else{
+			unset($args['password']);
+		}
+
+		return $args;
+	}
+
+	/**
+	 * 管理员数据保存
+	 */
+	public static function adminSave($model, $data){
+		$data['update_time'] = time();
+		if($model -> isEmpty()){
+			$data['add_time'] = $data['update_time'];
+			$data['avatar'] = '/static/common/imgs/avatar/'.mt_rand(1,110).'.png';
+		}
 
 		if(!empty($data['password'])){
-			if(!check_password_hash($data['oldpwd'], $model->password)){
-				return new RuntimeError('原始密码输入有误');
-			}
-
-			if($data['oldpwd'] == $data['password']){
-				return new RuntimeError('新密码不能与旧密码相同');
-			}
-
-			if($data['confirmpwd'] != $data['password']){
-				return new RuntimeError('确认密码输入有误');
-			}
-
-			if(!check_password_strength($data['password'])){
-				return new RuntimeError('密码格式有误');
-			}
-
-			$args['password'] = generate_password_hash($data['password']);
+			$data['password'] = generate_password_hash($data['password']);
 		}else{
 			unset($data['password']);
 		}
 
-		if($data['avatar']){
-			$avatar = '/static/api/avatar/'.$data['avatar'].'.png';
-			if(is_file(env('root_path').'public/'.$avatar)){
-				$data['avatar'] = $avatar;
-			}else{
-				$data['avatar'] = '';
-			}
+		unset($data['roles']);
+		return $model->data($data)->save();
+	}
+
+	/**
+	 * 获取多个管理员关联角色信息
+	 *
+	 * @param array $data 		 需要进行转换的数据
+	 */
+	public static function adminMultiRelationRoles($data){
+		$admin_ids = [];
+		// 桶
+		$barrel	   = [];
+
+		// 取管理员id
+		foreach($data as $key => $val){
+			$admin_ids[$val['id']] = $key;
+			$data[$key]['roles'] = [];
 		}
 
-		unset($data['confirmpwd']);
-		unset($data['oldpwd']);
+		$roles = db('admin_role_relation')->where('admin_id', 'in', array_keys($admin_ids))->select();
+
+		foreach($roles as $role){
+			$barrel[$role['role_id']][] = $admin_ids[$role['admin_id']];
+		}
+
+		$roles = db('admin_role')->field('id, name, description')->where('id', 'in', array_keys($barrel))->select();
+		foreach($roles as $role){
+			foreach($barrel[$role['id']] as $admin_index){
+				$data[$admin_index]['roles'][] = $role;
+			}
+		}
 
 		return $data;
 	}
 
 	/**
-	 * 获取权限黑名单数据
+	 * 获取单个管理员关联角色信息
 	 *
-	 * @param int $admin_id 管理员账号id
-	 *
+	 * @param int $admin_id 	管理员id
 	 */
-	public static function getBlocklist($admin_id){
-		// 获取关联角色id;
-		$role_ids = db('admin_role_relation')->where('admin_id', $admin_id)->column('role_id');
+	public static function adminRelationRoles($admin_id){
+		$role_ids = [];
 
-		// 禁止访问数据权限
-		$blocklist = [
-			'data' => [],
-			'page' => [],
-		];
-
-		if(empty($role_ids)){
-			return $blocklist;
+		if(is_array($admin_id)){
+			$db = db('admin_role_relation')->where('admin_id', 'in', $admin_id);
+		}else{
+			$db = db('admin_role_relation')->where('admin_id', $admin_id);
 		}
 
-		$results = db('admin_role_blocklist')->field('id, controller, action, type')->where('role_id', 'in', $role_ids)->select();
+		$relations = $db->select();
 
-		// 计算规则, 整合成多个对象的数据组, 仅当各权限名单中都有的才算禁止(求交集)
-		if(!empty($results)){
-			$role_count = count($role_ids);
-			$stat = [
-				'data' => [],
-				'page' => [],
-			];
-
-			$types = [1 => 'data', 2 => 'page'];
-			foreach($results as $val){
-				$type = $types[$val['type']];
-				$controller = $val['controller'];
-				$action = $val['action'];
-
-				if(! isset($stat[$type][$controller])){
-					$stat[$type][$controller] = [];
-				}
-
-				if(! isset($stat[$type][$controller][$action])){
-					$stat[$type][$controller][$action] = 0;
-				}
-
-				$stat[$type][$controller][$action] = 1;
-			}
-
-			// 判断是否所有角色都禁止改权限
-			foreach($types as $type){
-				if(empty($stat[$type])){
-					continue;
-				}
-
-				foreach($stat[$type] as $controller => $actions){
-					foreach($actions as $action => $total){
-						if($total < $role_count){
-							continue;
-						}
-
-						$blocklist[$type][$controller][] = $action;
-					}
-				}
-			}
+		// 2. 获取对应角色id,
+		foreach($relations as $val){
+			$role_ids[$val['role_id']] = 1;
 		}
 
-		return $blocklist;
-	}
-
-	/**
-	 * 验证是否有访问数据的权限
-	 *
-	 * @param object/int $admin  管理员数据或管理员id
-	 * @param string $controller 访问的控制器
-	 * @param string $action 	 访问的路由
-	 *
-	 * @return bool 允许访问为true, 反之为false
-	 */
-	public static function verifyPermission($admin, $controller, $action){
-		static $blocklist = [];
-
-		// 此处获取用户信息
-		if(is_numeric($admin)){
-			$admin = model('admin')->getById($admin, 'id, name, is_admin');
-		}
-
-		if(empty($admin)){
-			return false;
-		}
-
-		if($admin['is_admin']){
-			return true;
-		}
-
-		// 获取关联角色id;
-		$role_ids = db('admin_role_relation')->where('admin_id', $admin['id'])->column('role_id');
-
-		if(empty($role_ids)){
-			return true;
-		}
-
-		if(empty($blocklist)){
-			$resulst = db('admin_role_blocklist')->field('id, controller, action')->where('type', 1)->where('role_id', 'in', $role_ids)->select();
-
-			// 计算规则, 整合成多个对象的数据组, 仅当各权限名单中都有的才算禁止(求交集)
-			if(!empty($resulst)){
-				$temp = [];
-				$role_count = count($role_ids);
-
-				foreach($resulst as $val){
-					if(! isset($temp[$val['controller']])){
-						$temp[$val['controller']] = [];
-					}
-
-					if(! isset($temp[$val['controller']][$val['action']])){
-						$temp[$val['controller']][$val['action']] = 0;
-					}
-
-					$temp[$val['controller']][$val['action']] += 1;
-				}
-
-				// 判断是否所有角色都禁止改权限
-				foreach($temp as $controller => $actions){
-					foreach($actions as $action => $count){
-						if($count >= $role_count){
-							if(! isset($blocklist[$controller])){
-								$blocklist[$controller] = [];
-							}
-							$blocklist[$controller][] = $action;
-						}
-					}
-				}
-			}
-		}
-
-		if(isset($blocklist[$controller]) && isset($blocklist[$controller][$action])){
-			return false;
-		}
-
-		return true;
-	}
-
-	/**
-	 * 刷新token
-	 */
-	public static function refreshToken($params){
-		if(empty($params)){
-			return new RuntimeError('refresh_token异常');
-		}
-
-		$refresh_token =  isset($params['refresh_token']) ? $params['refresh_token'] : '';
-
-		if(empty($refresh_token)){
-			return new RuntimeError('token生成失败');
-		}
-
-		$payload = TokenService::verifyRefreshToken($refresh_token);
-						
-		if(!$payload || empty($payload['uid'])){
-			return new RuntimeError('token生成失败');
-		}
-
-		$admin = db('admin')
-			->where('id', $payload['uid'])
-			->where('is_disabled', 0)
+		// 3. 获取角色信息, 并赋给管理, 角色信息可以缓存
+		$role_ids = array_keys($role_ids);
+		$roles = db('admin_role')
+			->field('id, name, description')
 			->where('is_deleted', 0)
-			->find();
+			->where('is_disabled', 0)
+			->where('id', 'IN', $role_ids)
+			->select();
 
-		$token = TokenService::generateToken([
-			'uid' => $admin['id']
-		]);
+		return $roles;
+	}
 
-		return $token;
+	/**
+	 * 管理员关联角色信息保存
+	 */
+	public static function adminRoleSave($admin, $roles, $is_edit = false){
+		// 添加时
+		$relation = [];
+		foreach($roles as $role){
+			$relation[] = [
+				'admin_id' => $admin->id,
+				'role_id'  => $role,
+			];
+		}
+
+		if($is_edit){
+			// 先解除绑定,再建立新的绑定
+			db('admin_role_relation')->where('admin_id', $admin->id)->delete();
+		}
+
+		return db('admin_role_relation')->insertAll($relation);
 	}
 }

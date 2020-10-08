@@ -1,9 +1,5 @@
 <?php
 
-load_func('function');
-load_func('util');
-load_func('format');
-
 /**
  * 返回失败消息
  *
@@ -44,7 +40,7 @@ function show_success($msg, $data=[]){
  * @return mixed,	成功返回新ID，失败返回false
  */
 function add_operate_log($content, $data='', $type='admin', $uid=0){
-	if(empty($uid) && !check_user_logged($type))
+	if(empty($uid))
 		return false;
 
 	empty($uid) && $uid = $GLOBALS['CURRENT_'.strtoupper($type)]['id'];
@@ -62,79 +58,6 @@ function add_operate_log($content, $data='', $type='admin', $uid=0){
 	return $add ? $add : false;
 }
 
-/**
- * 操作权限控制
- *
- * admin_ban表为权限黑名单，仅当菜单在权限黑名单中时，才不允许访问
- * 注: 每个管理可以同时绑定多个角色, 当页面在黑名单中的次数与绑定角色次数一直时, 才会不允许访问
- *
- * @param string $controller 控制器名称
- * @param string $action	 方法名称
- */
-function admin_can_access($controller, $action){
-	static $ban_list = [];
-
-	$controller = strtolower($controller);
-	$admin = request()->admin;
-
-	if(empty($admin)){
-		return false;
-	}
-
-	if($admin['is_admin']){
-		return true;
-	}
-
-	if(! isset($ban_list[$admin['id']])){
-		$role_ids = db('admin_role_relation')
-			->alias('rr')
-			->join('admin_role r', 'r.id = rr.role_id', 'left')
-			->where('rr.admin_id', $admin['id'])
-			->column('r.id');
-
-		if(!empty($role_ids)){
-			$record = db('admin_ban')->where('role_id', 'in', $role_ids)->select();
-			$role_count = count($role_ids);
-
-			if(!empty($record)){
-				$map = [];
-
-				foreach($record as $val){
-					if(! isset($map[$val['controller']])){
-						$map[$val['controller']] = [];
-					}
-
-					if(! isset($map[$val['controller']][$val['action']])){
-						$map[$val['controller']][$val['action']] = 0;
-					}
-
-					$map[$val['controller']][$val['action']] += 1;
-				}
-
-				foreach($map as $k_controller => $val){
-					foreach($val as $k_action => $count){
-						if($role_count == $count){
-							$bans[$k_controller][$k_action] = 1;
-						}
-					}
-				}
-			}
-
-			if(empty($bans)){
-				return true;
-			}
-
-			$ban_list[$admin['id']] = $bans;
-		}
-	}
-
-	if(isset($ban_list[$admin['id']][$controller][$action])){
-		return false;
-	}else{
-		return true;
-	}
-}
-
 //----------------------------------------------------------------------
 
 /**
@@ -148,32 +71,64 @@ function ip_to_long($ip){
 	return sprintf('%u', ip2long($ip));
 }
 
-/**
- * 密码加密
- * 
- * @param string $password 需加密的密码
- * @param $salt 密码加密盐值
- * @param $key  密码加密键
- */
-function password_encrypt($password, $salt='', $key='sy_site_password'){
-	$secret  = config('app.password_secret');
-	$key = hash_hmac('md5', $salt.md5($secret.'-'.$salt), $key);
+//----------------------------------------------------------------------
 
-	$password = openssl_encrypt($password, 'DES-ECB', $key, 0);
-	return $password;
+/**
+ * 获取指定分类的所有子分类
+ *
+ * @param int		$pid,		指定需要获取子分类的父ID，特殊的设置为0将获取所有分类
+ * @param array		$category,	提前查询到的所有分类
+ * @param string	$field,		指定返回字段值
+ *
+ * @return array
+ */
+function get_cate_children($pid, $category, $field=''){
+	$children = array();
+
+	foreach($category as $k => $cate){
+		if($cate['parent_id'] != $pid)
+			continue;
+
+		$children[] = (!empty($field) && isset($cate[$field])) ? $cate[$field] : $cate;
+
+		unset($category[$k]);
+
+		$tmp = get_cate_children($cate['id'], $category, $field);
+
+		if(!empty($tmp))
+			$children = array_merge($children, $tmp);
+	}
+
+	return $children;
 }
 
 /**
- * 密码解密
- * 
- * @param string $password 需加密的密码
- * @param $salt 密码加密盐值
- * @param $key  密码加密键
+ * 生成用户密码HASH
+ *
+ * @param string	$str,		明文密码
+ * @param int		$count,		HASH计算次数
+ * @param string	$algo,		用来在散列密码时指示算法的密码算法常量
+ *
+ * @return string
  */
-function password_decrypt($password, $salt='', $key='sy_site_password'){
-	$secret  = config('app.password_secret');
-	$key = hash_hmac('md5', $salt.md5($secret.'-'.$salt), $key);
+function generate_password_hash($str, $count=10, $algo=PASSWORD_DEFAULT){
+	$options = [
+		'cost' => $count,
+	];
 
-	$password = openssl_decrypt($password, 'DES-ECB', $key, 0);
-	return $password;
+	return password_hash($str, $algo, $options);
+}
+
+//----------------------------------------------------------------------
+
+/**
+ * 检验由generate_password_hash方法生成的用户密码HASH
+ *
+ * @param string	$str,		明文密码
+ * @param int		$hash,		HASH值
+ *
+ * @return bool
+ */
+function check_password_hash($str, $hash){
+	return password_verify($str, $hash);
 }

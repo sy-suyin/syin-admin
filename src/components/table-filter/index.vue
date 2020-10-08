@@ -1,31 +1,35 @@
 <template>
 	<!-- 筛选 -->
-	<el-card class="filter-box">
-		<el-form ref="filter_form" :model="filter_args" label-width="80px">
-			<el-row>
-				<el-col
-					v-for="item in fields"
-					:key="item.model"
-				 	:xs="12" :sm="8"
-					:xl="6"
-				>
-					<form-element
-						:type="item.type"
-						:params="item.params"
-						:attrs="item.attrs"
-						:props="item.props"
-						:results="item.data"
-						v-model="filter_args[item.model]"
-					></form-element>
-				</el-col>
+	<el-form ref="filter_form" :model="filter_args" label-width="80px" class="filter-box">
+		<el-row>
+			<el-col
+				v-for="item in fields"
+				:key="item.model"
+				:xs="12"
+				:sm="8"
+				:xl="6"
+			>
+				<form-element
+					:type="item.type"
+					:params="item.params"
+					:attrs="item.attrs"
+					:props="item.props"
+					:results="item.data"
+					v-model="filter_args[item.model]"
+				></form-element>
+			</el-col>
 
-				<el-col class="filter-toolbar" :xs="{offset: 12,span: 12}" :sm="{offset: 16,span: 8}" :xl="{offset: 18,span: 6}">
-					<el-button size="mini" type="primary" @click="filter">查询</el-button>
-					<el-button size="mini" type="danger" @click="reset">重置</el-button>
-				</el-col>
-			</el-row>
-		</el-form>
-	</el-card>
+			<el-col
+				class="filter-toolbar"
+				:xs="12"
+				:sm="8"
+				:xl="6"
+			>
+				<el-button size="mini" type="primary" @click="filter">查询</el-button>
+				<el-button size="mini" type="danger" @click="reset">重置</el-button>
+			</el-col>
+		</el-row>
+	</el-form>
 </template>
 
 <script>
