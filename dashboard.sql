@@ -31,6 +31,7 @@ CREATE TABLE `sy_admin` (
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除; 0: 否, 1: 是',
   `add_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
   `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
+  `delete_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '删除时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='管理员';
 
@@ -50,6 +51,7 @@ CREATE TABLE `sy_admin_role` (
   `is_deleted` tinyint(1) unsigned NOT NULL DEFAULT '0' COMMENT '是否删除; 0: 否, 1: 是',
   `add_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '添加时间',
   `update_time` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
+  `delete_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '删除时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='管理员角色表';
 

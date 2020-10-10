@@ -14,6 +14,21 @@ class BaseService{
 	protected static $search_fields = 'name';
 
 	/**
+	 * 是否开启数据限制
+	 */
+	protected static $data_limit = false;
+
+	/**
+	 * 数据限制字段, 请务必保证该字段在数据库中真实存在
+	 */
+	protected static $data_limit_field = 'admin_id';
+
+	/**
+	 * 数据限制开启时自动填充限制字段值
+	 */
+	protected static $data_limit_auto_fill = false;
+
+	/**
 	 * 各绑定简写对照
 	 */
 	protected static $bind_contrast = [
@@ -33,11 +48,10 @@ class BaseService{
  	 * @param object 	$where			查询条件
  	 * @param object 	$search			搜索条件, 将搜索和查询分开或许会更好
 	 */
-	public static function getListParams($params, $is_deleted = false, $where = [], $search = []){
+	public static function getListParams($params, $where = [], $search = []){
 		$page 	= isset($params['page']) ? $params['page'] : 1;
 		$number = isset($params['num'])  ? $params['num']  : 10;
 		$order  = 'id desc';
-		$where['is_deleted'] = $is_deleted ? 1 : 0;
 
 		// 未传入搜索数据时
 		if(empty($search)){
@@ -46,6 +60,9 @@ class BaseService{
 
 			$search[$fields] = $keyword; 
 		}
+
+		// 数据限制
+		self::$data_limit && $where[self::$data_limit_field] = request()->access->id;
 
 		// 此处需考虑搜索功能
 		return [
@@ -76,6 +93,11 @@ class BaseService{
 			throw new RuntimeError('未找到相关数据');
 		}
 
+		// 数据限制
+		if(self::$data_limit && $result[self::$data_limit_field] != request()->access->id){
+			throw new RuntimeError('未找到相关数据');
+		}
+
 		return $result;
 	}
 
@@ -88,7 +110,7 @@ class BaseService{
 
 		// 验证参数
 		if($validation) {
-			$valid = self::validate($args, $validation['rules'], $validation['msgs']);
+			self::validate($args, $validation['rules'], $validation['msgs']);
 		}
 
 		return $args;
@@ -133,6 +155,15 @@ class BaseService{
 			$args[$name] = $instance->obtain($field, $type, $default, $filter);
 		}
 
+		// 数据自动填充
+		self::$data_limit_auto_fill && $args[self::$data_limit_field] = request()->access->id;
+
+		// id补充
+		if(!isset($args['id'])){
+			$id =  $instance->obtain('id', 'int', 0);
+			$id && $args['id'] = $id;
+		}
+
 		return $args;
 	}
 
@@ -153,5 +184,45 @@ class BaseService{
 		}
 
 		return true;
+	}
+	
+	/**
+	 * 删除数据
+	 */
+	public static function delete(Repository $repository, $name, $where = []){
+		$id = isset($_POST['id'])	?	$_POST['id']	:	array();
+		$deleted = absint(input('operate'));
+		$operation_type = $deleted  ? '删除' : '恢复';
+		$count = 0;
+
+		if(empty($id)){
+			return new RuntimeError('没有要操作的项目');
+		}
+
+		if(is_array($id)){
+			$id = array_filter(array_map('absint', $id));
+
+			$where['id'] = ['in', $id];
+		}else{
+			$where['id'] = absint($id);
+		}
+
+		self::$data_limit && $where[self::$data_limit_field] = request()->access->id;
+
+		$results = $repository->select($where, ['id']);
+
+		foreach($results as $result){
+			$count += $result->delete();
+		}
+		
+		$msg = $operation_type.$result.'条'.$name.'记录';
+
+		// 返回数据
+		return [
+			'status' => 1,
+			'type'   => $operation_type,
+			'result' => $result,
+			'msg'    => $msg,
+		];
 	}
 }

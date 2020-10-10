@@ -26,10 +26,10 @@ class Role{
 	 */
 	public function recycle(RoleRepository $repository){
 		// 1. 获取查询参数
-		$params = RoleService::getListParams($_POST, true);
+		$params = RoleService::getListParams($_POST);
 
 		// 2. 查询数据
-		$result = $repository->paginate($params);
+		$result = $repository->withDeleted()->paginate($params);
 
 		return show_success('', $result);
 	}

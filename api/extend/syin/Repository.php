@@ -1,12 +1,15 @@
 <?php
 namespace syin;
 
+use Exception;
+use RuntimeException;
 use think\db\Where;
 use think\Model;
 
 class Repository {
 
 	protected $model;
+	protected $with_deleted = false;
 
 	public function __construct($model = null) {
 		$model || $model = $this->makeModel();
@@ -15,21 +18,47 @@ class Repository {
 	}
 
 	public function model(){
+		return '';
 	}
 
 	public function makeModel(){
 		$model = model($this->model());
 
 		if (!$model instanceof Model){
-
+			throw Exception('Class must be an instance of think\\Model');
 		}
 
 		return $model;
 	}
 
+	/**
+	 * 查询所有数据
+	 */
     public function all($columns = array('*')){
-		$results = $this->model->field($columns)->order('id', 'desc')->select();
+		$model 	 = $this->model;
+		$this->with_deleted && ($model = $model->onlyTrashed()) && $this->withDeleted(false);
+
+		$results = $model->field($columns)->order('id', 'desc')->select();
 		return $results;
+	}
+
+	/**
+	 * 查询数据
+	 */
+	public function select($where = [], $columns = array('*')){
+		$model 	 = $this->model;
+		$this->with_deleted && ($model = $model->onlyTrashed()) && $this->withDeleted(false);
+
+		$results = $model->where($where)->field($columns)->order('id', 'desc')->select();
+		return $results;
+	}
+
+	/**
+	 * 查询被软删除的数据
+	 */
+	public function withDeleted($is_deleted = true){
+		$this->with_deleted = $is_deleted;
+		return $this;
 	}
 
 	/**
@@ -48,10 +77,13 @@ class Repository {
 		$num 	 = isset($config['num']) 		? $config['num'] 		: 10;
 		$page  	 = isset($config['page']) 		? $config['page']  		: 0;
 		$where 	 = isset($config['where']) 		? $config['where'] 		: [];
-		$search  = isset($config['search']) 	? $config['search'] 		: [];
+		$search  = isset($config['search']) 	? $config['search'] 	: [];
 		$hidden  = isset($config['hidden']) 	? $config['hidden'] 	: [];
 		$order 	 = isset($config['order']) 		? $config['order'] 		: [];
 		$page  	 = max(intval($page), 1);
+
+		$model 	 = $this->model;
+		$this->with_deleted && ($model = $model->onlyTrashed()) && $this->withDeleted(false);
 
 		// 处理搜索
 		$where = $this->dealSerach($where, $search);
@@ -80,7 +112,7 @@ class Repository {
 	}
 
 	/**
-	 * 处理搜索
+	 * 处理搜索, 继承后可覆盖修改此处
 	 */
 	protected function dealSerach($where, $search){
 		if(empty($search)){

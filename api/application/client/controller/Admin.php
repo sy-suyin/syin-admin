@@ -27,10 +27,10 @@ class Admin {
 	 */
 	public function recycle(AdminRepository $repository){
 		// 1. 获取查询参数
-		$params = AdminService::adminListParams($_POST, true);
+		$params = AdminService::adminListParams($_POST);
 
 		// 2. 查询数据
-		$result = $repository->paginate($params);
+		$result = $repository->withDeleted()->paginate($params);
 
 		return show_success('', $result);
 	}
@@ -91,8 +91,8 @@ class Admin {
 	/**
 	 * 管理员管理 - 删除
 	 */
-	public function del(AdminModel $model){
-		$result = AdminService::deletedItemLogically($model, '管理员');
+	public function del(AdminRepository $repository){
+		$result = AdminService::delete($repository, '管理员');
 
 		if($result['status']){
 			return show_success('操作成功, 共'.$result['msg']);

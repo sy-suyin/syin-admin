@@ -3,19 +3,16 @@ namespace app\client\service;
 
 use app\common\library\RuntimeError;
 use app\common\library\BaseService;
-use app\common\library\DbTool;
+use syin\Repository;
 
 class AdminService extends BaseService {
-
-	use DbTool;
 
 	/**
 	 * 获取管理员列表查询所需条件
 	 *
  	 * @param bool 	$params			数据数组
- 	 * @param bool 	$is_deleted		是否查询被删除的数据
 	 */
-	public static function adminListParams($params, $is_deleted = false){
+	public static function adminListParams($params){
 		obtain($params);
 
 		$where  = [];
@@ -30,7 +27,7 @@ class AdminService extends BaseService {
 			$where['is_disabled'] = $status == 1 ? 1 : 0;
 		}
 
-		$params = self::getListParams($params, $is_deleted, $where);
+		$params = self::getListParams($params, $where);
 		$params['hidden'] = ['password'];
 		return $params;
 	}
@@ -72,8 +69,7 @@ class AdminService extends BaseService {
 		$args = self::filterParmas($fields, $_POST);
 
 		// 验证参数
-		$is_edit && $args['id'] = $model->id;
-		$valid = self::validate($args, $validation['rules'], $validation['msgs']);
+		self::validate($args, $validation['rules'], $validation['msgs']);
 
 		if(! $is_edit){
 			$args['avatar']   = '/static/common/imgs/avatar/'.mt_rand(1,110).'.png';
@@ -87,26 +83,6 @@ class AdminService extends BaseService {
 		}
 
 		return $args;
-	}
-
-	/**
-	 * 管理员数据保存
-	 */
-	public static function adminSave($model, $data){
-		$data['update_time'] = time();
-		if($model -> isEmpty()){
-			$data['add_time'] = $data['update_time'];
-			$data['avatar'] = '/static/common/imgs/avatar/'.mt_rand(1,110).'.png';
-		}
-
-		if(!empty($data['password'])){
-			$data['password'] = generate_password_hash($data['password']);
-		}else{
-			unset($data['password']);
-		}
-
-		unset($data['roles']);
-		return $model->data($data)->save();
 	}
 
 	/**
