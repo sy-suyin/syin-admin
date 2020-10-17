@@ -11,46 +11,29 @@
 		<div class="content-container" v-loading="is_loading">
 			<db-table 
 				:data="results"
-				:columns="columns"
-				:actionbar="actionbar"
-				:urls="urls"
-				:pages="pages"
+				:config="config"
+				:pagination="page_default"
 				@handle="handle"
 			>
-
-				<template #footer>
-					<table-page
-						:pagination="page_default"
-						@handle="handle"
-					></table-page>
-				</template>
 			</db-table>
 		</div>
 	</div>
 </template>
 
 <script>
-import pageMixin from "@/mixins/page";
 import tableMixin from "@/mixins/table";
-import commonMixin from "@/mixins/common";
-import config from '@/assets/build/rolelist';
-import tablePage from '@/components/table-page';
+import config from "@/assets/build/rolelist";
 
 export default {
 	name: "system_rolelist",
-	components: { tablePage },
-	mixins: [commonMixin, pageMixin, tableMixin],
+	mixins: [ tableMixin ],
   	data() {
 		return {
-			urls: config.urls,
-			pages: config.pages,
-			columns: config.columns,
-			actionbar: config.actionbar,
-			filter_fields: config.filter_fields,
+			config,
 		}
 	},
 	created(){
-		this.addScene(this.urls.list, 'default', { mapping: 'results' });
+		this.addScene(config.urls.list, 'default', { mapping: 'results' });
 	},
 	mounted(){
 		this.getRequestData();

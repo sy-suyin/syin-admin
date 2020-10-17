@@ -1,4 +1,6 @@
-module.exports = {
+import { list } from '@/config/table';
+
+let config = {
 	// 各跳转链接, 从各跳转连接中分析出请求的控制器及路由, 下面的如果需要控制权限, 只需要传入名称
 
 	// 请求链接
@@ -10,7 +12,7 @@ module.exports = {
 		recycle: '/admin/recycle',
 	},
 
-	// 页面链接。 拆分能更好的区分, 能让请求链接和页面链接各不同
+	// 页面链接
 	pages: {
 		add: '/system/adminadd',
 		list: '/system/adminlist',
@@ -20,12 +22,16 @@ module.exports = {
 
 	columns: [
 		{
-			prop: 'selection',
+			type: 'selection',
 		},
 		{
-			prop: 'slot',
-			slot: 'sort',
+			type: 'edit',
+			prop: 'sort',
 			label: '排序',
+			input: 'number',
+			access: 'sort',
+			width: 86,
+			max: 99,
 		},
 		{
 			prop: 'id',
@@ -42,47 +48,28 @@ module.exports = {
 			label: '登录账号',
 		},
 		{
-			prop: 'tag',
+			type: 'switch',
 			label: '状态',
-			field: 'is_disabled',
-			class: 'disabled-btn',
+			prop: 'is_disabled',
 			handle: 'disabled',
 			txt: ['启用','禁用'],
+			color: ['#13ce66', '#ff4949'],
 			access: 'dis',
 			width: 160,
 		},
 		{
-			prop: 'slot',
-			slot: 'roles',
+			type: 'label',
+			prop: 'roles',
 			label: '角色',
 		},
 		{
 			prop: 'add_time',
 			label: '添加时间',
 			width: 160,
-			// formatter: this.filterTime
 		}
 	],
 
-	actionbar: [
-		{
-			type: 'url',
-			name: '修改',
-			target: 'edit',
-			access: 'edit',
-		},
-		{
-			type: 'btn',
-			name: '删除',
-			target: 'del',
-			access: 'del',
-			params: {
-				operate: 1,
-			}
-		},
-	],
-
-	filter_fields: [
+	filters: [
 		{
 			type: 'input',
 			model: 'name',
@@ -92,10 +79,8 @@ module.exports = {
 			},
 			attrs: {
 				placeholder: '请输入管理员名称', 
-			},
-			props: {
 				size: 'mini',
-			}
+			},
 		},
 		{
 			type: 'date',
@@ -104,10 +89,8 @@ module.exports = {
 				label: '添加时间',
 				show_label: true,
 			},
-			attrs: {
-				placeholder: '选择日期时间', 
-			},
 			props: {
+				placeholder: '选择日期时间',
 				type: 'datetime',
 				size: 'mini',
 				valueFormat: 'timestamp'
@@ -140,3 +123,6 @@ module.exports = {
 		},
 	],
 };
+
+config = {...list, ...config};
+export default config;

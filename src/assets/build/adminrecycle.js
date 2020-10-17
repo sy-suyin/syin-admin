@@ -1,17 +1,26 @@
-export default{
-	// 各跳转链接
+import { recycle } from '@/config/table';
+
+let config = {
+	// 请求链接
 	urls: {
+		del: '/admin/del',
+		dis: '/admin/dis',
+		sort: '/admin/sort',
+		list: '/admin/index',
+		recycle: '/admin/recycle',
+	},
+
+	// 页面链接。 拆分能更好的区分, 能让请求链接和页面链接各不同
+	pages: {
 		add: '/system/adminadd',
-		del: '/system/admindel',
-		dis: '/system/admindis',
-		edit: '/system/adminedit/:id',
 		list: '/system/adminlist',
+		edit: '/system/adminedit/:id',
 		recycle: '/system/adminrecycle',
 	},
 
 	columns: [
 		{
-			prop: 'selection',
+			type: 'selection',
 		},
 		{
 			prop: 'id',
@@ -31,48 +40,9 @@ export default{
 			prop: 'add_time',
 			label: '添加时间',
 			width: 160,
-			formatter: this.filterTime
 		}
 	],
-
-	actionbar: [
-		{
-			type: 'btn',
-			name: '还原',
-			target: 'del',
-			access: ['system', 'admindel'],
-			params: {
-				operate: 0,
-			}
-		},
-	],
-
-	toolbar: [
-		{
-			type: 'btn',
-			name: '刷新',
-			target: 'reload',
-			icon: "el-icon-refresh-left",
-			color: 'primary',
-		},
-		{
-			type: 'url',
-			name: '列表',
-			target: 'list',
-			color: 'primary',
-			icon: "el-icon-s-promotion",
-			access: ['system', 'adminlist'],
-		},
-		{
-			type: 'btn',
-			name: '还原',
-			target: 'del',
-			color: 'success',
-			icon: "el-icon-delete",
-			access: ['system', 'admindel'],
-			params: {
-				operate: 0,
-			}
-		},
-	]
 };
+
+config = {...recycle, ...config};
+export default config;

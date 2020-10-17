@@ -11,10 +11,8 @@
 		<div class="content-container" v-loading="is_loading">
 			<db-table 
 				:data="results"
-				:columns="columns"
-				:actionbar="actionbar"
+				:config="config"
 				:pagination="page_default"
-				:toolbar="toolbar"
 				@handle="handle"
 			>
 			</db-table>
@@ -23,21 +21,19 @@
 </template>
 
 <script>
-import pageMixin from "@/mixins/page";
 import tableMixin from "@/mixins/table";
-import commonMixin from "@/mixins/common";
-import pageHeader from "@/components/page-header";
+import config from "@/assets/build/adminrecycle";
 
 export default {
 	name: "system_adminrecycle",
-	mixins: [pageMixin, tableMixin, commonMixin],
-	components: {pageHeader},
+	mixins: [ tableMixin ],
   	data() {
       	return {
+			config,
 		}
 	},
 	created(){
-		this.addScene(this.urls.recycle, 'default', { mapping: 'results' });
+		this.addScene(config.urls.recycle, 'default', { mapping: 'results' });
 	},
 	mounted(){
 		this.getRequestData();
@@ -49,8 +45,4 @@ export default {
 
 <style lang="scss">
 @import "@/assets/style/table.scss";
-
-.role-tag{
-	margin-right: 4px;
-}
 </style>

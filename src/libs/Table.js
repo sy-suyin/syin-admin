@@ -40,45 +40,20 @@ class Table{
 	 * 操作前检查整合数据 
 	 */
 	static requestCheck(params){
-		let args = {};
-
 		if( !params.hasOwnProperty('url') || !params.url ){
 			return Promise.reject(new Error('未找到请求链接'));
 		}
 
-		if(params.hasOwnProperty('data')){
-			args.data = params.data;
-
-			if(isEmpty(args.data)){
-				return Promise.reject(new Error('请先选择需要操作的项目'));
-			}
-		} else if(params.hasOwnProperty('id')){
-			args.id = params.id;
-
-			if( getType(args.id) == 'array'){
-				if(args.id.length < 1){
+		if(params.args.hasOwnProperty('id')){
+			if( getType(params.args.id) == 'array'){
+				if(params.args.id.length < 1){
 					return Promise.reject(new Error('请先选择需要操作的项目'));
 				}
-			}else if(! +args.id){
+			}else if(! +params.args.id){
 				return Promise.reject(new Error('请先选择需要操作的项目'));
 			}
-
-			// 整理操作标示数据
-			if(params.hasOwnProperty('mark') && params.mark){
-				if('object' != getType(params.mark)){
-					args.mark = mark;
-				}else{
-					let mark_keys = Object.keys(params.mark);
-					if(mark_keys.length > 0){
-						args[mark_keys[0]] = Object.values(params.mark)[0];
-					}
-				}
-			}
-		} else {
-			return Promise.reject(new Error('请先传入完整数据'));
 		}
-		
-		params.args = args;
+
 		return params;
 	}
 

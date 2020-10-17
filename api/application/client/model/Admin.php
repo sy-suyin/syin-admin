@@ -1,11 +1,11 @@
 <?php
 namespace app\client\model;
 
-use app\common\model\Base;
 use think\model\concern\SoftDelete;
+use think\Model;
 
-class Admin extends Base{
-	
+class Admin extends Model
+{
 	use SoftDelete;
 
     // 定义时间戳字段名

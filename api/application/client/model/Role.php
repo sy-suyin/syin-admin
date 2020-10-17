@@ -1,10 +1,12 @@
 <?php
 namespace app\client\model;
 
-use app\common\model\Base;
 use think\model\concern\SoftDelete;
+use think\Model;
 
-class Role extends Base{
+class Role extends Model
+{
+    use SoftDelete;
 
     protected $name = 'admin_role';
 

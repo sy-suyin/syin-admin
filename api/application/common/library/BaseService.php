@@ -42,7 +42,7 @@ class BaseService{
 
 	/**
 	 * 最基础的分页参数获取
-	 * 
+	 *
 	 * @param object 	$params			数据数组
  	 * @param bool 		$is_deleted		是否查询被删除的数据
  	 * @param object 	$where			查询条件
@@ -58,11 +58,11 @@ class BaseService{
 			$keyword = isset($params['key']) ? $params['key'] : '';
 			$fields = self::$search_fields;
 
-			$search[$fields] = $keyword; 
+			$search[$fields] = $keyword;
 		}
 
 		// 数据限制
-		self::$data_limit && $where[self::$data_limit_field] = request()->access->id;
+		self::$data_limit && $where[self::$data_limit_field] = request()->auth->id;
 
 		// 此处需考虑搜索功能
 		return [
@@ -94,7 +94,7 @@ class BaseService{
 		}
 
 		// 数据限制
-		if(self::$data_limit && $result[self::$data_limit_field] != request()->access->id){
+		if(self::$data_limit && $result[self::$data_limit_field] != request()->auth->id){
 			throw new RuntimeError('未找到相关数据');
 		}
 
@@ -156,7 +156,7 @@ class BaseService{
 		}
 
 		// 数据自动填充
-		self::$data_limit_auto_fill && $args[self::$data_limit_field] = request()->access->id;
+		self::$data_limit_auto_fill && $args[self::$data_limit_field] = request()->auth->id;
 
 		// id补充
 		if(!isset($args['id'])){
@@ -185,7 +185,7 @@ class BaseService{
 
 		return true;
 	}
-	
+
 	/**
 	 * 删除数据
 	 */
@@ -207,20 +207,124 @@ class BaseService{
 			$where['id'] = absint($id);
 		}
 
-		self::$data_limit && $where[self::$data_limit_field] = request()->access->id;
+		// 数据限制
+		self::$data_limit && $where[self::$data_limit_field] = request()->auth->id;
 
-		$results = $repository->select($where, ['id']);
+		$results = $repository->withDeleted(!$deleted)->select($where, ['id']);
 
+		$func = $deleted ? 'delete' : 'restore';
 		foreach($results as $result){
-			$count += $result->delete();
+			$count += $result->$func();
 		}
-		
-		$msg = $operation_type.$result.'条'.$name.'记录';
+
+		$msg = $operation_type.$count.'条'.$name.'记录';
 
 		// 返回数据
 		return [
 			'status' => 1,
 			'type'   => $operation_type,
+			'result' => $count,
+			'msg'    => $msg,
+		];
+	}
+
+	/**
+	 * 表格批量操作
+	 */
+	public static function multi(Repository $repository, $field, $default = 0){
+		$params = $_POST;
+		$ids = isset($params['id']) ? $params['id'] : 0;
+		$values = isset($params['data']) ? $params['data'] : 0;
+		$count = 0;
+
+		if(empty($ids)){
+			throw new RuntimeError('未找到相关数据');
+		}
+
+		if(is_array($values)){
+			if(empty($values)){
+				throw new RuntimeError('未找到相关数据');
+			}
+		}else{
+			$values = absint($values);
+		}
+
+		// 数据限制
+		if(self::$data_limit){
+			$repository->where([
+				self::$data_limit_field => request()->auth->id
+			]);
+		}
+
+		if(is_array($values)){
+			foreach($ids as $k => $id){
+				if(!isset($values[$k])){
+					continue;
+				}
+				
+				$val = isset($values[$k]) ? $values[$k] : $default;
+				$count += $repository->update([
+					$field => $val,
+				], $id);
+			}
+		}else{
+			foreach($ids as $id){
+				$count += $repository->update([
+					$field => $values,
+				], $id);
+			}
+		}
+		return $count;
+	}
+
+	/**
+	 * 禁用/启用数据
+	 * 禁用操作使用较多, 所以值得额外封装
+	 *
+	 * @param Class 	$repository		数据仓库实例
+	 * @param String	$name			数据名称
+	 */
+	public static function disableItem(Repository $repository, $name){
+		$data  = obtain('data/b', 0);
+		$operation_type = $data ? '禁用' : '启用';
+		$result = self::multi($repository, 'is_deleted', 0);
+
+		if(is_error($result)){
+			return [
+				'status' => 0,
+				'msg'	 => '操作失败：'.$result->getError()
+			];
+		}
+
+		$msg = '操作成功, 共'.$operation_type.$result.'条'.$name.'记录';
+		return [
+			'status' => 1,
+			'type'   => $operation_type,
+			'result' => $result,
+			'msg'    => $msg,
+		];
+	}
+
+	/**
+	 * 项目自定义排序
+	 *
+	 * @param Class    	$model 模型类实例
+	 * @param String	$name  数据名称
+	 *
+	 */
+	public static function sortItem(Repository $repository, $name){
+		$result = self::multi($repository, 'sort', 99);
+
+		if(is_error($result)){
+			return [
+				'status' => 0,
+				'msg'	 => '操作失败：'.$result->getError()
+			];
+		}
+
+		$msg = '操作成功, 共对'. $result. '条'.$name.'记录进行排序';
+		return [
+			'status' => 1,
 			'result' => $result,
 			'msg'    => $msg,
 		];

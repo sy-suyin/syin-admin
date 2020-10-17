@@ -98,8 +98,8 @@ class Role{
 	/**
 	 * 角色管理 - 删除
 	 */
-	public function del(RoleModel $model){
-		$result = RoleService::deletedItemLogically($model, '角色');
+	public function del(RoleRepository $repository){
+		$result = RoleService::delete($repository, '角色');
 
 		if($result['status']){
 			return show_success('操作成功, 共'.$result['msg']);
@@ -111,14 +111,17 @@ class Role{
 	/**
 	 * 角色管理 - 禁用
 	 */
-	public function dis(RoleModel $model){
-		$result = RoleService::disableItem($model, '角色');
+	public function dis(RoleRepository $repository){
+		$result = RoleService::disableItem($repository, '角色');
+		return json($result);
+	}
 
-		if($result['status']){
-			return show_success('操作成功, 共'.$result['msg']);
-		}else{
-			return show_error('操作失败：'.$result['msg']);
-		}
+	/**
+	 * 角色管理 - 排序
+	 */
+	public function sort(RoleRepository $repository){
+		$result = RoleService::sortItem($repository, 'sort', '99');
+		return json($result);
 	}
 
 	/**

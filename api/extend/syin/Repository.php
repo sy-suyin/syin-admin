@@ -9,7 +9,7 @@ use think\Model;
 class Repository {
 
 	protected $model;
-	protected $with_deleted = false;
+	protected $query;
 
 	public function __construct($model = null) {
 		$model || $model = $this->makeModel();
@@ -28,6 +28,7 @@ class Repository {
 			throw Exception('Class must be an instance of think\\Model');
 		}
 
+		$this->query = $model;
 		return $model;
 	}
 
@@ -35,10 +36,7 @@ class Repository {
 	 * 查询所有数据
 	 */
     public function all($columns = array('*')){
-		$model 	 = $this->model;
-		$this->with_deleted && ($model = $model->onlyTrashed()) && $this->withDeleted(false);
-
-		$results = $model->field($columns)->order('id', 'desc')->select();
+		$results = $this->query->field($columns)->order('id', 'desc')->select();
 		return $results;
 	}
 
@@ -46,10 +44,8 @@ class Repository {
 	 * 查询数据
 	 */
 	public function select($where = [], $columns = array('*')){
-		$model 	 = $this->model;
-		$this->with_deleted && ($model = $model->onlyTrashed()) && $this->withDeleted(false);
-
-		$results = $model->where($where)->field($columns)->order('id', 'desc')->select();
+		$where && $where = new Where($where);
+		$results = $this->query->where($where)->field($columns)->order('id', 'desc')->select();
 		return $results;
 	}
 
@@ -57,7 +53,8 @@ class Repository {
 	 * 查询被软删除的数据
 	 */
 	public function withDeleted($is_deleted = true){
-		$this->with_deleted = $is_deleted;
+		$this->query = $is_deleted ? $this->model->onlyTrashed() : $this->model;
+
 		return $this;
 	}
 
@@ -68,6 +65,7 @@ class Repository {
 	 * 						 page:当前页
 	 * 						 num:每页数量
 	 * 						 where:查询条件
+	 * 						 search:搜索条件
 	 * 						 hidden:不输出的字段属性
 	 * 						 order:排序条件
 	 * @param bool/int $total  传入总记录数将不会自动进行总数计算, 适用于特殊的复杂查询
@@ -82,9 +80,6 @@ class Repository {
 		$order 	 = isset($config['order']) 		? $config['order'] 		: [];
 		$page  	 = max(intval($page), 1);
 
-		$model 	 = $this->model;
-		$this->with_deleted && ($model = $model->onlyTrashed()) && $this->withDeleted(false);
-
 		// 处理搜索
 		$where = $this->dealSerach($where, $search);
 
@@ -92,7 +87,7 @@ class Repository {
 			$where = new Where($where);
 		}
 
-		$data = $this->model
+		$data = $this->query
 			->where($where)
 			->hidden($hidden)
 			->page($page, $num)
@@ -100,7 +95,7 @@ class Repository {
 			->select();
 
 		if(! $total){
-			$total = $this->model->where($where)->count();
+			$total = $this->query->where($where)->count();
 		}
 
 		return [
@@ -128,20 +123,22 @@ class Repository {
 		return $where;
 	}
 
+	/**
+	 * 新建数据
+	 */
     public function create(array $data){
 		$result = $this->model->save($data);
 
 		return $result ? $this->model : false;
 	}
 
-    public function update(array $data, $id){
-		$result = $this->model->save($data, ['id' => $id]);
+	/**
+	 * 修改数据
+	 */
+    public function update(array $data, $id, $attribute ='id'){
+		$result = $this->query->save($data, [$attribute => $id]);
 
 		return $result;
-	}
-
-    public function delete($id){
-
 	}
 
     public function find($id, $columns = array('*')){
@@ -160,5 +157,50 @@ class Repository {
 			->find();
 
 		return $result;
+	}
+
+	/**
+	 * 设定模型where查询条件
+	 * 
+	 * @param array $where
+	 * @param bool  $or
+	 * 
+	 */
+	public function where($where, $or = false){
+		$query = $this->query;
+		$this->query = $this->query->where($where);
+        foreach ($where as $field => $value) {
+            if ($value instanceof \Closure) {
+                $query = (!$or)
+                    ? $query->where($value)
+                    : $query->orWhere($value);
+            } elseif (is_array($value)) {
+                if (count($value) === 2) {
+					list($operator, $search) = $value;
+				} elseif (count($value) === 1) {
+					$search = $value[0];
+					$operator = '=';
+				}
+
+				$query = (!$or)
+					? $query->where($field, $operator, $search)
+					: $query->orWhere($field, $operator, $search);
+            } else {
+                $query = (!$or)
+                    ? $query->where($field, '=', $value)
+                    : $query->orWhere($field, '=', $value);
+            }
+		}
+
+		$this->query = $query;
+		return $this;
+	}
+
+	/**
+	 * 重置查询条件
+	 */
+	public function resetQuery(){
+		unset($this->query);
+		$this->query = $this->model();
 	}
 }

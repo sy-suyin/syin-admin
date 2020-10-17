@@ -1,4 +1,6 @@
-export default{
+import { list } from '@/config/table';
+
+let config = {
 	// 各跳转链接
 	urls: {
 		add: '/role/add',
@@ -18,7 +20,7 @@ export default{
 
 	columns: [
 		{
-			prop: 'selection',
+			type: 'selection',
 		},
 		{
 			prop: 'id',
@@ -31,12 +33,12 @@ export default{
 			width: 200,
 		},
 		{
-			prop: 'tag',
+			type: 'switch',
 			label: '状态',
 			field: 'is_disabled',
-			class: 'disabled-btn',
 			handle: 'disabled',
 			txt: ['启用','禁用'],
+			color: ['#13ce66', '#ff4949'],
 			access: 'dis',
 			width: 160,
 		},
@@ -46,20 +48,7 @@ export default{
 			width: 180,
 		}
 	],
-
-	actionbar: [
-		{
-			type: 'url',
-			name: '修改',
-			access: 'edit',
-		},
-		{
-			type: 'btn',
-			name: '删除',
-			access: 'del',
-			params: {
-				operate: 1,
-			}
-		}
-	],
 }
+
+config = {...list, ...config};
+export default config;

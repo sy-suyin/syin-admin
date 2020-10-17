@@ -4,22 +4,25 @@
 
 		<!-- 表格顶部工具栏 -->
 		<div slot="header" class="clearfix">
-			<slot name="filter"></slot>
-			
+			<table-filter
+				v-if="params.filters && params.filters.length"
+				:fields="params.filters"
+				@handle="handle"
+			></table-filter>
+
 			<div>
 				<!-- 左侧为操作栏 -->
 				<div class="table-toolbar">
-					<slot name="toolbar">
-						<template v-for="(item, index) in toolbar">
-							<el-button
-								size="mini"
-								:type="item.color || 'primary'"
-								:icon="item.icon"
-								@click="tableBtnClick(item.type, item.access, item.params)"
-								:key="index"
-							> {{item.name}} </el-button>
-						</template>
-					</slot>
+					<template v-for="(item, index) in params.toolbar">
+						<el-button
+							size="mini"
+							:type="item.color || 'primary'"
+							:icon="item.icon"
+							@click="tableBtnClick(item.type, item.access, item.params)"
+							:key="index"
+							v-if="checkPermission(item.access, item.type == 'btn' ? 'data' : 'page' )"
+						> {{item.name}} </el-button>
+					</template>
 
 					<slot name="toolbar_after"></slot>
 				</div>
@@ -29,8 +32,8 @@
 					<slot name="table_search">
 						<div class="table-search">
 							<el-input
-								:placeholder="params.search_tip"
-								v-model="search_args.keyword"
+								:placeholder="params.config.search_tip"
+								v-model="search_args.key"
 								size="mini"
 							>
 								<i slot="suffix" class="el-input__icon el-icon-search search-btn" @click="handle('search', search_args)"></i>
@@ -38,6 +41,7 @@
 						</div>
 					</slot>
 
+					<!-- 数据导出功能 -->
 					<el-button-group class="btn-group">
 						<el-dropdown>
 							<el-button size="mini" icon="el-icon-download">
@@ -62,36 +66,79 @@
 		<!-- 表格内容区域 -->
 		<el-table
 			:data="data"
-			:ref="params.ref || ''"
-			:class="params.class || ''"
+			:ref="params.config.ref"
+			:class="params.config.class"
 			@selection-change="handle('selectionChange', $event)"
 			tooltip-effect="dark"
 			style="width: 100%"
 		>
-			<template v-for="(column, index) in columns">
+			<template v-for="(column, index) in params.columns">
 				<!-- 复选框 -->
 				<el-table-column
-					v-if="column.prop == 'selection'"
+					v-if="column.type == 'selection'"
 					:width="column.width || '48'" 
-					:key="column.prop"
+					:key="column.type"
 					type="selection"
 					align="center"
 				>
 				</el-table-column>
 
 				<!-- 自定义插槽 -->
-				<slot v-else-if="column.prop == 'slot'" :name="column.slot"></slot>
+				<slot v-else-if="column.type == 'slot'" :name="column.slot"></slot>
 
-				<!-- 标签栏 -->
+				<!-- 修改 -->
 				<el-table-column
-					v-else-if="column.prop == 'tag'"
+					v-else-if="column.type == 'edit'"
+					:width="column.width"
+					:label="column.label"
+					:key="index"
+				>
+					<template v-slot="{row}">
+						<el-input
+							v-model="row.sort"
+							:type="column.input || 'text'"
+							size="mini"
+							min="0"
+							:max="column.max"
+							:disabled="!checkPermission(column.access)"
+							@change="editVal($event, column.handle, row)"
+						/>
+					</template>
+				</el-table-column>
+
+				<!-- 开关 -->
+				<el-table-column
+					v-else-if="column.type == 'switch'"
 					:label="column.label"
 					width="160" 
 					:key="index"
 				>
 					<template v-slot="{row}">
 						<!-- 在此处传入一个标志, 此标志判断是否允许修改数据, 如果不允许修改数据, 则数据仅可查看 -->
-						<table-switch :row="row" :column="column" :disabled="!checkPermission(column.access)"></table-switch>
+						<table-switch
+							:row="row"
+							:column="column"
+							:disabled="!checkPermission(column.access)"
+							@switch="editVal($event, column.handle, row)"
+						></table-switch>
+					</template>
+				</el-table-column>
+
+				<!-- 标签 -->
+				<el-table-column
+					v-else-if="column.type == 'label'"
+					:label="column.label"
+					:key="index"
+				>
+					<template v-slot="{row}">
+						<el-tag
+							class="table-tag"
+							effect="plain"
+							type="info"
+							size="mini"
+							v-for="item in row[column.prop]"
+							:key="column.prop + item.id"
+						>{{item.name}}</el-tag>
 					</template>
 				</el-table-column>
 
@@ -109,20 +156,20 @@
 			</template>
 
 			<!-- 拓展 -->
-			<template v-if="params.slot_append" slot="append">
+			<template v-if="params.config.slot_append" slot="append">
 				<slot name="append"></slot>
 			</template>
 
 			<!-- 操作栏 -->
 			<el-table-column
 				align="right" 
-				v-if="actionbar.length"
-				:label="params.actionbar_name" 
-				:width="params.actionbar_width || null"
+				v-if="params.actionbar.length"
+				:label="params.config.actionbar_name" 
+				:width="params.config.actionbar_width || null"
 			>
 				<template slot-scope="scope">
 					<span 
-						v-for="(item, index) in actionbar"
+						v-for="(item, index) in params.actionbar"
 						:key="index"
 					>
 						<template
@@ -142,124 +189,97 @@
 		</el-table>
 
 		<!-- 表格底部 -->
-		<slot name="footer"></slot>
+		<slot name="footer">
+			<table-page
+				:pagination="pagination"
+				@handle="handle"
+			></table-page>
+		</slot>
 	</el-card>
 </template>
 
 <script>
+import { debounce, checkPermission } from '@/libs/util';
 import permission from '@/directive/permission/index'
-import { checkPermission } from '@/libs/util';
 import tableSwitch from '@/components/table-switch';
+import tableToolbar from "@/components/table-toolbar";
+import tableFilter from "@/components/table-filter";
+import tablePage from "@/components/table-page";
 
 export default {
 	name: 'db_table',
 	directives: { permission },
-	components: { tableSwitch },
+	components: { tableFilter, tableSwitch, tableToolbar, tablePage },
 	props: {
 		data: Array,
-		columns: Array,
-		actionbar: Array,
 		pagination: Object,
-		urls: Object,
-		pages: Object,
 		config: Object,
 	},
 	data() {
       	return {
-			params: null,
+			params: {
+				urls: [],
+				pages: [],
+				columns: [],
+				actionbar: [],
+				filters: [],
+				// 默认配置
+				config: {
+					ref: '',
+					class: '',
+					actionbar_width: null,
+					actionbar_name: '操作',
+					slot_append: false,
+					search_tip: '请输入搜索内容',
+				}
+			},
 
 			search_args: {
-				keyword: '',
+				key: '',
 			},
 
 			// 权限信息表
 			data_access: {},
 			page_access: {},
-
-			// 默认表格上方操作
-			toolbar: [
-				{
-					type: 'btn',
-					// name: '刷新',
-					access: 'reload',
-					icon: "el-icon-refresh-left",
-					color: 'primary',
-				},
-				{
-					type: 'url',
-					name: '添加',
-					icon: "el-icon-plus",
-					color: 'primary',
-					access: 'add',
-				},
-				{
-					type: 'btn',
-					name: '排序',
-					icon: "el-icon-sort",
-					color: 'success',
-					access: 'sort',
-				},
-				{
-					type: 'url',
-					name: '回收站',
-					color: 'warning',
-					icon: "el-icon-s-promotion",
-					access: 'recycle',
-				},
-				{
-					type: 'btn',
-					name: '删除',
-					color: 'danger',
-					icon: "el-icon-delete",
-					access: 'del',
-					params: {
-						operate: 1,
-					}
-				},
-			],
 		}
 	},
 
 	created(){
-		let def_config = {
-			ref: '',
-			class: '',
-			page_config: null,
-			actionbar_width: null,
-			actionbar_name: '操作',
-			slot_append: false,
-			search_tip: '请输入搜索内容',
-		};
-
-		this.params = { ...def_config, ...this.config};
-
-		for(let key in this.urls){
-			let url = this.urls[key].split('/');
-			if(url[0].length){
-				continue;
-			}
-
-			let controller = url[1] || 'index';
-			let action = url[2] || 'index';
-
-			this.data_access[key] = checkPermission(controller, action, 'data');
-		}
-
-		for(let key in this.pages){
-			let page = this.pages[key].split('/');
-
-			if(page[0].length){
-				continue;
-			}
-
-			let controller = page[1] || 'index';
-			let action = page[2] || 'index';
-
-			this.page_access[key] = checkPermission(controller, action, 'page');
-		}
+		this.params = {...this.params, ...this.config};
+		this.initPermission();
 	},
 
 	methods: {
+
+		/**
+		 * 初始化权限信息
+		 */
+		initPermission(){
+			for(let key in this.params.urls){
+				let url = this.params.urls[key].split('/');
+				if(url[0].length){
+					continue;
+				}
+
+				let controller = url[1] || 'index';
+				let action = url[2] || 'index';
+
+				this.data_access[key] = checkPermission(controller, action, 'data');
+			}
+
+			for(let key in this.params.pages){
+				let page = this.params.pages[key].split('/');
+
+				if(page[0].length){
+					continue;
+				}
+
+				let controller = page[1] || 'index';
+				let action = page[2] || 'index';
+
+				this.page_access[key] = checkPermission(controller, action, 'page');
+			}
+		},
 
 		/**
 		 * 权限判断
@@ -278,11 +298,28 @@ export default {
 			this.$emit.apply(this, params);
 		},
 
+		/**
+		 * 数据表格中按钮点击
+		 */
 		tableBtnClick(type, ...params){
 			type == 'url' && params.unshift('jump');
 			params.unshift('handle');
 			this.$emit.apply(this, params);
-		}
+		},
+
+		/**
+		 * 数据值修改
+		 * 延迟100ms提交, 以防止input数值修改时频繁提交
+		 */
+		editVal: debounce(100, function(val, handle, row){
+			if(!handle) return;
+
+			let params = ['handle', handle, {
+				id: row.id,
+				val: val
+			}];
+			this.$emit.apply(this, params);
+		}),
     }
 }
 </script>

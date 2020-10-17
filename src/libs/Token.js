@@ -1,6 +1,6 @@
 import axios from 'axios'
 import store from '@/store';
-import Observer from '@/libs/Observer.js';
+import Observer from '@/libs/Observer';
 
 class Token {
 

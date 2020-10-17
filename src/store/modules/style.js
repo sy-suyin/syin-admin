@@ -1,5 +1,5 @@
 import styleConfig from '@/config/style';
-import Storage from '@/libs/Storage.js';
+import Storage from '@/libs/Storage';
 
 const { sidebar_mini, sidebar_filters_color, sidebar_background_img, fixed_header } = styleConfig;
 

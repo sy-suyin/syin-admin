@@ -28,6 +28,7 @@ class AdminService extends BaseService {
 		}
 
 		$params = self::getListParams($params, $where);
+		$params['order'] = ['sort asc', 'id desc'];
 		$params['hidden'] = ['password'];
 		return $params;
 	}

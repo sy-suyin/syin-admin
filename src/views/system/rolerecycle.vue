@@ -11,10 +11,8 @@
 		<div class="content-container" v-loading="is_loading">
 			<db-table 
 				:data="results"
-				:columns="columns"
-				:actionbar="actionbar"
+				:config="config"
 				:pagination="page_default"
-				:toolbar="toolbar"
 				@handle="handle"
 			>
 			</db-table>
@@ -23,20 +21,19 @@
 </template>
 
 <script>
-import pageMixin from "@/mixins/page";
 import tableMixin from "@/mixins/table";
-import commonMixin from "@/mixins/common";
+import config from "@/assets/build/rolerecycle";
 
 export default {
 	name: "system_rolerecycle",
-	mixins: [pageMixin, tableMixin, commonMixin],
+	mixins: [ tableMixin ],
   	data() {
       	return {
-			
+			config,
 		}
 	},
 	created(){
-		this.addScene(this.urls.recycle, 'default', { mapping: 'results' });
+		this.addScene(config.urls.recycle, 'default', { mapping: 'results' });
 	},
 	mounted(){
 		this.getRequestData();

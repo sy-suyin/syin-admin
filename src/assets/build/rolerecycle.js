@@ -1,9 +1,18 @@
-export default{
+import { recycle } from '@/config/table';
+
+let config = {
 	// 各跳转链接
 	urls: {
+		add: '/role/add',
+		del: '/role/del',
+		dis: '/role/dis',
+		edit: '/role/edit/:id',
+		list: '/role/index',
+		recycle: '/role/recycle',
+	},
+
+	pages: {
 		add: '/system/roleadd',
-		del: '/system/roledel',
-		dis: '/system/roledis',
 		edit: '/system/roleedit/:id',
 		list: '/system/rolelist',
 		recycle: '/system/rolerecycle',
@@ -11,7 +20,7 @@ export default{
 
 	columns: [
 		{
-			prop: 'selection',
+			type: 'selection',
 		},
 		{
 			prop: 'id',
@@ -27,7 +36,6 @@ export default{
 			prop: 'add_time',
 			label: '添加时间',
 			width: 160,
-			formatter: this.filterTime
 		}
 	],
 
@@ -42,33 +50,7 @@ export default{
 			}
 		},
 	],
-
-	toolbar: [
-		{
-			type: 'btn',
-			name: '刷新',
-			target: 'reload',
-			icon: "el-icon-refresh-left",
-			color: 'primary',
-		},
-		{
-			type: 'url',
-			name: '列表',
-			target: 'list',
-			color: 'primary',
-			icon: "el-icon-s-promotion",
-			access: ['system', 'rolelist'],
-		},
-		{
-			type: 'btn',
-			name: '还原',
-			target: 'del',
-			color: 'success',
-			icon: "el-icon-delete",
-			access: ['system', 'roledel'],
-			params: {
-				operate: 0,
-			}
-		},
-	]
 }
+
+config = {...recycle, ...config};
+export default config;

@@ -2,7 +2,7 @@
  * 封装localStorage操作
  */
 
-import {aes_encrypt, aes_decrypt} from '@/libs/crypto.js';
+import {aes_encrypt, aes_decrypt} from '@/libs/crypto';
 
 class Storage {
 

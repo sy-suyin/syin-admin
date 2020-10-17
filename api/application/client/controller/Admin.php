@@ -92,6 +92,8 @@ class Admin {
 	 * 管理员管理 - 删除
 	 */
 	public function del(AdminRepository $repository){
+		// 管理员数据较特殊, 超级管理员不允许删除
+		$repository->where(['is_admin' => 0]);
 		$result = AdminService::delete($repository, '管理员');
 
 		if($result['status']){
@@ -104,26 +106,16 @@ class Admin {
 	/**
 	 * 管理员管理 - 禁用
 	 */
-	public function dis(AdminModel $model){
-		$result = AdminService::disableItem($model, '管理员');
-
-		if($result['status']){
-			return show_success('操作成功, 共'.$result['msg']);
-		}else{
-			return show_error('操作失败：'.$result['msg']);
-		}
+	public function dis(AdminRepository $repository){
+		$result = AdminService::disableItem($repository, '管理员');
+		return json($result);
 	}
 
 	/**
 	 * 管理员管理 - 排序
 	 */
-	public function sort(AdminModel $model){
-		$result = AdminService::sortItem($model, '管理员');
-
-		if($result['status']){
-			return show_success('操作成功, 共'.$result['msg']);
-		}else{
-			return show_error('操作失败：'.$result['msg']);
-		}
+	public function sort(AdminRepository $repository){
+		$result = AdminService::sortItem($repository, 'sort', '99');
+		return json($result);
 	}
 }

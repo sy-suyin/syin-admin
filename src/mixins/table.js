@@ -2,19 +2,23 @@
  * 封装表格页面相关操作
  */
 
-import {isEmpty, isSet, debounce, throttle, timestampToTime} from '@/libs/util';
-import Table from '@/libs/Table.js';
-import dbTable from "@/components/db-table";
+import {isEmpty, isSet, debounce} from '@/libs/util';
+import Table from '@/libs/Table';
+import dbTable from '@/components/db-table';
+import pageMixin from '@/mixins/page';
+import commonMixin from '@/mixins/common';
 
 export default {
 	components: { dbTable },
+	mixins: [commonMixin, pageMixin],
 	data(){
 		return {
-
-			// 表格相关跳转链接, 在被混入的组件重写
-			urls: {},
-
-			pages: {},
+			config: {
+				// 表格相关跳转链接, 在被混入的组件重写
+				urls: {},
+	
+				pages: {},
+			},
 
 			// 表格数据
 			results: [],
@@ -40,7 +44,7 @@ export default {
 		 */
 		buildUrl(key, type = 'url', params = false){
 			let url = '';
-			let urls = this[type == 'page' ? 'pages' : 'urls'];
+			let urls = this.config[type == 'page' ? 'pages' : 'urls'];
 
 			if(urls.hasOwnProperty(key)){
 				url = urls[key];
@@ -68,8 +72,6 @@ export default {
 		 */
 		jump(key, params = false){
 			let url = this.buildUrl(key, 'page', params);
-			console.log(key);
-			console.log(url);
 			this.$router.push({path: url})
 		},
 
@@ -146,7 +148,7 @@ export default {
 
 				return Promise.reject(e);
 			}).finally(()=>{
-				this.is_loading = false;
+				this.loading(false);
 			});
 		},
 
@@ -157,22 +159,23 @@ export default {
 		 * @param {int} operate		操作标识, 0: 恢复, 1: 删除
 		 */
 		del({id = -1, operate = -1} = {}){
-			let url = this.urls['del'];
+			let url = this.config.urls['del'];
 			let operate_msg = operate == 1 ? '删除' : '恢复';
 			let params = {
 				url,
 				is_confirm: true,
-				mark: {operate}
+				args: {
+					operate
+				}
 			};
 
 			if(id == -1){
-				params.confirm_msg = `你确认要批量${operate_msg}数据吗?`;
-				params.id = this.selected;
-			}else{
-				params.confirm_msg = `你确认要${operate_msg}数据吗?`;
-				params.id = id;
+				operate_msg = '批量' + operate_msg;
+				id = this.selected;
 			}
 
+			params.args.id = id;
+			params.confirm_msg = `你确认要${operate_msg}数据吗?`;
 			this.execute(params).then(res => {
 				this.getRequestData({
 					retry: true
@@ -184,20 +187,18 @@ export default {
 		 * 启用/禁用数据
 		 *
 		 * @param {int} id 			需要 启用/禁用 数据的ID. 如果为-1, 则选取表格所有被选中项的id
-		 * @param {int} operate		操作标识, 0: 启用, 1: 禁用
+		 * @param {int} is_disabled	操作标识, 0: 启用, 1: 禁用
 		 */
-		disabled({id = -1, is_disabled = 0, operate = -1}){
-			let url = this.urls['dis'];
+		disabled({id = -1, val = 0}){
+			let url = this.config.urls['dis'];
 			id = id == -1 ? this.selected : [ id ];
 
-			if(operate == -1){
-				operate = +!is_disabled;
-			}
-
 			let params = {
-				id,
 				url,
-				mark: {operate}
+				args: {
+					id,
+					data: val
+				}
 			};
 
 			this.execute(params).then(res => {
@@ -213,57 +214,31 @@ export default {
 		 * 排序, 需表格数据中有sort与id字段
 		 */
 		sort(){
-			let url = this.urls['sort'];
-			let data = this.extract('id, sort');
+			let url = this.config.urls['sort'];
 
-			this.execute({
-				url,
-				data
-			}).then(res => {
-				this.message('操作成功', 'success');
-			});
+			this.mulitEdit(url, 'sort');
 		},
 
 		/**
-		 * 提取表格数据, 默认会获取id
-		 *
-		 * @param {string}   fields  需要提取数据的字段, 可不传. 当不传数据时返回数据为包含id的一维数组
-		 * @param {function} filter  自定义过滤器, 当返回false时, 该项数据将不会加入提取数据中, 传入过滤器的数据格式为 filter( { 字段名: 字段值 } )
-		 *
-		 * @returns {array}
+		 * 辅助方法 - 批量修改
+		 * 此方法对应前端数据表格中edit模板, 后端multi方法
 		 */
-		extract(fields = '', filter = false){
-			fields = fields.split(',');
-			let field_len = fields.length;
-			let results = [];
-
+		mulitEdit(url, field){
+			let args = {
+				id: [],
+				data: [],
+			};
 			this.results.forEach(item => {
-				let id = item.id || 0;
-
-				if(field_len < 1 ){
-					id && results.push(id);
-				}else{
-					// 此处不对id进行判断, 主要为有些时候主键名不一定为id
-
-					let data = {};
-					fields.forEach(field => {
-						field = field.trim();
-						if(item.hasOwnProperty(field)){
-							data[field] = item[field];
-						}
-					});
-
-					if(filter){
-						if(false !== filter(data)){
-							results.push(data);
-						}
-					}else{
-						results.push(data);
-					}
-				}
+				args.id.push(item.id);
+				args.data.push(item[field]);
 			});
 
-			return results;
+			return this.execute({
+				url,
+				args
+			}).then(res => {
+				this.message('操作成功', 'success');
+			});
 		},
 
 		/**
@@ -277,24 +252,5 @@ export default {
 
 			this.selected = ids;
 		}),
-
-		///////////////////////////////////////////////////////////
-		// 表格常用的过滤器
-		///////////////////////////////////////////////////////////
-
-		/**
-		 * 时间过滤器
-		 *
-		 * 应传入10位长度的时间戳
-		 */
-		filterTime(row, column){
-			let time = row[column.property] || '';
-			let time_str = '';
-			if(time){
-				time_str = timestampToTime(time);
-			}
-
-			return time_str ? time_str : '';
-		}
 	},
 }
