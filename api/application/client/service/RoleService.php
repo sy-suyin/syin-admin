@@ -3,7 +3,6 @@ namespace app\client\service;
 
 use app\common\library\BaseService;
 use app\common\library\RuntimeError;
-use app\common\library\DbTool;
 
 class RoleService extends BaseService {
 
@@ -32,12 +31,11 @@ class RoleService extends BaseService {
 
 		// 验证参数
 		$is_edit && $args['id'] = $model->id;
-		$valid = self::validate($args, $validation['rules'], $validation['msgs']);
+		self::validate($args, $validation['rules'], $validation['msgs']);
 		
 		return $args;
 	}
 
-	
 	/**
 	 * 角色禁止名单数据检查
 	 */

@@ -14,4 +14,10 @@ class Admin extends Model
     protected $deleteTime = 'delete_time';
     protected $defaultSoftDelete = 0;
 
+    /**
+     * 关联模型
+     */
+    public function relation(){
+        return $this->hasMany('AdminRelation');
+    }
 }

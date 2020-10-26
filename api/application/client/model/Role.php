@@ -16,4 +16,10 @@ class Role extends Model
     protected $deleteTime = 'delete_time';
     protected $defaultSoftDelete = 0;
 
+    /**
+     * 关联模型
+     */
+    public function blocklist(){
+        return $this->hasMany('RoleBlocklist', 'role_id');
+    }
 }

@@ -10,27 +10,37 @@ class LoginService extends BaseService {
 	/**
 	 * 登录检测
 	 */
-	public static function login($model, $data){
-		$admin = $model
-			->scope('nodeleted')
-			->where('login_name', $data['login_name'])
-			->find();
+	public static function login(){
+		$fields = [
+			'login',
+			'password',
+		];
 
-		if(empty($admin)){
-			return new RuntimeError('登录账号或密码错误1');
+		$validation = [
+			'rules' => [
+				'login'      	=> 'require',
+				'password'   	=> 'require',
+			],
+			'msgs'  => [
+				'name.require' 	 	=> '请先输入名称',
+				'password.require'  => '登录密码不能为空',
+			]
+		];
+
+		// 数据筛选过滤
+		$args = self::filterParmas($fields, $_POST);
+
+		// 验证参数
+		self::validate($args, $validation['rules'], $validation['msgs']);
+
+		$auth = Auth::getInstance();
+		$result = $auth -> login($args['login'], $args['password']);
+
+		if(is_error($result)){
+			throw $result;
 		}
 
-		if(!check_password_hash($data['password'], $admin->password)){
-			return new RuntimeError('登录账号或密码错误');
-		}
-
-		if($admin->is_disabled > 0){
-			return new RuntimeError('登录账号已被禁用, 请联系管理');
-		}
-
-		request()->admin = $admin;
-
-		return $admin;
+		return $result;
 	}
 
 	/**
@@ -40,39 +50,16 @@ class LoginService extends BaseService {
 		$blocklist = self::getBlocklist($admin->id);
 		$domain = request()->domain();
 		$domain = trim($domain, '/');
+		$sidebar_imgs = config('common.sidebar_imgs');
 
 		$result = [
+			'user'		=> $admin->hidden(['password', 'sort'])->toArray(),
 			'blocklist' => $blocklist,
 			'config' => array(
 				'domain' => $domain,
-				'sidebar_imgs' => [
-					$domain.'/static/api/sidebar/bg-1.jpg',
-					$domain.'/static/api/sidebar/bg-2.jpg',
-					$domain.'/static/api/sidebar/bg-3.jpg',
-					$domain.'/static/api/sidebar/bg-4.jpg',
-				],
+				'sidebar_imgs' => $sidebar_imgs
 			)
 		];
-
-		return $result;
-	}
-
-	/**
-	 * 生成token
-	 */
-	public static function generateToken($admin){
-		// 生成token
-		$result['access_token'] = TokenService::generateToken([
-			'uid' => $admin->id
-		]);
-
-		$result['refresh_token'] = TokenService::generateRefreshToken([
-			'uid' => $admin->id
-		]);
-
-		$result['refresh_token_url'] = url('index/refreshtoken', '', true, true);
-
-		$result['token_expire'] = self::getTokenExpire();
 
 		return $result;
 	}
@@ -82,55 +69,6 @@ class LoginService extends BaseService {
 	 */
 	public static function getTokenExpire(){
 		return config('auth. token_expire');
-	}
-
-	/**
-	 * 获取登录时的角色信息
-	 */
-	public static function profileParams($model, $params, $scene){
-		$result = self::requestCheck($model, $params, $scene);
-
-		if(is_error($result)){
-			return $result;
-		}
-
-		list($data, $model) = $result;
-
-		if(!empty($data['password'])){
-			if(!check_password_hash($data['oldpwd'], $model->password)){
-				return new RuntimeError('原始密码输入有误');
-			}
-
-			if($data['oldpwd'] == $data['password']){
-				return new RuntimeError('新密码不能与旧密码相同');
-			}
-
-			if($data['confirmpwd'] != $data['password']){
-				return new RuntimeError('确认密码输入有误');
-			}
-
-			if(!check_password_strength($data['password'])){
-				return new RuntimeError('密码格式有误');
-			}
-
-			$args['password'] = generate_password_hash($data['password']);
-		}else{
-			unset($data['password']);
-		}
-
-		if($data['avatar']){
-			$avatar = '/static/api/avatar/'.$data['avatar'].'.png';
-			if(is_file(env('root_path').'public/'.$avatar)){
-				$data['avatar'] = $avatar;
-			}else{
-				$data['avatar'] = '';
-			}
-		}
-
-		unset($data['confirmpwd']);
-		unset($data['oldpwd']);
-
-		return $data;
 	}
 
 	/**
@@ -202,108 +140,61 @@ class LoginService extends BaseService {
 	}
 
 	/**
-	 * 验证是否有访问数据的权限
+	 * 生成token
+	 * 
+	 * @param int   $admin_id 		管理员id
+	 * @param bool  $with_refresh	是否附带生成刷新token所需的数据
+	 * @param array $data			生成token时所附带的额外数据
 	 *
-	 * @param object/int $admin  管理员数据或管理员id
-	 * @param string $controller 访问的控制器
-	 * @param string $action 	 访问的路由
-	 *
-	 * @return bool 允许访问为true, 反之为false
 	 */
-	public static function verifyPermission($admin, $controller, $action){
-		static $blocklist = [];
+	public static function generateToken($admin_id, $with_refresh = false, $data = []){
+		$data['uid'] = $admin_id;
 
-		// 此处获取用户信息
-		if(is_numeric($admin)){
-			$admin = model('admin')->getById($admin, 'id, name, is_admin');
+		// 生成token
+		$result = [
+			'token_type' => 'bearer',
+			'access_token' => TokenService::generateToken($data),
+			'token_expire' => config('auth. token_expire'),
+		];
+
+		if($with_refresh){
+			$result['refresh_token'] = TokenService::generateRefreshToken(['uid' => $admin_id]);
+			$result['refresh_token_url'] = url('index/refreshtoken', '', true, true);
 		}
 
-		if(empty($admin)){
-			return false;
+		foreach($result as $key => $val){
+			header("{$key}: {$val}");
 		}
 
-		if($admin['is_admin']){
-			return true;
-		}
-
-		// 获取关联角色id;
-		$role_ids = db('admin_role_relation')->where('admin_id', $admin['id'])->column('role_id');
-
-		if(empty($role_ids)){
-			return true;
-		}
-
-		if(empty($blocklist)){
-			$resulst = db('admin_role_blocklist')->field('id, controller, action')->where('type', 1)->where('role_id', 'in', $role_ids)->select();
-
-			// 计算规则, 整合成多个对象的数据组, 仅当各权限名单中都有的才算禁止(求交集)
-			if(!empty($resulst)){
-				$temp = [];
-				$role_count = count($role_ids);
-
-				foreach($resulst as $val){
-					if(! isset($temp[$val['controller']])){
-						$temp[$val['controller']] = [];
-					}
-
-					if(! isset($temp[$val['controller']][$val['action']])){
-						$temp[$val['controller']][$val['action']] = 0;
-					}
-
-					$temp[$val['controller']][$val['action']] += 1;
-				}
-
-				// 判断是否所有角色都禁止改权限
-				foreach($temp as $controller => $actions){
-					foreach($actions as $action => $count){
-						if($count >= $role_count){
-							if(! isset($blocklist[$controller])){
-								$blocklist[$controller] = [];
-							}
-							$blocklist[$controller][] = $action;
-						}
-					}
-				}
-			}
-		}
-
-		if(isset($blocklist[$controller]) && isset($blocklist[$controller][$action])){
-			return false;
-		}
-
-		return true;
+		return $result;
 	}
 
 	/**
 	 * 刷新token
 	 */
 	public static function refreshToken($params){
+		$auth = \app\client\service\Auth::getInstance();
+
 		if(empty($params)){
 			return new RuntimeError('refresh_token异常');
 		}
 
-		$refresh_token =  isset($params['refresh_token']) ? $params['refresh_token'] : '';
+		$refresh_token = isset($params['refresh_token']) ? $params['refresh_token'] : '';
 
 		if(empty($refresh_token)){
 			return new RuntimeError('token生成失败');
 		}
 
 		$payload = TokenService::verifyRefreshToken($refresh_token);
-						
+
 		if(!$payload || empty($payload['uid'])){
 			return new RuntimeError('token生成失败');
 		}
 
-		$admin = db('admin')
-			->where('id', $payload['uid'])
-			->where('is_disabled', 0)
-			->where('is_deleted', 0)
-			->find();
+		$uid = absint($payload['uid']);
+		$admin = $auth->getUserInfo($uid);
+		$result = self::generateToken($admin['id'], false);
 
-		$token = TokenService::generateToken([
-			'uid' => $admin['id']
-		]);
-
-		return $token;
+		return $result;
 	}
 }

@@ -31,36 +31,6 @@ function show_success($msg, $data=[]){
 //----------------------------------------------------------------------
 
 /**
- * 添加当前登录管理员操作日记
- *
- * @param string	$content,	简要描述
- * @param mixed		$data,		自定义需要存放的数据
- * @param int		$uid,		指定用户ID，默认获取当前登录的用户
- *
- * @return mixed,	成功返回新ID，失败返回false
- */
-function add_operate_log($content, $data='', $type='admin', $uid=0){
-	if(empty($uid))
-		return false;
-
-	empty($uid) && $uid = $GLOBALS['CURRENT_'.strtoupper($type)]['id'];
-
-	$add = db('log_operate')->insert(array(
-		'type'			=> $type,
-		'user_id'		=> $uid,
-		'content'		=> htmlspecialchars(strip_tags($content), ENT_QUOTES, 'UTF-8'),
-		'data'			=> htmlspecialchars(strip_tags($data), ENT_QUOTES, 'UTF-8'),
-		'add_time'		=> time(),
-		'client_ip'		=> request()->ip(),
-		'user_agent'	=> request()->header('user-agent')
-	));
-
-	return $add ? $add : false;
-}
-
-//----------------------------------------------------------------------
-
-/**
  * ip2long函数修正
  * 修正ip2long函数在特定系统环境下会产生负值的问题
  *

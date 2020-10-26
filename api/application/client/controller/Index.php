@@ -1,8 +1,8 @@
 <?php
 namespace app\client\controller;
 
+use app\client\repository\AdminRepository;
 use app\client\service\AdminService;
-use syin\Builder;
 use think\Request;
 
 class Index {
@@ -10,21 +10,15 @@ class Index {
 	/**
      * 个人中心
      */
-    public function profileAction(Request $request){
+    public function profile(AdminRepository $repository){
+		$admin = request()->admin;
 		// 验证提交数据
-		$params = $request->post();
-		$params['id'] = $request->admin->id;
-		$data = AdminService::profileParams($request->admin, $params, 'profile');
+		$args = AdminService::getProfileParams($admin);
 
-		if(is_error($data)){
-			return show_error($data->getError());
-		}
+		$result = $repository->update($args, $admin->id);
 
-		// 保存数据
-		$save = AdminService::saveData($request->admin, $data);
-
-		if(! $save){
-			return show_error('修改失败，请稍后重试');
+		if(! $result){
+			return show_error('保存失败');
 		}
 
 		// 保存日志
@@ -36,23 +30,13 @@ class Index {
 	/**
 	 * 获取新token
 	 */
-	public function refreshTokenAction(Request $request){
-		$token = AdminService::refreshToken($request->post());
-		$token_expire = AdminService::getTokenExpire(); 
+	public function refreshToken(Request $request){
+		$token = \app\client\service\LoginService::refreshToken($request->post());
+
 		if(is_error($token)){
 			return show_error($token->getError());
 		}
 
-		return show_success('请求成功')
-			->header([
-				'access_token' => $token,
-				'token_type'   => 'bearer',
-				'expires'      => $token_expire
-			])->allowCache(false);
-	}
-
-	public function buildAction(){
-		$builder = new Builder();
-		$builder->build('test');
+		return show_success('请求成功')->allowCache(false);
 	}
 }

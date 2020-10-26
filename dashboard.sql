@@ -97,3 +97,19 @@ CREATE TABLE `sy_dict_data` (
   `update_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '修改时间',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='数据字典数据';
+
+-- 管理员操作日志
+CREATE TABLE `sy_admin_log` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增id',
+  `admin_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '管理员id',
+  `module` varchar(64) NOT NULL DEFAULT '' COMMENT '模块名称',
+  `controller` varchar(64) NOT NULL DEFAULT '' COMMENT '控制器名称',
+  `url` varchar(510) NOT NULL DEFAULT '' COMMENT '操作页面',
+  `action` varchar(64) NOT NULL DEFAULT '' COMMENT '方法名称',
+  `content` text COMMENT '操作描述',
+  `data` text COMMENT '自定义存储的数据',
+  `add_time` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '操作时间',
+  `client_ip` varchar(64) NOT NULL DEFAULT '' COMMENT '客户端IP',
+  `user_agent` varchar(256) NOT NULL DEFAULT '' COMMENT '客户端标志',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='管理员操作日志';

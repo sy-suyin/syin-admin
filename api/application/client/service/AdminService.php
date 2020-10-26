@@ -1,6 +1,7 @@
 <?php
 namespace app\client\service;
 
+use app\client\repository\RoleRepository;
 use app\common\library\RuntimeError;
 use app\common\library\BaseService;
 use syin\Repository;
@@ -10,10 +11,10 @@ class AdminService extends BaseService {
 	/**
 	 * 获取管理员列表查询所需条件
 	 *
- 	 * @param bool 	$params			数据数组
 	 */
-	public static function adminListParams($params){
-		obtain($params);
+	public static function adminListParams(){
+		$data = $_POST;
+		obtain($data);
 
 		$where  = [];
 		$time   = obtain('time/s', 0, 'time');
@@ -27,7 +28,7 @@ class AdminService extends BaseService {
 			$where['is_disabled'] = $status == 1 ? 1 : 0;
 		}
 
-		$params = self::getListParams($params, $where);
+		$params = self::getListParams($data, $where);
 		$params['order'] = ['sort asc', 'id desc'];
 		$params['hidden'] = ['password'];
 		return $params;
@@ -87,35 +88,94 @@ class AdminService extends BaseService {
 	}
 
 	/**
+	 * 检查角色修改的信息
+	 */
+	public static function getProfileParams($admin){
+		$fields = [
+			'login' 	=> 'login_name',
+			'name',
+		];
+
+		$validation = [
+			'rules' => [
+				'name'      	=> 'require|unique:admin',
+				'login_name'   	=> 'require|alphaNum',
+			],
+			'msgs'  => [
+				'name.require' 	 => '请先输入名称',
+				'name.unique' 	 => '名称已被占用',
+				'login_name.require' => '请先输入登录账号名称',
+				'login_name.alphaNum'=> '登录账号只能是字母和数字',
+			]
+		];
+
+		// 数据筛选过滤
+		$args = self::filterParmas($fields, $_POST);
+
+		// 验证参数
+		$args['id'] = $admin['id'];
+		self::validate($args, $validation['rules'], $validation['msgs']);
+
+		$other = self::filterParmas([
+			'password',
+			'confirmpwd',
+			'oldpwd',
+			'avatar/d'
+		]);
+
+		// 此处检查密码并对密码进行加密
+		if(!empty($args['password'])){
+			if($other['password'] == $other['oldpwd']){
+				throw new RuntimeError('新密码不能与旧密码一致');
+			}
+
+			if($other['password'] != $args['confirmpwd']){
+				throw new RuntimeError('确认密码与新密码不一致');
+			}
+			
+			if(generate_password_hash($args['oldpwd']) == $admin['password']){
+				throw new RuntimeError('旧密码有误, 请检查后重试');
+			}
+
+			$args['password'] = generate_password_hash($args['password']);
+		}
+
+		return $args;
+	}
+
+	/**
 	 * 获取多个管理员关联角色信息
 	 *
 	 * @param array $data 		 需要进行转换的数据
 	 */
-	public static function adminMultiRelationRoles($data){
-		$admin_ids = [];
-		// 桶
-		$barrel	   = [];
-
-		// 取管理员id
-		foreach($data as $key => $val){
-			$admin_ids[$val['id']] = $key;
-			$data[$key]['roles'] = [];
-		}
-
-		$roles = db('admin_role_relation')->where('admin_id', 'in', array_keys($admin_ids))->select();
-
-		foreach($roles as $role){
-			$barrel[$role['role_id']][] = $admin_ids[$role['admin_id']];
-		}
-
-		$roles = db('admin_role')->field('id, name, description')->where('id', 'in', array_keys($barrel))->select();
-		foreach($roles as $role){
-			foreach($barrel[$role['id']] as $admin_index){
-				$data[$admin_index]['roles'][] = $role;
+	public static function adminMultiRelationRoles(Repository $repository, $admins){
+		// 延迟预加载
+		$roleRepo  = new RoleRepository();
+		$admins->load('Relation');
+		$admins = $admins->toArray();
+		$bucket = [];
+		$role_ids = [];
+		
+		foreach($admins as $key => $admin){
+			$admins[$key]['roles'] = [];
+			foreach($admin['relation'] as $relation){
+				$role_id = $relation['role_id'];
+				$bucket[$role_id][] = $key;
+				$role_ids[$role_id] = 1;
 			}
 		}
 
-		return $data;
+		$role_ids = array_keys($role_ids);
+		$where['id'] = ['in', $role_ids];
+		$roles = $roleRepo->select($where);
+
+		foreach($roles as $role){
+			foreach($bucket[$role['id']] as $admin_index){
+				$admins[$admin_index]['roles'][] = $role;
+			}
+		}
+
+		return $admins;
 	}
 
 	/**
@@ -143,7 +203,6 @@ class AdminService extends BaseService {
 		$role_ids = array_keys($role_ids);
 		$roles = db('admin_role')
 			->field('id, name, description')
-			->where('is_deleted', 0)
 			->where('is_disabled', 0)
 			->where('id', 'IN', $role_ids)
 			->select();

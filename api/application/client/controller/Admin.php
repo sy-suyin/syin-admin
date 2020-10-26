@@ -3,7 +3,6 @@ namespace app\client\controller;
 
 use app\client\repository\AdminRepository;
 use app\client\service\AdminService;
-use app\client\model\Admin as AdminModel;
 use think\Request;
 
 class Admin {
@@ -13,11 +12,11 @@ class Admin {
 	 */
 	public function index(AdminRepository $repository){
 		// 1. 获取查询参数
-		$params = AdminService::adminListParams($_POST);
+		$params = AdminService::adminListParams();
 
 		// 2. 查询数据
 		$result = $repository->paginate($params);
-		$result['data'] = AdminService::adminMultiRelationRoles($result['data']->toArray());
+		$result['data'] = AdminService::adminMultiRelationRoles($repository, $result['data']);
 
 		return show_success('', $result);
 	}
@@ -27,7 +26,7 @@ class Admin {
 	 */
 	public function recycle(AdminRepository $repository){
 		// 1. 获取查询参数
-		$params = AdminService::adminListParams($_POST);
+		$params = AdminService::adminListParams();
 
 		// 2. 查询数据
 		$result = $repository->withDeleted()->paginate($params);
