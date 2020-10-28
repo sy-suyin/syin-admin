@@ -132,7 +132,7 @@ class AdminService extends BaseService {
 			if($other['password'] != $args['confirmpwd']){
 				throw new RuntimeError('确认密码与新密码不一致');
 			}
-			
+
 			if(generate_password_hash($args['oldpwd']) == $admin['password']){
 				throw new RuntimeError('旧密码有误, 请检查后重试');
 			}
@@ -155,7 +155,7 @@ class AdminService extends BaseService {
 		$admins = $admins->toArray();
 		$bucket = [];
 		$role_ids = [];
-		
+
 		foreach($admins as $key => $admin){
 			$admins[$key]['roles'] = [];
 			foreach($admin['relation'] as $relation){

@@ -13,6 +13,7 @@ use syin\builder\Element;
 use syin\builder\service\Controller;
 use syin\builder\service\Model;
 use syin\builder\service\Service;
+use syin\builder\web\Index;
 
 class Builder{
 
@@ -20,15 +21,17 @@ class Builder{
 
 	public function build($table){
 		// 先给各构建者初始化
-		// $builders[] = new Controller();
-		$builders[] = new Model($table);
+		$builders[] = new Index($table);
+		// $builders[] = new Controller($table);
+		// $builders[] = new Model($table);
 		// $builders[] = new Service();
 
 		$table_name = 'sy_'.$table;
 
 		$sql =  $sql = "SELECT * FROM `information_schema`.`columns` "
-		. "WHERE TABLE_SCHEMA = ? AND table_name = ? "
-		. "ORDER BY ORDINAL_POSITION";
+			. "WHERE TABLE_SCHEMA = ? AND table_name = ? "
+			. "ORDER BY ORDINAL_POSITION";
+
 		$row = db()->query($sql, ['dashboard', $table_name]);
 
 		foreach($row as $key => $val){
@@ -39,6 +42,8 @@ class Builder{
 				$builder->add($element);
 			}
 		}
+
+		p('builder');
 
 		foreach($builders as $key => $builder){
 			// $builder->print($element);

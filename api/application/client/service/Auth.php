@@ -116,16 +116,15 @@ class Auth {
 	 * @param int 	$uid 用户id
 	 */
 	public function getUserInfo($uid = 0){
-		if(!$uid && ! $this->isLogin()){
-			return false;
+		if($uid){
+			if(!$this->logined || $uid != $this->auth->id){
+				$auth = $this->repository->find($uid);
+				$this->logined = $auth ? true : false;
+				$this->auth = $this->logined ? $auth : false;
+			}
 		}
 
-		if($uid != $this->auth->id){
-			$auth = $this->repository->find($uid);
-			$auth && $this->auth;
-		}
-
-		return $this->auth;
+		return $this->logined ? $this->auth : false;
 	}
 
 	/**

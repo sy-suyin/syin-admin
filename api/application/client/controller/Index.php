@@ -4,6 +4,7 @@ namespace app\client\controller;
 use app\client\repository\AdminRepository;
 use app\client\service\AdminService;
 use think\Request;
+use syin\Builder;
 
 class Index {
 
@@ -38,5 +39,10 @@ class Index {
 		}
 
 		return show_success('请求成功')->allowCache(false);
+	}
+
+	public function build(){
+		$builder = new Builder();
+		$builder->build('admin_role_blocklist');
 	}
 }

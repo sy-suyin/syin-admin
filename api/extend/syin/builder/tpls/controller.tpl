@@ -1,18 +1,17 @@
-<?php
 namespace app\client\controller;
 
-use app\client\repository\RoleRepository;
-use app\client\service\RoleService;
+use app\client\repository\{$class_name}Repository;
+use app\client\service\{$class_name}Service;
 use think\Request;
 
-class Role{
+class {$class_name}{
 
 	/**
 	 * 角色管理 - 列表
 	 */
-	public function index(RoleRepository $repository){
+	public function index({$class_name}Repository $repository){
 		// 1. 获取查询参数
-		$params = RoleService::getListParams($_POST);
+		$params = {$class_name}Service::getListParams($_POST);
 
 		// 2. 查询数据
 		$result = $repository->paginate($params);
@@ -23,9 +22,9 @@ class Role{
 	/**
 	 * 角色管理 - 回收站
 	 */
-	public function recycle(RoleRepository $repository){
+	public function recycle({$class_name}Repository $repository){
 		// 1. 获取查询参数
-		$params = RoleService::getListParams($_POST);
+		$params = {$class_name}Service::getListParams($_POST);
 
 		// 2. 查询数据
 		$result = $repository->withDeleted()->paginate($params);
@@ -36,8 +35,8 @@ class Role{
 	/**
 	 * 角色管理 - 角色数据
 	 */
-	public function detail(RoleRepository $repository){
-		$model = RoleService::getRecord($repository);
+	public function detail({$class_name}Repository $repository){
+		$model = {$class_name}Service::getRecord($repository);
 
 		return show_success('查询成功', $model->toArray());
 	}
@@ -45,10 +44,9 @@ class Role{
 	/**
 	 * 角色管理 - 添加
 	 */
-	public function add(RoleRepository $repository){
+	public function add({$class_name}Repository $repository){
 		// 获取提交数据
-		$args = RoleService::checkRequest();
-		$blocklist = RoleService::roleBlocklistCheck();
+		$args = {$class_name}Service::checkRequest();
 
 		// 保存数据
 		$result = $repository->create($args);
@@ -56,10 +54,6 @@ class Role{
 		if(! $result){
 			return show_error('保存失败');
 		}
-
-		// 保存角色权限
-		$data['id'] = $result->id;
-		RoleService::roleBlocklistSave($data, $blocklist, false);
 
 		// 保存日志
 
@@ -70,12 +64,11 @@ class Role{
 	/**
 	 * 角色管理 - 修改
 	 */
-	public function edit(RoleRepository $repository){
-		$model = RoleService::getRecord($repository, $_POST);
+	public function edit({$class_name}Repository $repository){
+		$model = {$class_name}Service::getRecord($repository, $_POST);
 
 		// 获取提交数据
-		$args = RoleService::checkRequest($model);
-		$blocklist = RoleService::roleBlocklistCheck();
+		$args = {$class_name}Service::checkRequest($model);
 
 		// 保存数据
 		$result = $repository->update($args, $model->id);
@@ -83,10 +76,6 @@ class Role{
 		if(! $result){
 			return show_error('添加失败，请稍后重试');
 		}
-
-		// 保存角色权限
-		$data['id'] = $model->id;
-		RoleService::roleBlocklistSave($data, $blocklist, true);
 
 		// 保存日志
 
@@ -97,8 +86,8 @@ class Role{
 	/**
 	 * 角色管理 - 删除
 	 */
-	public function del(RoleRepository $repository){
-		$result = RoleService::delete($repository, '角色');
+	public function del({$class_name}Repository $repository){
+		$result = {$class_name}Service::delete($repository, '角色');
 
 		if($result['status']){
 			return show_success('操作成功, 共'.$result['msg']);
@@ -110,23 +99,23 @@ class Role{
 	/**
 	 * 角色管理 - 禁用
 	 */
-	public function dis(RoleRepository $repository){
-		$result = RoleService::disableItem($repository, '角色');
+	public function dis({$class_name}Repository $repository){
+		$result = {$class_name}Service::disableItem($repository, '角色');
 		return json($result);
 	}
 
 	/**
 	 * 角色管理 - 排序
 	 */
-	public function sort(RoleRepository $repository){
-		$result = RoleService::sortItem($repository, 'sort', '99');
+	public function sort({$class_name}Repository $repository){
+		$result = {$class_name}Service::sortItem($repository, 'sort', '99');
 		return json($result);
 	}
 
 	/**
 	 * 获取所有角色数据
 	 */
-	public function all(RoleRepository $repository){
+	public function all({$class_name}Repository $repository){
 		$results = $repository->all();
 		return show_success('', $results);
 	}

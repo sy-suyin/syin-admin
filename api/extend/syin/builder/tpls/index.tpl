@@ -2,7 +2,7 @@
 	<div class="data-table">
 		<page-header>
 			<template #breadcrumb-after>
-				<h2 class="page-title">角色列表</h2>
+				<h2 class="page-title">管理员列表</h2>
 			</template>
 		</page-header>
 
@@ -20,10 +20,10 @@
 
 <script>
 import tableMixin from "@/mixins/table";
-import config from "@/assets/build/rolelist";
+import config from "@/assets/build/{$name}";
 
 export default {
-	name: "system_rolelist",
+	name: "system_{$name}",
 	mixins: [ tableMixin ],
   	data() {
 		return {

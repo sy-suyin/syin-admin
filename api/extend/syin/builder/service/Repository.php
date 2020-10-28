@@ -7,7 +7,7 @@ class Controller extends Base{
 	// public function 
 
 	public function build(){
-		$path = env('ROOT_PATH') . 'extend/syin/builder/tpls/controller.tpl';
+		$path = env('ROOT_PATH') . 'extend/syin/builder/tpls/repository.tpl';
 		$html = app('view')->fetch($path, [
 			'name' => $this->name,
 			'class_name' => $this->class_name,

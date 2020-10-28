@@ -94,9 +94,9 @@ class Request{
 							});
 						}).catch(e => {
 							if(! window.location.href.includes('/login')){
-								setTimeout(() => {
-									store.commit('auth/logout');
-								}, 3000);
+								// setTimeout(() => {
+								// 	store.commit('auth/logout');
+								// }, 3000);
 							}
 
 							return Promise.reject(new Error('账号过期, 请重新登录'));
