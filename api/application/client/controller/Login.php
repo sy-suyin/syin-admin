@@ -2,9 +2,7 @@
 namespace app\client\controller;
 
 use app\client\service\LoginService;
-use app\client\service\Auth;
 use think\Request;
-
 
 class Login{
 
@@ -18,6 +16,8 @@ class Login{
 		// 配置登录后返回的数据
 		$result = LoginService::loginConfig($admin);
 
+		// 设置标题(日志)
+		$request->title = '管理员登录';
 		return show_success('登录成功', $result)->allowCache(false);
 	}
 

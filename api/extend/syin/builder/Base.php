@@ -17,14 +17,6 @@ class Base{
 		$this->items[] = $item;
 	}
 
-	public function print(){
-		p('-------------------');
-		foreach($this->items as $item){
-			p($item->getType());
-			p($item->getConfig());
-		}
-	}
-
 	/**
 	 * 下划线转驼峰
 	 */

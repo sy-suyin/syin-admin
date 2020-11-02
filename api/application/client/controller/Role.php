@@ -62,6 +62,7 @@ class Role{
 		RoleService::roleBlocklistSave($data, $blocklist, false);
 
 		// 保存日志
+		request()->title = '添加角色';
 
 		// 返回消息
 		return show_success('已成功添加角色');
@@ -89,6 +90,7 @@ class Role{
 		RoleService::roleBlocklistSave($data, $blocklist, true);
 
 		// 保存日志
+		request()->title = '修改角色';
 
 		// 返回消息
 		return show_success('已成功修改角色');
@@ -101,6 +103,7 @@ class Role{
 		$result = RoleService::delete($repository, '角色');
 
 		if($result['status']){
+			request()->title = '删除角色';
 			return show_success('操作成功, 共'.$result['msg']);
 		}else{
 			return show_error('操作失败：'.$result['msg']);
@@ -112,6 +115,7 @@ class Role{
 	 */
 	public function dis(RoleRepository $repository){
 		$result = RoleService::disableItem($repository, '角色');
+		request()->title = '角色禁用';
 		return json($result);
 	}
 
@@ -120,6 +124,7 @@ class Role{
 	 */
 	public function sort(RoleRepository $repository){
 		$result = RoleService::sortItem($repository, 'sort', '99');
+		request()->title = '角色排序';
 		return json($result);
 	}
 

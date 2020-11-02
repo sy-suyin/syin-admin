@@ -61,6 +61,7 @@ class Admin {
 		AdminService::adminRoleSave($result, $args['roles'], false);
 
 		// 保存日志
+		request()->title = '添加管理员';
 
 		// 返回消息
 		return show_success('已成功添加管理员数据');
@@ -83,6 +84,7 @@ class Admin {
 		AdminService::adminRoleSave($model, $args['roles'], true);
 
 		// 保存日志
+		request()->title = '修改管理员';
 
 		return show_success('已成功修改管理员数据');
 	}
@@ -96,6 +98,7 @@ class Admin {
 		$result = AdminService::delete($repository, '管理员');
 
 		if($result['status']){
+			request()->title = '删除管理员';
 			return show_success('操作成功, 共'.$result['msg']);
 		}else{
 			return show_error('操作失败：'.$result['msg']);
@@ -107,6 +110,7 @@ class Admin {
 	 */
 	public function dis(AdminRepository $repository){
 		$result = AdminService::disableItem($repository, '管理员');
+		request()->title = '管理员禁用';
 		return json($result);
 	}
 
@@ -115,6 +119,7 @@ class Admin {
 	 */
 	public function sort(AdminRepository $repository){
 		$result = AdminService::sortItem($repository, 'sort', '99');
+		request()->title = '管理员排序';
 		return json($result);
 	}
 }

@@ -43,6 +43,6 @@ class Index {
 
 	public function build(){
 		$builder = new Builder();
-		$builder->build('admin_role_blocklist');
+		$builder->build('admin');
 	}
 }
