@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { login } from '@/api/user';
+import userApi from '@/api/user';
 import { getType } from '@/libs/util';
 
 export default {
@@ -59,7 +59,7 @@ export default {
 			this.loginChains().then(params => {
 				this.is_loading = true;
 
-				login(params.args).then(result => {
+				userApi.login(params.args).then(result => {
 					this.loginSuccess(result);
 				}).catch(e => {
 					let msg = e.message || '网络异常, 请稍后重试';

@@ -50,7 +50,7 @@
 import commonMixin from "@/mixins/common";
 import validateMixin from "@/mixins/validate";
 import { debounce, requestAll } from '@/libs/util';
-import { getAdmin, editAdmin, getRoles } from '@/api/system';
+import systemApi from '@/api/system';
 
 export default {
 	name: "system_adminadd",
@@ -91,8 +91,8 @@ export default {
 			}
 
 			this.loading(true);
-			requestAll([getAdmin(id), getRoles()]).then((res)=>{
-				let {0: admin, 1: roles} = res;
+			requestAll([systemApi.getAdmin(id), systemApi.getRoles()]).then((res)=>{
+				let [admin, roles] = res;
 
 				// 处理管理员数据
 				this.form.id = id;
@@ -116,7 +116,7 @@ export default {
 			this.submitChain().then(params => {
 
 				this.loading(true);
-				editAdmin(params.args).then(res => {
+				systemApi.editAdmin(params.args).then(res => {
 					this.$router.push({path: this.redirect_url})
 				}).catch(e => {
 					let msg = e.message || '网络异常, 请稍后重试';

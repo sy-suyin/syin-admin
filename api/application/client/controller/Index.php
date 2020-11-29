@@ -3,8 +3,10 @@ namespace app\client\controller;
 
 use app\client\repository\AdminRepository;
 use app\client\service\AdminService;
+use app\common\criteria\todayCriteria;
 use think\Request;
 use syin\Builder;
+use syin\Repository;
 
 class Index {
 
@@ -12,10 +14,9 @@ class Index {
      * 个人中心
      */
     public function profile(AdminRepository $repository){
-		$admin = request()->admin;
+		$admin = request()->auth;
 		// 验证提交数据
 		$args = AdminService::getProfileParams($admin);
-
 		$result = $repository->update($args, $admin->id);
 
 		if(! $result){

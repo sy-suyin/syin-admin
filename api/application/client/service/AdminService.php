@@ -96,25 +96,17 @@ class AdminService extends BaseService {
 			'name',
 		];
 
-		$validation = [
-			'rules' => [
-				'name'      	=> 'require|unique:admin',
-				'login_name'   	=> 'require|alphaNum',
-			],
-			'msgs'  => [
-				'name.require' 	 => '请先输入名称',
-				'name.unique' 	 => '名称已被占用',
-				'login_name.require' => '请先输入登录账号名称',
-				'login_name.alphaNum'=> '登录账号只能是字母和数字',
-			]
+		$rules = [
+			'name|名称'      	    => 'require|unique:admin',
+			'login_name|登录名称'   => 'require|alphaNum',
 		];
 
 		// 数据筛选过滤
 		$args = self::filterParmas($fields, $_POST);
 
 		// 验证参数
-		$args['id'] = $admin['id'];
-		self::validate($args, $validation['rules'], $validation['msgs']);
+		$args['id'] = $admin->id;
+		self::validate($args, $rules);
 
 		$other = self::filterParmas([
 			'password',

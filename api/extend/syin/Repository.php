@@ -1,8 +1,6 @@
 <?php
 namespace syin;
 
-use Exception;
-use RuntimeException;
 use think\db\Where;
 use think\Model;
 
@@ -11,16 +9,50 @@ class Repository {
 	protected $model;
 	protected $query;
 
-	public function __construct($model = null) {
+	/**
+     * @var Collection
+     */
+    protected $criteria;
+
+    /**
+     * @var bool
+     */
+    protected $skipCriteria = false;
+
+	/**
+	 * 输入类实例, 继承该类必须重新定义
+	 */
+    protected static $instance;
+
+	public function __construct($model = null, $criteria = []) {
 		$model || $model = $this->makeModel();
 
 		$this->model = $model;
+		$this->criteria = $criteria;
 	}
 
+	/**
+	 * 返回模型空间路径
+	 */
 	public function model(){
 		return '';
 	}
 
+	/**
+	 * 获取唯一模型类实例
+	 * 使用此方法前需先在继承的仓库中定义 $instance 方法
+	 */
+    public static function getInstance(){
+        if (is_null(static::$instance)) {
+            static::$instance = new static;
+        }
+
+        return static::$instance;
+    }
+
+	/**
+	 * 生成模型类实例
+	 */
 	public function makeModel(){
 		$model = model($this->model());
 
@@ -36,6 +68,7 @@ class Repository {
 	 * 查询所有数据
 	 */
     public function all($columns = array('*')){
+		$this->applyCriteria();
 		$results = $this->query->field($columns)->order('id', 'desc')->select();
 		return $results;
 	}
@@ -44,6 +77,7 @@ class Repository {
 	 * 查询数据
 	 */
 	public function select($where = [], $columns = array('*')){
+		$this->applyCriteria();
 		$where && $where = new Where($where);
 		$results = $this->query->where($where)->field($columns)->order('id', 'desc')->select();
 		return $results;
@@ -87,6 +121,7 @@ class Repository {
 			$where = new Where($where);
 		}
 
+		$this->applyCriteria();
 		$data = $this->query
 			->where($where)
 			->hidden($hidden)
@@ -142,7 +177,8 @@ class Repository {
 	}
 
     public function find($id, $columns = array('*')){
-		$result = $this->model
+		$this->applyCriteria();
+		$result = $this->query
 			->field($columns)
 			->where('id', $id)
 			->find();
@@ -151,7 +187,8 @@ class Repository {
 	}
 
     public function findBy($attribute, $value, $columns = array('*')){
-		$result = $this->model
+		$this->applyCriteria();
+		$result = $this->query
 			->field($columns)
 			->where($attribute, $value)
 			->find();
@@ -168,7 +205,7 @@ class Repository {
 	 */
 	public function where($where, $or = false){
 		$query = $this->query;
-		$this->query = $this->query->where($where);
+		// $this->query = $this->query->where($where);
         foreach ($where as $field => $value) {
             if ($value instanceof \Closure) {
                 $query = (!$or)
@@ -202,5 +239,58 @@ class Repository {
 	public function resetQuery(){
 		unset($this->query);
 		$this->query = $this->model();
+	}
+
+/**
+     * @param bool $status
+     * @return $this
+     */
+    public function skipCriteria($status = true){
+        $this->skipCriteria = $status;
+        return $this;
+	}
+	
+	/**
+     * @return mixed
+     */
+    public function getCriteria() {
+        return $this->criteria;
+    }
+
+    /**
+     * @param Criteria $criteria
+     * @return $this
+     */
+    public function getByCriteria(Criteria $criteria) {
+        $this->query = $criteria->apply($this->query, $this);
+        return $this;
+    }
+
+    /**
+     * @param Criteria $criteria
+     * @return $this
+     */
+    public function pushCriteria(Criteria $criteria) {
+        $this->criteria[] = $criteria;
+        return $this;
+    }
+
+    /**
+     * @return $this
+     */
+    public function applyCriteria() {
+        if($this->skipCriteria === true)
+            return $this;
+
+        foreach($this->getCriteria() as $criteria) {
+            if($criteria instanceof Criteria)
+                $this->query = $criteria->apply($this->query, $this);
+        }
+
+        return $this;
+	}
+
+	public function getLastSql(){
+		return $this->model->getLastSql();
 	}
 }

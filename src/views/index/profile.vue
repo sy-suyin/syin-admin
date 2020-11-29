@@ -77,7 +77,7 @@
 import { config } from '@/libs/util';
 import commonMixin from "@/mixins/common";
 import validateMixin from "@/mixins/validate";
-import { updateProfile } from '@/api/user';
+import userApi from '@/api/user';
 
 export default {
 	name: "home",
@@ -211,7 +211,7 @@ export default {
 			this.submitChain().then(({ args }) => {
 				this.loading(true);
 
-				updateProfile(args).then(res => {
+				userApi.updateProfile(args).then(res => {
 					this.updateUser(args);
 					this.message('数据更新成功', 'success');
 				}).catch(e => {

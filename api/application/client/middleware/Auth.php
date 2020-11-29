@@ -18,16 +18,6 @@ class Auth{
 		$auth->setRepository(new AdminRepository);
 		$request->auth = $auth;
 
-		// 刷新 token
-		if($controller == 'index' && $action == 'refreshtoken'){
-			return $next($request);
-		}
-
-		// 测试
-		if($controller == 'index' && $action == 'build'){
-			return $next($request);
-		}
-
 		// 重新尝试登录
 		$auth->autologin($token);
 

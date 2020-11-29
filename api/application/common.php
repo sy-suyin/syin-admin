@@ -74,3 +74,11 @@ function obtain($name = '', $default = null, $filter = '', $params = null){
 		return \syin\Input::get($name, $default, $filter, $params);
 	}
 }
+
+/**
+ * 快速返回数据仓库实例
+ */
+function repository($name){
+	$namespace = '\app\client\repository\\'.$name.'Repository';
+	return new $namespace;
+}

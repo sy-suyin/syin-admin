@@ -11,7 +11,6 @@ class Login{
 	 */
 	public function index(Request $request){
 		$admin = LoginService::login();
-
 		LoginService::generateToken($admin->id, true);
 		// 配置登录后返回的数据
 		$result = LoginService::loginConfig($admin);

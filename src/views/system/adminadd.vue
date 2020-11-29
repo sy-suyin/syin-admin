@@ -48,7 +48,7 @@
 import commonMixin from "@/mixins/common";
 import validateMixin from "@/mixins/validate";
 import { debounce } from '@/libs/util';
-import { addAdmin, getRoles } from '@/api/system';
+import systemApi from '@/api/system';
 
 export default {
 	name: "system_adminadd",
@@ -85,7 +85,7 @@ export default {
 	methods: {
 
 		init(){
-			getRoles().then(res => {
+			systemApi.getRoles().then(res => {
 				this.roles = res;
 			}).catch(e => {
 				let msg = e.message || '网络异常, 请稍后重试';
@@ -95,9 +95,8 @@ export default {
 
 		submit(){
 			this.submitChain().then(params => {
-
 				this.loading(true);
-				addAdmin(params.args).then(res => {
+				systemApi.addAdmin(params.args).then(res => {
 					this.$router.push({path: this.redirect_url})
 				}).catch(e => {
 					let msg = e.message || '网络异常, 请稍后重试';

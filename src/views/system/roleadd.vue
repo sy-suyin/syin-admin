@@ -40,7 +40,7 @@
 import commonMixin from "@/mixins/common";
 import validateMixin from "@/mixins/validate";
 import { menus } from '@/config/menu';
-import { addRole, getAccessData } from '@/api/system';
+import systemApi from '@/api/system';
 import permissions from './components/permissions';
 
 export default {
@@ -80,7 +80,7 @@ export default {
 	methods: {
 		init(){
 			this.loading(true);
-			getAccessData().then(res => {
+			systemApi.getAccessData().then(res => {
 				this.permissions.data = Object.values(res.config);
 			}).catch(e => {
 				let msg = e.message || '网络异常, 请稍后重试';
@@ -97,7 +97,7 @@ export default {
 			this.submitChain().then(params => {
 
 				this.loading(true);
-				addRole(params.args).then(res => {
+				systemApi.addRole(params.args).then(res => {
 					this.$router.push({path: this.redirect_url})
 				}).catch(e => {
 					let msg = e.message || '网络异常, 请稍后重试';

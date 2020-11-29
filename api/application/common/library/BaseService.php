@@ -3,7 +3,6 @@ namespace app\common\library;
 
 use app\common\library\RuntimeError;
 use syin\Repository;
-use think\Validate;
 use syin\Input;
 
 class BaseService{
@@ -168,15 +167,22 @@ class BaseService{
 	}
 
 	/**
+	 * 获取验证器实例
+	 */
+	public static function getValidate($rules, $msgs = []){
+		return new \app\common\library\BaseValidate($rules, $msgs);
+	}
+
+	/**
 	 * 验证输入数据
 	 */
-	public static function validate($params, $rules, $msgs) {
+	public static function validate($params, $rules, $msgs = []) {
 		// 进行数据验证
 		if(empty($rules)){
 			return true;
 		}
 
-		$validate = Validate::make($rules, $msgs);
+		$validate = self::getValidate($rules, $msgs);
 		$valid = $validate->check($params);
 
 		if(! $valid){

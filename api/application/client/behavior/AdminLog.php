@@ -6,7 +6,7 @@ use app\client\repository\AdminLogRepository;
 class AdminLog {
     public function run($params){
         if (request()->isPost()) {
-            AdminLogRepository::record();
+            // AdminLogRepository::record();
         }
     }
 }

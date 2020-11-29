@@ -40,7 +40,7 @@ import commonMixin from "@/mixins/common";
 import validateMixin from "@/mixins/validate";
 import {menus} from '@/config/menu';
 import { requestAll } from '@/libs/util';
-import { getRole, editRole, getAccessData } from '@/api/system';
+import systemApi from '@/api/system';
 import permissions from './components/permissions';
 
 export default {
@@ -96,8 +96,8 @@ export default {
 			}
 
 			this.loading(true);
-			requestAll([getRole(id), getAccessData(id)]).then((res)=>{
-				let {0: role, 1: access_data} = res;
+			requestAll([systemApi.getRole(id), systemApi.getAccessData(id)]).then((res)=>{
+				let [role, access_data] = res;
 
 				// 处理角色数据
 				this.form.id = id;
@@ -124,7 +124,7 @@ export default {
 			this.submitChain().then(params => {
 				this.loading(true);
 
-				editRole(params.args).then(res => {
+				systemApi.editRole(params.args).then(res => {
 					this.$router.push({path: this.redirect_url})
 				}).catch(e => {
 					let msg = e.message || '网络异常, 请稍后重试';

@@ -1,7 +1,7 @@
 import Storage from '@/libs/Storage.js';
 import Cookie from '@/libs/Cookie';
 import {aes_encrypt, aes_decrypt} from '@/libs/crypto';
-import { tokenLogin } from '@/api/user';
+import userApi from '@/api/user';
 
 const state = {
 	token:'',
@@ -189,7 +189,7 @@ const actions = {
 			this.commit('auth/updateUser', user);
 		}else{
 			// 使用 token 向后端请求数据, 获取用户信息以及配置信息
-			tokenLogin().then(result => {
+			userApi.tokenLogin().then(result => {
 				this.commit('auth/setLogin', result);
 				location.reload();
 			}).catch(e => {
