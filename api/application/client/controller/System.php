@@ -14,7 +14,7 @@ class System {
 	public function getAccessData(){
 		// 角色id
 		$id = absint(input('id'));
-		
+
 		// 数据权限配置数据
 		$config = config('access.');
 

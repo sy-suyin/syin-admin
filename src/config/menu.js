@@ -247,6 +247,13 @@ const menus = [
 				]
 			},
 			{
+				name: '系统配置',
+				icon: '',
+				controller: 'system',
+				action: 'config',
+				is_hidden: 0
+			},
+			{
 				name: '数据字典',
 				icon: '',
 				controller: 'system',

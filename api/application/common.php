@@ -57,7 +57,6 @@ function absint($value){
 	return abs((int)$value);
 }
 
-
 /**
  * 获取参数
  * 当$name不为字符串时, 方法将根据第一个参数设置后续获取数据时, 所需用到的数据集
