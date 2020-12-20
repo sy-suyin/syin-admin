@@ -166,39 +166,39 @@ const menus = [
 			{
 				name: '管理员管理',
 				icon: '',
-				controller: 'system',
+				controller: 'admin',
 				action: 'adminman',
 				is_hidden: 0,
 				children: [
 					{
 						name: '列表',
 						icon: '',
-						controller: 'system',
-						action: 'adminlist',
+						controller: 'admin',
+						action: 'index',
 						is_hidden: 0
 					},
 					{
 						name: '回收站',
 						icon: '',
-						controller: 'system',
-						action: 'adminrecycle',
-						relation: 'system-adminlist',
+						controller: 'admin',
+						action: 'recycle',
+						relation: 'admin-index',
 						is_hidden: 1
 					},
 					{
 						name: '添加',
 						icon: '',
-						controller: 'system',
-						action: 'adminadd',
-						relation: 'system-adminlist',
+						controller: 'admin',
+						action: 'add',
+						relation: 'admin-index',
 						is_hidden: 1
 					},
 					{
 						name: '修改',
 						icon: '',
-						controller: 'system',
-						action: 'adminedit',
-						relation: 'system-adminlist',
+						controller: 'admin',
+						action: 'edit',
+						relation: 'admin-index',
 						params: '/:id',
 						is_hidden: 1
 					},
@@ -207,41 +207,41 @@ const menus = [
 			{
 				name: '角色管理',
 				icon: '',
-				controller: 'system',
+				controller: 'role',
 				action: 'roleman',
 				is_hidden: 0,
 				children: [
 					{
 						name: '列表',
 						icon: '',
-						controller: 'system',
-						action: 'rolelist',
-						relation: 'system-rolelist',
+						controller: 'role',
+						action: 'index',
+						relation: 'role-index',
 						is_hidden: 0
 					},
 					{
 						name: '回收站',
 						icon: '',
-						controller: 'system',
-						action: 'rolerecycle',
-						relation: 'system-rolelist',
+						controller: 'role',
+						action: 'recycle',
+						relation: 'role-index',
 						is_hidden: 1
 					},
 					{
 						name: '添加',
 						icon: '',
-						controller: 'system',
-						action: 'roleadd',
-						relation: 'system-rolelist',
+						controller: 'role',
+						action: 'add',
+						relation: 'role-index',
 						is_hidden: 1
 					},
 					{
 						name: '修改',
 						icon: '',
-						controller: 'system',
-						action: 'roleedit',
+						controller: 'role',
+						action: 'edit',
 						params: '/:id',
-						relation: 'system-rolelist',
+						relation: 'role-index',
 						is_hidden: 1
 					},
 				]

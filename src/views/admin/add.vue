@@ -1,3 +1,4 @@
+
 <template>
 	<div>
 		<page-header></page-header>
@@ -76,7 +77,7 @@ export default {
 					{ required: true, message: '请先选择角色', trigger: 'blur' },
 				],
 			},
-			redirect_url: '/system/adminlist',
+			redirect_url: '/admin/index',
 		}
 	},
 	mounted(){

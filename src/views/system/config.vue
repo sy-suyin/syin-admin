@@ -21,7 +21,7 @@
 <script>
 import commonMixin from "@/mixins/common";
 import validateMixin from "@/mixins/validate";
-import userApi from '@/api/user';
+import userApi from '@/api/auth';
 
 export default {
 	name: "home",

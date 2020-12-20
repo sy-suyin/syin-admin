@@ -73,7 +73,7 @@ class Storage {
 	/**
 	 * 删除存储数据
 	 * 
-	 * 实例: remove('ky1', 'kyw', 'ky4');
+	 * 实例: remove('ky1', 'ky2, 'ky3');
 	 * 
 	 */
 	static remove(){

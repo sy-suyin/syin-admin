@@ -37,7 +37,7 @@ class Admin {
 	/**
 	 * 角色管理 - 管理员数据
 	 */
-	public function detail(AdminRepository $repository){
+	public function read(AdminRepository $repository){
 		$result = AdminService::getRecord($repository);
 
 		$result = $result->toArray();
@@ -46,10 +46,18 @@ class Admin {
 		return show_success('查询成功', $result);
 	}
 
+    /**
+     * 获取创建数据前所需数据
+     * GET
+     */
+    public function create(AdminRepository $repository){
+        return show_success('查询成功');
+    }
+
 	/**
 	 * 管理员管理 - 添加
 	 */
-	public function add(AdminRepository $repository){
+	public function save(AdminRepository $repository){
 		$args   = AdminService::checkRequest();
 		$result = $repository->create($args);
 
@@ -67,10 +75,14 @@ class Admin {
 		return show_success('已成功添加管理员数据');
 	}
 
+	public function edit(AdminRepository $repository){
+
+	}
+
 	/**
 	 * 管理员管理 - 修改
 	 */
-	public function edit(AdminRepository $repository){
+	public function update(AdminRepository $repository){
 		$model = AdminService::getRecord($repository, $_POST);
 		$args  = AdminService::checkRequest($model);
 

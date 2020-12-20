@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import userApi from '@/api/user';
+import userApi from '@/api/auth';
 import { getType } from '@/libs/util';
 
 export default {

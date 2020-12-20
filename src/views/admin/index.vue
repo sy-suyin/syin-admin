@@ -10,7 +10,7 @@
 			<db-table 
 				:data="results"
 				:config="config"
-				:pagination="page_default"
+				:pagination="pages.default"
 				@handle="handle"
 			>
 			</db-table>
@@ -23,7 +23,7 @@ import tableMixin from "@/mixins/table";
 import config from "@/assets/build/adminlist";
 
 export default {
-	name: "system_adminlist",
+	name: "admin_index",
 	mixins: [ tableMixin ],
   	data() {
 		return {

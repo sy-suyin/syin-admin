@@ -1,21 +1,22 @@
+import api from '@/api/admin';
 import { recycle } from '@/config/table';
 
 let config = {
 	// 请求链接
 	urls: {
-		del: '/admin/del',
-		dis: '/admin/dis',
-		sort: '/admin/sort',
-		list: '/admin/index',
-		recycle: '/admin/recycle',
+		del: api.del,
+		dis: api.dis,
+		sort: api.sort,
+		list: api.index,
+		recycle: api.recycle,
 	},
 
 	// 页面链接。 拆分能更好的区分, 能让请求链接和页面链接各不同
 	pages: {
-		add: '/system/adminadd',
-		list: '/system/adminlist',
-		edit: '/system/adminedit/:id',
-		recycle: '/system/adminrecycle',
+		add: '/admin/add',
+		list: '/admin/index',
+		edit: '/admin/eidt/:id',
+		recycle: '/admin/recycle',
 	},
 
 	columns: [

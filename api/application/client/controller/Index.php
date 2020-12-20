@@ -30,6 +30,13 @@ class Index {
 	}
 
 	/**
+	 * 返回后台配置
+	 */
+	public function config(){
+
+	}
+
+	/**
 	 * 获取新token
 	 */
 	public function refreshToken(Request $request){

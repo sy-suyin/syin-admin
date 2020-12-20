@@ -255,16 +255,17 @@ export default {
 		 * 初始化权限信息
 		 */
 		initPermission(){
+			// TODO 此处待完善
 			for(let key in this.params.urls){
-				let url = this.params.urls[key].split('/');
-				if(url[0].length){
-					continue;
-				}
+				// let url = this.params.urls[key].split('/');
+				// if(url[0].length){
+				// 	continue;
+				// }
 
-				let controller = url[1] || 'index';
-				let action = url[2] || 'index';
+				// let controller = url[1] || 'index';
+				// let action = url[2] || 'index';
 
-				this.data_access[key] = checkPermission(controller, action, 'data');
+				// this.data_access[key] = checkPermission(controller, action, 'data');
 			}
 
 			for(let key in this.params.pages){

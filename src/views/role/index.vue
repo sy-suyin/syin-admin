@@ -2,9 +2,7 @@
 	<div class="data-table">
 		<page-header>
 			<template #breadcrumb-after>
-				<div>
-					<h2 class="page-title">管理员回收站</h2>
-				</div>
+				<h2 class="page-title">角色列表</h2>
 			</template>
 		</page-header>
 
@@ -12,7 +10,7 @@
 			<db-table 
 				:data="results"
 				:config="config"
-				:pagination="page_default"
+				:pagination="pages.default"
 				@handle="handle"
 			>
 			</db-table>
@@ -22,18 +20,18 @@
 
 <script>
 import tableMixin from "@/mixins/table";
-import config from "@/assets/build/adminrecycle";
+import config from "@/assets/build/rolelist";
 
 export default {
-	name: "system_adminrecycle",
+	name: "role_index",
 	mixins: [ tableMixin ],
   	data() {
-      	return {
+		return {
 			config,
 		}
 	},
 	created(){
-		this.addScene(config.urls.recycle, 'default', { mapping: 'results' });
+		this.addScene(config.urls.list, 'default', { mapping: 'results' });
 	},
 	mounted(){
 		this.getRequestData();

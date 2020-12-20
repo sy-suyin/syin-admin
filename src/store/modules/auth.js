@@ -1,7 +1,7 @@
 import Storage from '@/libs/Storage.js';
 import Cookie from '@/libs/Cookie';
 import {aes_encrypt, aes_decrypt} from '@/libs/crypto';
-import userApi from '@/api/user';
+import userApi from '@/api/auth';
 
 const state = {
 	token:'',

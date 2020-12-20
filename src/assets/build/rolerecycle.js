@@ -1,21 +1,21 @@
+import api from '@/api/role';
 import { recycle } from '@/config/table';
 
 let config = {
 	// 各跳转链接
 	urls: {
-		add: '/role/add',
-		del: '/role/del',
-		dis: '/role/dis',
-		edit: '/role/edit/:id',
-		list: '/role/index',
-		recycle: '/role/recycle',
+		del: api.del,
+		dis: api.dis,
+		sort: api.sort,
+		list: api.index,
+		recycle: api.recycle,
 	},
 
 	pages: {
-		add: '/system/roleadd',
-		edit: '/system/roleedit/:id',
-		list: '/system/rolelist',
-		recycle: '/system/rolerecycle',
+		add: '/role/add',
+		edit: '/role/edit/:id',
+		list: '/role/list',
+		recycle: '/role/recycle',
 	},
 
 	columns: [

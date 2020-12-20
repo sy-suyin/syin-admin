@@ -1,3 +1,4 @@
+import api from '@/api/admin';
 import { list } from '@/config/table';
 
 let config = {
@@ -5,19 +6,19 @@ let config = {
 
 	// 请求链接
 	urls: {
-		del: '/admin/del',
-		dis: '/admin/dis',
-		sort: '/admin/sort',
-		list: '/admin/index',
-		recycle: '/admin/recycle',
+		del: api.del,
+		dis: api.dis,
+		sort: api.sort,
+		list: api.index,
+		recycle: api.recycle,
 	},
 
 	// 页面链接
 	pages: {
-		add: '/system/adminadd',
-		list: '/system/adminlist',
-		edit: '/system/adminedit/:id',
-		recycle: '/system/adminrecycle',
+		add: '/admin/add',
+		list: '/admin/index',
+		edit: '/admin/eidt/:id',
+		recycle: '/admin/recycle',
 	},
 
 	columns: [

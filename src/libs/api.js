@@ -2,7 +2,6 @@ import Request from '@/libs/Request';
 import { base_url } from '@/config/reuqest';
 
 const BASE_URL = process.env.NODE_ENV === 'development' ? base_url.dev : base_url.pro;
-
 const service = new Request(BASE_URL);
 
 /**
