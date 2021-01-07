@@ -64,10 +64,10 @@ const api = {
 	/**
 	 * 获取修改时所需数据
 	 */
-	edit(id) {
+	edit(data) {
 		return request({
 			url: '/admin/edit',
-			data: {id},
+			data,
 			method: 'get',
 			dispose: true,
 		});

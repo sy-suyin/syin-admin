@@ -2,7 +2,9 @@
 namespace app\client\controller;
 
 use app\client\repository\AdminRepository;
+use app\client\repository\RoleRepository;
 use app\client\service\AdminService;
+use app\common\criteria\BaseCriteria;
 use think\Request;
 
 class Admin {
@@ -35,7 +37,7 @@ class Admin {
 	}
 
 	/**
-	 * 角色管理 - 管理员数据
+	 * 管理员管理 - 管理员数据
 	 */
 	public function read(AdminRepository $repository){
 		$result = AdminService::getRecord($repository);
@@ -50,8 +52,13 @@ class Admin {
      * 获取创建数据前所需数据
      * GET
      */
-    public function create(AdminRepository $repository){
-        return show_success('查询成功');
+    public function create(AdminRepository $repository, RoleRepository $roleRepo){
+		// 查询所有未被禁用的角色
+		$roles = $roleRepo->getByCriteria(new BaseCriteria)->all();
+
+        return show_success('查询成功', [
+			'roles' => $roles
+		]);
     }
 
 	/**
@@ -75,8 +82,17 @@ class Admin {
 		return show_success('已成功添加管理员数据');
 	}
 
-	public function edit(AdminRepository $repository){
+	public function edit(AdminRepository $repository, RoleRepository $roleRepo){
+		$model = AdminService::getRecord($repository);
+		$roles = $roleRepo->getByCriteria(new BaseCriteria)->all();
+		$model->roles = AdminService::adminRelationRoles($model->id);
 
+		$model->hidden(['password', 'is_admin', 'logged_count']);
+
+		return show_success('查询成功', [
+			'result' => $model,
+			'roles'	 => $roles
+		]);
 	}
 
 	/**

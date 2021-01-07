@@ -7,15 +7,17 @@
         @focus="onFocus"
         :multiple="false"
         :size="propValue.size"
+        class="single-select"
+        :class="propValue.class"
         :clearable="propValue.clearable"
         :disabled="propValue.disabled"
         :placeholder="propValue.placeholder"
     >
         <el-option
             v-for="item in options"
-            :label="item.label"
-            :key="item.value"
-            :value="item.value"
+            :label="item[label_name]"
+            :key="item[value_name]"
+            :value="item[value_name]"
         >
         </el-option>
     </el-select>
@@ -37,8 +39,14 @@ export default {
     },
     data(){
         return {
+            label_name: 'label',
+            value_name: 'value',
             defaultValue: this.value,
         }
+    },
+    mounted(){
+        this.label_name = this.propValue.label_name || 'label';
+        this.value_name = this.propValue.value_name || 'value';
     },
     methods: {
         handleBlur(event){
@@ -58,5 +66,7 @@ export default {
 </script>
 
 <style lang="scss">
-
+.single-select{
+    width: 100%;
+}
 </style>

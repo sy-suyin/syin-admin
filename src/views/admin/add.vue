@@ -1,4 +1,3 @@
-
 <template>
 	<div>
 		<page-header></page-header>
@@ -6,39 +5,25 @@
 		<div class="content-container" v-loading="is_loading">		
 			<el-card class="box-card">
 				<div slot="header" class="clearfix">
-					添加管理员
+					{{title}}
 				</div>
 
-				<el-form :ref="this.form_name" :model="form" :rules="rules" label-width="80px">
-					<el-form-item label="登录账号" prop="login">
-						<el-input v-model="form.login"></el-input>
-					</el-form-item>
+				<el-form :ref="this.form_name" :model="args" :rules="rules" label-width="80px">
 
-					<el-form-item label="用户名称" prop="name" >
-						<el-input v-model="form.name"></el-input>
-					</el-form-item>
+					<template v-for="item in items">
+						<!-- 输入分隔 -->
+						<el-divider content-position="left" v-if="item.type == 'divider'" :key="item.name">{{item.name}}</el-divider>
 
-					<el-form-item label="登录密码" prop="password">
-						<el-input v-model="form.password" show-password></el-input>
-					</el-form-item>
-
-					<el-form-item label="权限角色" prop="roles">
-						<el-select v-model="form.roles" placeholder="请选择权限角色" multiple>
-
-							<el-option
-								v-for="item in roles"
-								:key="item.id"
-								:label="item.name"
-								:value="item.id">
-							</el-option>
-
-						</el-select>
-					</el-form-item>
+						<el-form-item :label="item.name" :prop="item.value" :key="item.name" v-else>
+							<form-item v-model="args[item.value]" :type="item.type" :options="item.target ? data[item.target] : item.data" :propValue="item.propValue"></form-item>
+						</el-form-item>
+					</template>
 
 					<el-form-item>
 						<el-button type="primary" @click="submit">立即创建</el-button>
 						<el-button @click="$router.back(-1)">取消</el-button>
 					</el-form-item>
+
 				</el-form>
 			</el-card>
 		</div>
@@ -49,35 +34,24 @@
 import commonMixin from "@/mixins/common";
 import validateMixin from "@/mixins/validate";
 import { debounce } from '@/libs/util';
-import systemApi from '@/api/system';
+import api from '@/api/admin';
+import formItem from '@/components/form-item';
+import config from "@/config/model/admin/add";
 
 export default {
-	name: "system_adminadd",
+	name: "admin_add",
+	components: {formItem},
 	mixins: [ commonMixin, validateMixin ],
   	data() {
       	return {
-			roles: [],
-        	form: {
-				login: '',
-          		name:  '',
-				password: '',
-				roles: []
+			args: {},
+			data: {
+				roles: [],
 			},
-			rules: {
-				login: [
-					{ required: true, message: '请输入登录账号名称', trigger: 'blur' },
-				],
-				name: [
-					{ required: true, message: '请输入用户名称', trigger: 'blur' },
-				],
-				password: [
-					{ required: true, message: '请输入登录密码', trigger: 'blur' },
-				],
-				roles: [
-					{ required: true, message: '请先选择角色', trigger: 'blur' },
-				],
-			},
-			redirect_url: '/admin/index',
+			title: config.title || '',
+			items: config.items,
+			rules: config.rules,
+			redirect_url: config.redirect_url,
 		}
 	},
 	mounted(){
@@ -86,18 +60,20 @@ export default {
 	methods: {
 
 		init(){
-			systemApi.getRoles().then(res => {
-				this.roles = res;
+			this.loading(true);
+			api.create().then(res => {
+				this.data.roles = res.roles;
 			}).catch(e => {
 				let msg = e.message || '网络异常, 请稍后重试';
 				this.message(msg, 'warning', 3000, this.redirect_url);
+			}).finally(()=>{
+				this.loading(false);
 			});
 		},
 
 		submit(){
 			this.submitChain().then(params => {
-				this.loading(true);
-				systemApi.addAdmin(params.args).then(res => {
+				api.addAdmin(params.args).then(res => {
 					this.$router.push({path: this.redirect_url})
 				}).catch(e => {
 					let msg = e.message || '网络异常, 请稍后重试';

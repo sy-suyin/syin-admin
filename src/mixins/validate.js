@@ -28,7 +28,7 @@ export default {
 			if(this.optimget){
 				chains.unshift(this.optimget);
 			}else{
-				params.args = {...this.form};
+				params.args = {...this.args};
 			}
 
 			let promise = Promise.resolve(params);

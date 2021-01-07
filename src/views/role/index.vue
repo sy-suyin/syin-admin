@@ -20,7 +20,7 @@
 
 <script>
 import tableMixin from "@/mixins/table";
-import config from "@/assets/build/rolelist";
+import config from "@/config/model/role/index";
 
 export default {
 	name: "role_index",

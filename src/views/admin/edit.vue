@@ -5,36 +5,19 @@
 		<div class="content-container" v-loading="is_loading">
 			<el-card class="box-card">
 				<div slot="header" class="clearfix">
-					修改管理员
+					{{title}}
 				</div>
 
-				<el-form :ref="this.form_name" :model="form" :rules="rules" label-width="80px">
-					<el-form-item label="登录账号" prop="login">
-						<el-input v-model="form.login"></el-input>
-					</el-form-item>
+				<el-form :ref="this.form_name" :model="args" :rules="rules" label-width="80px">
 
-					<el-form-item label="用户名称" prop="name">
-						<el-input v-model="form.name"></el-input>
-					</el-form-item>
+					<template v-for="item in items">
+						<!-- 输入分隔 -->
+						<el-divider content-position="left" v-if="item.type == 'divider'" :key="item.name">{{item.name}}</el-divider>
 
-					<el-form-item label="权限角色" prop="roles">
-						<el-select v-model="form.roles" placeholder="请选择权限角色" multiple>
-
-							<el-option
-								v-for="item in roles"
-								:key="item.id"
-								:label="item.name"
-								:value="item.id">
-							</el-option>
-
-						</el-select>
-					</el-form-item>
-
-					<el-divider content-position="left">如果不修改密码, 下面留空</el-divider>
-
-					<el-form-item label="登录密码" prop="password">
-						<el-input v-model="form.password" show-password></el-input>
-					</el-form-item>
+						<el-form-item :label="item.name" :prop="item.value" :key="item.name" v-else>
+							<form-item v-model="args[item.value]" :type="item.type" :options="item.target ? data[item.target] : item.data" :propValue="item.propValue"></form-item>
+						</el-form-item>
+					</template>
 
 					<el-form-item>
 						<el-button type="primary" @click="submit">提交修改</el-button>
@@ -50,33 +33,25 @@
 import commonMixin from "@/mixins/common";
 import validateMixin from "@/mixins/validate";
 import { debounce, requestAll } from '@/libs/util';
-import systemApi from '@/api/system';
+import api from '@/api/admin';
+import formItem from '@/components/form-item';
+import config from "@/config/model/admin/edit";
 
 export default {
-	name: "system_adminadd",
+	name: "admin_edit",
+	components: {formItem},
 	mixins: [ commonMixin, validateMixin ],
   	data() {
       	return {
-			roles: [],
-        	form: {
-				id: 0,
-				login: '',
-          		name:  '',
-				password: '',
-				roles: []
+			args: {},
+			data: {
+				roles: [],
 			},
-			rules: {
-				login: [
-					{ required: true, message: '请输入登录账号名称', trigger: 'blur' },
-				],
-				name: [
-					{ required: true, message: '请输入用户名称', trigger: 'blur' },
-				],
-				roles: [
-					{ required: true, message: '请先选择角色', trigger: 'blur' },
-				],
-			},
-			redirect_url: '/system/adminlist',
+			title: config.title || '',
+			// items: config.items,
+			items: [],
+			rules: config.rules,
+			redirect_url: config.redirect_url,
 		}
 	},
 	mounted(){
@@ -85,25 +60,22 @@ export default {
 	methods: {
 		init(){
 			let id = +this.$route.params.id;
-
 			if(!id){
 				return this.message('参数异常', 'warning', 3000, this.redirect_url);
 			}
 
 			this.loading(true);
-			requestAll([systemApi.getAdmin(id), systemApi.getRoles()]).then((res)=>{
-				let [admin, roles] = res;
-
-				// 处理管理员数据
-				this.form.id = id;
-				this.form.login = admin.login_name;
-				this.form.name = admin.name;
-				admin.roles.forEach(val => {
-					this.form.roles.push(val.id);
+			api.edit({id}).then(res => {
+				this.args = {...res.result};
+				this.args.login = res.result.login_name;
+				this.data.roles = res.roles;
+				this.args.roles = [];
+				res.result.roles.forEach(val => {
+					this.args.roles.push(val.id);
 				});
 
-				// 处理角色数据
-				this.roles = roles;
+				// 开始渲染页面
+				this.items = config.items;
 			}).catch(e => {
 				let msg = e.message || '网络异常, 请稍后重试';
 				this.message(msg, 'warning', 3000, this.redirect_url);
@@ -116,7 +88,7 @@ export default {
 			this.submitChain().then(params => {
 
 				this.loading(true);
-				systemApi.editAdmin(params.args).then(res => {
+				api.update(params.args).then(res => {
 					this.$router.push({path: this.redirect_url})
 				}).catch(e => {
 					let msg = e.message || '网络异常, 请稍后重试';

@@ -12,7 +12,7 @@
 			<db-table 
 				:data="results"
 				:config="config"
-				:pagination="page_default"
+				:pagination="pages.default"
 				@handle="handle"
 			>
 			</db-table>
@@ -22,7 +22,7 @@
 
 <script>
 import tableMixin from "@/mixins/table";
-import config from "@/assets/build/rolerecycle";
+import config from "@/config/model/role/recycle";
 
 export default {
 	name: "system_rolerecycle",

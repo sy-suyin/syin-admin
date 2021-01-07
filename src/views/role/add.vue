@@ -8,22 +8,28 @@
 					添加角色
 				</div>
 
-				<el-form :ref="this.form_name" :model="form" :rules="rules" label-width="80px">
-					<el-form-item label="角色名称">
-						<el-input v-model="form.name"></el-input>
-					</el-form-item>
+				<el-form :ref="this.form_name" :model="args" :rules="rules" label-width="80px">
 
-					<el-form-item label="数据权限">
-						<permissions :data="permissions.data" @confirm="confirm('data', $event)" />
-					</el-form-item>
+					<template v-for="item in items">
+						<!-- 输入分隔 -->
+						<el-divider content-position="left" v-if="item.type == 'divider'" :key="item.name">{{item.name}}</el-divider>
 
-					<el-form-item label="页面权限">
-						<permissions :data="permissions.page"  @confirm="confirm('page', $event)" />
-					</el-form-item>
+						<el-form-item :label="item.name" :prop="item.value" :key="item.name" v-else-if="item.type == 'custom' && item.value == 'data'">
+							<form-item v-model="args[item.value]" :type="item.type" :options="item.target ? data[item.target] : item.data" :propValue="item.propValue">
+								<permissions :data="data.data"  @confirm="confirm('data', $event)" />
+							</form-item>
+						</el-form-item>
 
-					<el-form-item label="备注说明">
-						<el-input type="textarea" v-model="form.desc"></el-input>
-					</el-form-item>
+						<el-form-item :label="item.name" :prop="item.value" :key="item.name" v-else-if="item.type == 'custom' && item.value == 'page'">
+							<form-item v-model="args[item.value]" :type="item.type" :options="item.target ? data[item.target] : item.data" :propValue="item.propValue">
+								<permissions :data="data.page"  @confirm="confirm('page', $event)" />
+							</form-item>
+						</el-form-item>
+
+						<el-form-item :label="item.name" :prop="item.value" :key="item.name" v-else>
+							<form-item v-model="args[item.value]" :type="item.type" :options="item.target ? data[item.target] : item.data" :propValue="item.propValue"></form-item>
+						</el-form-item>
+					</template>
 
 					<el-form-item>
 						<el-button type="primary" @click="submit">立即创建</el-button>
@@ -42,34 +48,32 @@ import validateMixin from "@/mixins/validate";
 import { menus } from '@/config/menu';
 import systemApi from '@/api/system';
 import permissions from './components/permissions';
+import api from '@/api/role';
+import formItem from '@/components/form-item';
+import config from "@/config/model/role/add";
 
 export default {
-	name: "system_roleadd",
+	name: "role_add",
+	components: {formItem, permissions},
 	mixins: [ commonMixin, validateMixin ],
-	components: { permissions },
   	data() {
       	return {
-        	form: {
-          		name: '',
-				desc: '',
+        	args: {
 				blocklist: {
 					data: [],
 					page: [],
 				},
 			},
 
-			permissions: {
+			data: {
 				data: [],
 				page: menus,
 			},
 
-			rules: {
-				name: [
-					{ required: true, message: '请输入用户名称', trigger: 'blur' },
-				],
-			},
-
-			redirect_url: '/system/rolelist',
+			title: config.title || '',
+			items: config.items,
+			rules: config.rules,
+			redirect_url: config.redirect_url
 		}
 	},
 
@@ -81,7 +85,7 @@ export default {
 		init(){
 			this.loading(true);
 			systemApi.getAccessData().then(res => {
-				this.permissions.data = Object.values(res.config);
+				this.data.data = Object.values(res.config);
 			}).catch(e => {
 				let msg = e.message || '网络异常, 请稍后重试';
 				this.message(msg, 'warning', 3000, this.redirect_url);
@@ -93,7 +97,7 @@ export default {
 		/**
 		 * 提交数据
 		 */
-		submit(params) {
+		submit() {
 			this.submitChain().then(params => {
 
 				this.loading(true);
@@ -112,8 +116,8 @@ export default {
 		 * 权限确认选择
 		 */
 		confirm(type, unselected){
-			this.form.blocklist[type] = unselected;
-			this.form[`blocklist_${type}_edit`] = true;
+			this.args.blocklist[type] = unselected;
+			this.args[`blocklist_${type}_edit`] = true;
 		},
     }
 };

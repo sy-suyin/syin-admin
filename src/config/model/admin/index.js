@@ -17,7 +17,7 @@ let config = {
 	pages: {
 		add: '/admin/add',
 		list: '/admin/index',
-		edit: '/admin/eidt/:id',
+		edit: '/admin/edit/:id',
 		recycle: '/admin/recycle',
 	},
 

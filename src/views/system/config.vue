@@ -2,7 +2,7 @@
 	<div class="data-table">
 		<page-header>
 			<template #breadcrumb-after>
-				<h2 class="page-title">管理员列表</h2>
+				<h2 class="page-title">{{title}}</h2>
 			</template>
 		</page-header>
 
@@ -42,6 +42,7 @@ export default {
 	components: {formItem},
 	data(){
 		return {
+			title: '系统配置',
 			args: {
 			},
 			config: [

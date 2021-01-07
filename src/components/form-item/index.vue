@@ -1,9 +1,7 @@
 <template>
     <div>
-
-        <div :is="typeName" :value="value" :prop-value="propValue" @input="handleInput" :options="options" :propValue="propValue"></div>
-
-        <!-- <text-input :v-model="value" :default-value="defaultValue" :prop-value="propValue"></text-input> -->
+        <slot v-if="type == 'custom'"></slot>
+        <div v-else :is="typeName" :value="value" :prop-value="propValue" @input="handleInput" :options="options" :propValue="propValue"></div>
     </div>
 </template>
 
@@ -41,11 +39,9 @@ export default {
         propValue: '',
         options: false,
     },
-    mounted(){
-    },
+    mounted(){},
     methods: {
         handleInput(value){
-            console.log(value);
             this.$emit('input', value);
         }
     },

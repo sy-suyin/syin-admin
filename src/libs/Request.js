@@ -67,9 +67,18 @@ class Request{
 			};
 
 			// 对post提交的数据进行额外处理
-			if(config.method == 'post' && config.hasOwnProperty('data')){
-				config.data = Qs.stringify(config.data);
-				config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+			if(config.hasOwnProperty('data')){
+				switch(config.method){
+					case 'post': {
+						config.data = Qs.stringify(config.data);
+						config.headers['Content-Type'] = 'application/x-www-form-urlencoded';
+						break;
+					}
+					case 'get':{
+						config.params = config.data;
+						break;
+					}
+				}
 			}
 
 			return config;

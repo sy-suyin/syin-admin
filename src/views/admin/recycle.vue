@@ -2,9 +2,7 @@
 	<div class="data-table">
 		<page-header>
 			<template #breadcrumb-after>
-				<div>
-					<h2 class="page-title">管理员回收站</h2>
-				</div>
+				<h2 class="page-title">{{title}}</h2>
 			</template>
 		</page-header>
 
@@ -12,7 +10,7 @@
 			<db-table 
 				:data="results"
 				:config="config"
-				:pagination="page.default"
+				:pagination="pages.default"
 				@handle="handle"
 			>
 			</db-table>
@@ -22,13 +20,14 @@
 
 <script>
 import tableMixin from "@/mixins/table";
-import config from "@/assets/build/adminrecycle";
+import config from "@/config/model/admin/recycle";
 
 export default {
-	name: "system_adminrecycle",
+	name: "admin_recycle",
 	mixins: [ tableMixin ],
   	data() {
       	return {
+			title: '管理员回收站',
 			config,
 		}
 	},

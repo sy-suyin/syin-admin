@@ -8,22 +8,28 @@
 					修改角色
 				</div>
 
-				<el-form :ref="this.form_name" :model="form" :rules="rules" label-width="80px">
-					<el-form-item label="角色名称">
-						<el-input v-model="form.name"></el-input>
-					</el-form-item>
+				<el-form :ref="this.form_name" :model="args" :rules="rules" label-width="80px">
 
-					<el-form-item label="数据权限">
-						<permissions :data="permissions.data" :blocklist="blocklist.data" @confirm="confirm('data', $event)" />
-					</el-form-item>
+					<template v-for="item in items">
+						<!-- 输入分隔 -->
+						<el-divider content-position="left" v-if="item.type == 'divider'" :key="item.name">{{item.name}}</el-divider>
 
-					<el-form-item label="页面权限">
-						<permissions :data="permissions.page" :blocklist="blocklist.page" @confirm="confirm('page', $event)" />
-					</el-form-item>
+						<el-form-item :label="item.name" :prop="item.value" :key="item.name" v-else-if="item.type == 'custom' && item.value == 'data'">
+							<form-item v-model="args[item.value]" :type="item.type" :options="item.target ? data[item.target] : item.data" :propValue="item.propValue">
+								<permissions :data="data.data"  @confirm="confirm('data', $event)" :blocklist="blocklist.data"/>
+							</form-item>
+						</el-form-item>
 
-					<el-form-item label="备注说明">
-						<el-input type="textarea" v-model="form.desc"></el-input>
-					</el-form-item>
+						<el-form-item :label="item.name" :prop="item.value" :key="item.name" v-else-if="item.type == 'custom' && item.value == 'page'">
+							<form-item v-model="args[item.value]" :type="item.type" :options="item.target ? data[item.target] : item.data" :propValue="item.propValue">
+								<permissions :data="data.page"  @confirm="confirm('page', $event)" :blocklist="blocklist.page" />
+							</form-item>
+						</el-form-item>
+
+						<el-form-item :label="item.name" :prop="item.value" :key="item.name" v-else>
+							<form-item v-model="args[item.value]" :type="item.type" :options="item.target ? data[item.target] : item.data" :propValue="item.propValue"></form-item>
+						</el-form-item>
+					</template>
 
 					<el-form-item>
 						<el-button type="primary" @click="submit">提交修改</el-button>
@@ -42,14 +48,17 @@ import {menus} from '@/config/menu';
 import { requestAll } from '@/libs/util';
 import systemApi from '@/api/system';
 import permissions from './components/permissions';
+import api from '@/api/role';
+import formItem from '@/components/form-item';
+import config from "@/config/model/role/edit";
 
 export default {
 	name: "system_roleedit",
 	mixins: [ commonMixin, validateMixin ],
-	components: { permissions },
+	components: { formItem, permissions },
   	data() {
       	return {
-			form: {
+			args: {
 			  id: 0,
           		name: '',
 				desc: '',
@@ -66,18 +75,15 @@ export default {
 				page: [],
 			},
 
-			permissions: {
+			data: {
 				data: [],
 				page: menus,
 			},
 
-			rules: {
-				name: [
-					{ required: true, message: '请输入用户名称', trigger: 'blur' },
-				],
-			},
-
-			redirect_url: '/system/rolelist',
+			title: config.title || '',
+			items: [],
+			rules: config.rules,
+			redirect_url: config.redirect_url
 		}
 	},
 
@@ -100,15 +106,18 @@ export default {
 				let [role, access_data] = res;
 
 				// 处理角色数据
-				this.form.id = id;
-				this.form.name = role.name;
-				this.form.desc = role.description;
+				this.args.id = id;
+				this.args.name = role.name;
+				this.args.desc = role.description;
 
 				// 设置禁止名单
 				this.blocklist = access_data.blocklist,
 
 				// 处理后台返回的数据
-				this.permissions.data = Object.values(access_data.config);
+				this.data.data = Object.values(access_data.config);
+
+				// 开始渲染页面
+				this.items = config.items;
 			}).catch(e => {
 				let msg = e.message || '网络异常, 请稍后重试';
 				this.message(msg, 'warning', 3000, this.redirect_url);
@@ -139,8 +148,8 @@ export default {
 		 * 权限确认选择
 		 */
 		confirm(type, unselected){
-			this.form.blocklist[type] = unselected;
-			this.form[`blocklist_${type}_edit`] = true;
+			this.args.blocklist[type] = unselected;
+			this.args[`blocklist_${type}_edit`] = true;
 		},
     }
 };

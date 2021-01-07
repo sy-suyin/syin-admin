@@ -241,7 +241,7 @@ class Repository {
 		$this->query = $this->model();
 	}
 
-/**
+	/**
      * @param bool $status
      * @return $this
      */

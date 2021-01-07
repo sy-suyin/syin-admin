@@ -1,12 +1,14 @@
 <template>
-        <el-select
-        v-model="defaultValue"
+    <el-select
+        v-model="default_value"
         @change="handleChange"
         @clear="handleClear"
         @blur="handleBlur"
         @focus="onFocus"
         @removeTag="handleRemoveTag"
         :multiple="true"
+        class="multi-select"
+        :class="propValue.class"
         :size="propValue.size"
         :clearable="propValue.clearable"
         :disabled="propValue.disabled"
@@ -14,9 +16,9 @@
     >
         <el-option
             v-for="item in options"
-            :label="item.label"
-            :key="item.value"
-            :value="item.value"
+            :label="item[label_name]"
+            :key="item[value_name]"
+            :value="item[value_name]"
         >
         </el-option>
     </el-select>
@@ -38,11 +40,14 @@ export default {
     },
     data(){
         return {
-            defaultValue: this.value,
+            label_name: 'label',
+            value_name: 'value',
+            default_value: this.value,
         }
     },
     mounted(){
-        console.log(this.propValue);
+        this.label_name = this.propValue.label_name || 'label';
+        this.value_name = this.propValue.value_name || 'value';
     },
     methods: {
         handleBlur(event){
@@ -65,5 +70,7 @@ export default {
 </script>
 
 <style lang="scss">
-
+.multi-select{
+    width: 100%;
+}
 </style>

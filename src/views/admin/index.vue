@@ -2,7 +2,7 @@
 	<div class="data-table">
 		<page-header>
 			<template #breadcrumb-after>
-				<h2 class="page-title">管理员列表</h2>
+				<h2 class="page-title">{{title}}</h2>
 			</template>
 		</page-header>
 
@@ -20,13 +20,14 @@
 
 <script>
 import tableMixin from "@/mixins/table";
-import config from "@/assets/build/adminlist";
+import config from "@/config/model/admin/index";
 
 export default {
 	name: "admin_index",
 	mixins: [ tableMixin ],
   	data() {
 		return {
+			title: '管理员回收站',
 			config,
 		}
 	},
