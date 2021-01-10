@@ -82,6 +82,10 @@ class Admin {
 		return show_success('已成功添加管理员数据');
 	}
 
+	/**
+     * 获取修改前所需数据
+     * GET
+     */
 	public function edit(AdminRepository $repository, RoleRepository $roleRepo){
 		$model = AdminService::getRecord($repository);
 		$roles = $roleRepo->getByCriteria(new BaseCriteria)->all();

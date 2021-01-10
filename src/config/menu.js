@@ -157,6 +157,48 @@ const menus = [
 		]
 	},
 	{
+		name: '分类管理',
+		icon: 'setting',
+		controller: 'category',
+		action: 'indexman',
+		is_hidden: 0,
+		children: [
+
+			{
+				name: '列表',
+				icon: '',
+				controller: 'admin',
+				action: 'index',
+				is_hidden: 0
+			},
+			{
+				name: '回收站',
+				icon: '',
+				controller: 'admin',
+				action: 'recycle',
+				relation: 'admin-index',
+				is_hidden: 1
+			},
+			{
+				name: '添加',
+				icon: '',
+				controller: 'admin',
+				action: 'add',
+				relation: 'admin-index',
+				is_hidden: 1
+			},
+			{
+				name: '修改',
+				icon: '',
+				controller: 'admin',
+				action: 'edit',
+				relation: 'admin-index',
+				params: '/:id',
+				is_hidden: 1
+			},
+		]
+	},
+	{
 		name: '系统设置',
 		icon: 'setting',
 		controller: 'system',
@@ -253,6 +295,22 @@ const menus = [
 				action: 'config',
 				is_hidden: 0
 			},
+		]
+	},
+	{
+		name: '开发工具',
+		icon: 'setting',
+		controller: 'dev',
+		action: 'indexman',
+		is_hidden: 0,
+		children: [
+			{
+				name: '数据库管理',
+				icon: '',
+				controller: 'dev',
+				action: 'db',
+				is_hidden: 0,
+			}
 		]
 	},
 ];

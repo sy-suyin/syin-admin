@@ -48,9 +48,4 @@ class Index {
 
 		return show_success('请求成功')->allowCache(false);
 	}
-
-	public function build(){
-		$builder = new Builder();
-		$builder->build('admin');
-	}
 }
