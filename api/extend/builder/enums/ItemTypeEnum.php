@@ -2,35 +2,35 @@
 
 namespace builder\enums;
 
-use common\enums\BaseEnum;
+use builder\common\BaseEnum;
 
 /**
- * 表单元素类型
+ * 表单控件类型
  */
 class ItemTypeEnum extends BaseEnum {
 
-	const STRING = '';
-	const TEXT = '';
-	const EDITOR = '';
-	const NUMBER = '';
-	const DATE = '';
-	const TIME = '';
-	const DATETIME = '';
-	const DATETIMERANGE = '';
-	const IMAGE = '';
-	const IMAGES = '';
-	const FILE = '';
-	const FILES = '';
-	const SELECT = '';
-	const SELECTS = '';
-	const SWITCH = '';
-	const CHECKBOX = '';
-	const RADIO = '';
-	const JSON = '';
-	const CITY = '';
-	const SELECTPAGE = '';
-	const SELECTPAGES = '';
-	const CUSTOM = '';
+	const STRING = 'string';
+	const TEXT = 'text';
+	const EDITOR = 'editor';
+	const NUMBER = 'number';
+	const DATE = 'data';
+	const TIME = 'time';
+	const DATETIME = 'datetime';
+	const DATETIMERANGE = 'datetimerange';
+	const IMAGE = 'image';
+	const IMAGES = 'images';
+	const FILE = 'file';
+	const FILES = 'files';
+	const SELECT = 'select';
+	const SELECTS = 'selects';
+	const SWITCH = 'switch';
+	const CHECKBOX = 'checkbox';
+	const RADIO = 'raido';
+	const JSON = 'json';
+	const CITY = 'city';
+	const SELECTPAGE = 'selectpage';
+	const SELECTPAGES = 'selectpages';
+	const CUSTOM = 'cutsom';
 	
 	public static function getMap(): array
 	{

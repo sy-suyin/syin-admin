@@ -2,7 +2,7 @@
 
 namespace builder\enums;
 
-use common\enums\BaseEnum;
+use builder\common\BaseEnum;
 
 /**
  * 数据类型

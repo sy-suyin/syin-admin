@@ -37,7 +37,7 @@ class Poster{
             return $file_path;
         }
 
-        $image = \Image::open($config['background']);
+        $image = Image::open($config['background']);
 
         // 添加水印
         $this->addWater($image, $config['content']);
@@ -86,8 +86,8 @@ class Poster{
             $source_name .= substr($params['value'], $pos);
 
             $temp = Image::open('./qrcode.png');
-            $temp->crop($info[0], $info[1], 0, 0, $params['width'], $params['height'])->save($source_name);
             $source = $base_path . $source_name;
+            $temp->crop($info[0], $info[1], 0, 0, $params['width'], $params['height'])->save($source);
             $flag = true;
         }
 
@@ -106,7 +106,7 @@ class Poster{
      */
     protected function addTextWater($image, $params){
         $base_path = $this->getBasePath();
-        $font_path = $base_path . $params['font_path'];
+        $font_path = $base_path . $params['font'];
         $size  = !empty($params['size'])  ?: 40;
         $color = !empty($params['color']) ?: '#000000';
 

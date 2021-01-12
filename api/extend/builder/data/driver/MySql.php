@@ -2,19 +2,38 @@
 
 namespace builder\data\driver;
 
+use builder\enums\DataTypeEnum;
+use builder\enums\ItemTypeEnum;
+
 /**
- * 数据类型
+ * mysql数据解析
  */
 class MySql {
 
+    /**
+     * 根据数据表生成的配置数据
+     */
     protected $config;
-    protected $table_full;
-    protected $table_name;
+
+    /**
+     * Enum类型识别为单选框的结尾字符,默认会识别为单选下拉列表
+     */
+    protected $enumRadioSuffix = ['data', 'state', 'status'];
+
+    /**
+     * Set类型识别为复选框的结尾字符,默认会识别为多选下拉列表
+     */
+    protected $setCheckboxSuffix = ['data', 'state', 'status'];
 
     /**
      * Int类型识别为日期时间的结尾字符,默认会识别为日期文本框
      */
     protected $intDateSuffix = ['time'];
+
+   /**
+     * 开关后缀
+     */
+    protected $switchPrefix = ['is'];
 
     /**
      * 开关后缀
@@ -95,282 +114,157 @@ class MySql {
      */
     protected $deleteTimeField = 'deletetime';
 
+    public function __construct($config = null){
+        // 此处设置过滤跳过字段
 
-    public function __construct($config){
-        // 数据表前缀
-        $table_prefix = $config['data']['prefix'];
-		// 数据表全写
-		$table_full = $table_prefix.$config['table'];
-
-		// 查询数据表信息
-		$table_info = db()->query("show table status like '{$table_full}'");
-		$table_info = $table_info[0];
-
-		// 获取数据表名称
-		$table_name = $table_info['Comment'];
-		$table_name = explode(';', $table_name)[0];
-		$table_name = explode(':', $table_name)[0];
-        $table_name = trim($table_name);
-
-        $this->config = $config;
-        $this->table_full = $table_full;
-        $this->table_full = $table_full;
+        if(!is_null($config)){
+            !empty($config['ignoreFields']) && $this->ignoreFields = $config['ignoreFields'];
+            !empty($config['reservedField']) && $this->reservedField = $config['reservedField'];
+            !empty($config['createtime']) && $this->createtime = $config['createtime'];
+            !empty($config['updateTimeField']) && $this->updateTimeField = $config['updateTimeField'];
+            !empty($config['deleteTimeField']) && $this->deleteTimeField = $config['deleteTimeField'];
+        }
     }
 
-    public function parse(){
+    /**
+     * 获取配置数据
+     */
+    public function getConfig(){
+        return $this->config;
+    }
+
+    /**
+     * 解析数据表
+     */
+    public function parse($table, $prefix = null){
+        if(is_null($prefix)){
+            $prefix = config('database.prefix');
+        }
+
+        $table_full = $prefix . $table;
+
+        // 查询数据表信息
+        $table_info = db()->query("show table status like '{$table_full}'");
+
+        if(empty($table_info)){
+            return false;
+        }
+
+        $table_info = $table_info[0];
+        $table_title = $table_info['Comment'];
+        $table_title = explode(';', $table_title)[0];
+        $table_title = explode(':', $table_title)[0];
+        $config = [
+            'pk'    => '',
+            'table' => $table,
+            'title' => $table_title,
+            'table_full' => $table_full,
+            'is_sort_deleted' => false, // 是否为软删除
+            'items' => [],
+        ];
+
+        /**
+         * 获取数据表数据
+         */
+
         $sql = "SELECT * FROM `information_schema`.`columns` "
-        . "WHERE TABLE_SCHEMA = ? AND table_name = ? "
-        . "ORDER BY ORDINAL_POSITION";
+            . "WHERE TABLE_SCHEMA = ? AND table_name = ? "
+            . "ORDER BY ORDINAL_POSITION";
 
-        $row = db()->query($sql, [config('database.database'), $this->table_full]);
+        $row = db()->query($sql, [config('database.database'), $table_full]);
 
-        foreach($row as $val){
-            $config['field'] = $field = $val['COLUMN_NAME'];
-
-            $comment = $val['COLUMN_COMMENT'];
+        foreach($row as $options){
+            $comment = $options['COLUMN_COMMENT'];
             $comment = explode(':', $comment);
-            $config['name'] = $comment[0];
+            $item['name'] = $comment[0];
+            $item = [
+                'name'  => $options['COLUMN_NAME'],
+                'title' => $comment[0],
+                'data'  => [],
+            ];
 
             // 设置主键
-            if($val['COLUMN_KEY'] == 'PRI' && $this->pk == ''){
-                $this->pk = $field;
+            if($options['COLUMN_KEY'] == 'PRI' && $config['pk'] == ''){
+                $config['pk'] = $item['name'];
             }
 
             // 判断删除
-            if($field == 'delete_time'){
-                $this->is_sort_deleted = true;
+            if($item['name'] == $this->deleteTimeField){
+                $config['is_sort_deleted'] = true;
             }
 
-            if(in_array($field, $this->reserved_fields)){
-                return;
-            }
+            // if(in_array($field, $this->reserved_fields)){
+            //     return;
+            // }
 
             if(isset($comment[1])){
                 $data = explode(',', $comment[1]);
                 foreach($data as $key => $val){
-                    $config['data'][$key] = explode('=', $val);
+                    $item['data'][$key] = explode('=', $val);
                 }
             }
 
             // 计算数据类型
-            $config = $this->getFieldType($val, $config);
-            // $element->add($val);
-        }
-    }
-
-    public function add($options){
-        $config['field'] = $field = $options['COLUMN_NAME'];
-
-        $comment = $options['COLUMN_COMMENT'];
-        $comment = explode(':', $comment);
-        $config['name'] = $comment[0];
-
-        // 设置主键
-        if($options['COLUMN_KEY'] == 'PRI' && $this->pk == ''){
-            $this->pk = $field;
+            $config['items'][] = $this->getItemType($options, $item);
         }
 
-        // 判断删除
-        if($field == 'delete_time'){
-            $this->is_sort_deleted = true;
-        }
-
-        if(in_array($field, $this->reserved_fields)){
-            return;
-        }
-
-        if(isset($comment[1])){
-            $data = explode(',', $comment[1]);
-            foreach($data as $key => $val){
-                $config['data'][$key] = explode('=', $val);
-            }
-        }
-
-        // 计算数据类型
-        $config = $this->getFieldType($options, $config);
-
-        // 统计各数据类型数
-
-        // $this->items[] = new Item($config);
-
-        return [$config];
+        $this->config = $config;
+        p($config);
+        return $config;
     }
 
     /**
-     * 初始化类型值
-     *
+     * 获取表单控件类型
      */
-    // public function initType($options, $config){
-	// 	$key 	 = $options['COLUMN_NAME'];
-    //     $type 	 = $options['DATA_TYPE'];
-
-    //     // if (preg_match("/{$v}$/i", $field)) {
-
-    //     $config['data_type'] = 'string';
-    //     $config['form_type'] = 'text';
-    //     $config['is_multi']  = false;
-
-	// 	// 1. 根据数据库字段类型判断
-    //     switch ($type) {
-    //         case 'bigint':
-    //         case 'int':
-    //         case 'mediumint':
-	// 		case 'smallint':
-	// 		case 'tinyint':
-	// 			// 整数
-	// 			$config['data_type'] = DataType::$INT;
-	// 			$config['form_type'] = 'number';
-    //             break;
-	// 		case 'enum':
-	// 			// 下拉单选
-	// 			$config['data_type'] = DataType::$STRING;
-	// 			$config['form_type'] = 'select';
-	// 			$config['is_multi'] = false;
-	// 			break;
-	// 		case 'set':
-	// 			// 下拉多选
-	// 			$config['data_type'] = DataType::$ARRAY;
-	// 			$config['form_type'] = 'select';
-	// 			$config['is_multi'] = true;
-    //             break;
-    //         case 'decimal':
-    //         case 'double':
-	// 		case 'float':
-	// 			// 浮点数
-	// 			$config['data_type'] = DataType::$FLOAT;
-	// 			$config['form_type'] = 'number';
-    //             break;
-    //         case 'longtext':
-    //         case 'text':
-    //         case 'mediumtext':
-    //         case 'smalltext':
-	// 		case 'tinytext':
-	// 			// 文本域
-	// 			$config['data_type'] = DataType::$STRING;
-	// 			$config['form_type'] = 'textarea';
-	// 			break;
-    //         default:
-    //             break;
-    //     }
-
-	// 	$key_arr = explode('_', $key);
-
-	// 	if(count($key_arr) > 1){
-	// 		// 2. 根据数据库字段前后缀判断
-	// 		$key_prefix = $key_arr[0];
-	// 		$key_suffix = end($key_arr);
-
-	// 		// 判断是否为关联字段
-	// 		if($key_suffix == 'id' && $key != 'id'){
-	// 			$this->is_relation = true;
-	// 			// 此处待完善
-	// 			$this->relation_table = substr($key, 0, strrpos($key, '_'));
-	// 		}
-
-    //         if($key_suffix == 'data'){
-    //             if($type == 'enum'){
-    //                 $config['data_type'] = DataType::$STRING;
-    //                 $config['form_type'] = 'radio';
-    //             } else if($type == 'set'){
-    //                 $config['data_type'] = DataType::$ARRAY;
-    //                 $config['form_type'] = 'checkbox';
-    //             }
-    //         }elseif($key_suffix == 'switch'){
-    //             if($type == 'tinyint'){
-    //                 $config['data_type'] = DataType::$BOOL;
-    //                 $config['form_type'] = 'switch';
-    //             }
-    //         }elseif($key_suffix == 'date'){
-    //             if($type == 'int'){
-    //                 // 此处为日期, 前端传递格式如 2020-10-01, 后端处理暂未设定
-    //                 $config['data_type'] = DataType::$TIME;
-    //                 $config['form_type'] = 'time';
-    //             }
-    //         }elseif($key_suffix == 'time'){
-    //             if($type == 'int'){
-    //                 // 此处为时间, 前端传递格式如 2020-10-01 00:01:02
-    //                 $config['data_type'] = DataType::$TIME;
-    //                 $config['form_type'] = 'time';
-    //             }
-    //         }elseif($type == 'varchar'){
-    //             if($key_suffix == 'color'){
-    //                 $config['data_type'] = DataType::$STRING;
-    //                 $config['form_type'] = 'color';
-    //             }elseif($key_suffix == 'file'){
-    //                 $config['data_type'] = DataType::$STRING;
-    //                 $config['form_type'] = 'file';
-    //                 $config['is_multi'] = false;
-    //             }elseif($key_suffix == 'files'){
-    //                 $config['data_type'] = DataType::$STRING;
-    //                 $config['form_type'] = 'file';
-    //                 $config['is_multi'] = true;
-    //             }elseif($key_suffix == 'image' || $key_suffix == 'avatar'){
-    //                 $config['data_type'] = DataType::$STRING;
-    //                 $config['form_type'] = 'image';
-    //                 $config['is_multi'] = false;
-    //             }elseif($key_suffix == 'images' || $key_suffix == 'avatars'){
-    //                 $config['data_type'] = 0;
-    //                 $config['form_type'] = 'image';
-    //                 $config['is_multi'] = false;
-    //             }
-    //         }
-
-    //         if($key_prefix == 'is'){
-    //             if($type == 'tinyint'){
-    //                 $config['data_type'] = DataType::$BOOL;
-    //                 $config['form_type'] = 'switch';
-    //             }
-    //         }
-	// 	}
-
-	// 	return $config;
-    // }
-
-    
-    protected function getFieldType($options){
+    protected function getItemType($options, $config = []){
         $field_name = $options['COLUMN_NAME'];
         $type 	    = $options['DATA_TYPE'];
+        $config['date_type'] = DataTypeEnum::STRING;
+        $config['item_type'] = ItemTypeEnum::STRING;
 
-        $input_type = 'text';
         switch ($type) {
             case 'bigint':
             case 'int':
             case 'mediumint':
             case 'smallint':
             case 'tinyint':
-				// 整数
-                $data_type = 'int';
-                $input_type = 'number';
+                // 整数
+                $config['date_type'] = DataTypeEnum::INT;
+                $config['item_type'] = ItemTypeEnum::NUMBER;
                 break;
             case 'enum':
+                // 下拉(单选)
+                $config['date_type'] = DataTypeEnum::STRING;
+                $config['item_type'] = ItemTypeEnum::SELECT;
+                break;
             case 'set':
-                // 下拉
-                $data_type = 'string';
-                $input_type = 'select';
+                // 下拉(多选)
+                $config['date_type'] = DataTypeEnum::STRING;
+                $config['item_type'] = ItemTypeEnum::SELECTS;
                 break;
             case 'decimal':
             case 'double':
             case 'float':
                 // 浮点数
-                $data_type = 'float';
-                $input_type = 'number';
+                $config['date_type'] = DataTypeEnum::FLOAT;
+                $config['item_type'] = ItemTypeEnum::NUMBER;
                 break;
             case 'longtext':
             case 'text':
             case 'mediumtext':
             case 'smalltext':
             case 'tinytext':
-				// 文本域
-                $data_type = 'string';
-                $input_type = 'textarea';
+                // 文本域
+                $config['date_type'] = DataTypeEnum::STRING;
+                $config['item_type'] = ItemTypeEnum::TEXT;
                 break;
             case 'year':
             case 'date':
             case 'time':
             case 'datetime':
             case 'timestamp':
-                $data_type = 'int';
-                $input_type = 'datetime';
+                $config['date_type'] = DataTypeEnum::INT;
+                $config['item_type'] = ItemTypeEnum::TIME;
                 break;
             default:
                 break;
@@ -378,34 +272,53 @@ class MySql {
 
         // 指定后缀说明也是个时间字段
         if ($this->isMatchSuffix($field_name, $this->intDateSuffix)) {
-            $data_type  = 'int';
-            $input_type = 'datetime';
+            $config['date_type'] = DataTypeEnum::INT;
+            $config['item_type'] = ItemTypeEnum::TIME;
         }
         // 指定后缀结尾且类型为enum,说明是个单选框
-        if ($this->isMatchSuffix($field_name, $this->enumRadioSuffix) && $options['DATA_TYPE'] == 'enum') {
-            $data_type  = 'string';
-            $input_type = "radio";
+        else if ($this->isMatchSuffix($field_name, $this->enumRadioSuffix) && $options['DATA_TYPE'] == 'enum') {
+            $config['date_type'] = DataTypeEnum::STRING;
+            $config['item_type'] = ItemTypeEnum::RADIO;
         }
         // 指定后缀结尾且类型为set,说明是个复选框
-        if ($this->isMatchSuffix($field_name, $this->setCheckboxSuffix) && $options['DATA_TYPE'] == 'set') {
-            $data_type  = 'string';
-            $input_type = "checkbox";
+        else if ($this->isMatchSuffix($field_name, $this->setCheckboxSuffix) && $options['DATA_TYPE'] == 'set') {
+            $config['date_type'] = DataTypeEnum::STRING;
+            $config['item_type'] = ItemTypeEnum::CHECKBOX;
         }
-        // 指定后缀结尾且类型为char或tinyint且长度为1,说明是个Switch复选框
-        if ($this->isMatchSuffix($field_name, $this->switchSuffix) && ($options['COLUMN_TYPE'] == 'tinyint(1)' || $options['COLUMN_TYPE'] == 'char(1)') && $options['COLUMN_DEFAULT'] !== '' && $options['COLUMN_DEFAULT'] !== null) {
-            $data_type  = 'int';
-            $input_type = "switch";
+        // 指定前缀开始或后缀结尾且类型为char或tinyint且长度为1,说明是个Switch复选框
+        else if (($this->isMatchPrefix($field_name, $this->switchPrefix) || $this->isMatchSuffix($field_name, $this->switchSuffix)) && ($options['COLUMN_TYPE'] == 'tinyint(1)' || $options['COLUMN_TYPE'] == 'char(1)') && $options['COLUMN_DEFAULT'] !== '' && $options['COLUMN_DEFAULT'] !== null) {
+            $config['date_type'] = DataTypeEnum::INT;
+            $config['item_type'] = ItemTypeEnum::SWITCH;
         }
         // 指定后缀结尾城市选择框
-        if ($this->isMatchSuffix($field_name, $this->citySuffix) && ($options['DATA_TYPE'] == 'varchar' || $options['DATA_TYPE'] == 'char')) {
-            $data_type  = 'string';
-            $input_type = "citypicker";
+        else if ($this->isMatchSuffix($field_name, $this->citySuffix) && ($options['DATA_TYPE'] == 'varchar' || $options['DATA_TYPE'] == 'char')) {
+            $config['date_type'] = DataTypeEnum::STRING;
+            $config['item_type'] = ItemTypeEnum::CITY;
         }
         // 指定后缀结尾JSON配置
-        if ($this->isMatchSuffix($field_name, $this->jsonSuffix) && ($options['DATA_TYPE'] == 'varchar' || $options['DATA_TYPE'] == 'text')) {
-            $input_type = "fieldlist";
+        else if ($this->isMatchSuffix($field_name, $this->jsonSuffix) && ($options['DATA_TYPE'] == 'varchar' || $options['DATA_TYPE'] == 'text')) {
+            $config['date_type'] = DataTypeEnum::STRING;
+            $config['item_type'] = ItemTypeEnum::JSON;
         }
-        return $input_type;
+
+        return $config;
+    }
+
+    /**
+     * 判断是否符合指定前缀
+     * @param string $field     字段名称
+     * @param mixed  $suffixArr 后缀
+     * @return boolean
+     */
+    protected function isMatchPrefix($field, $prefixArr)
+    {
+        $prefixArr = is_array($prefixArr) ? $prefixArr : explode(',', $prefixArr);
+        foreach ($prefixArr as $k => $v) {
+            if (preg_match("/^{$v}/i", $field)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

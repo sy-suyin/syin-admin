@@ -1,8 +1,6 @@
 <?php
 
-namespace common\enums;
-
-use common\helpers\ArrayHelper;
+namespace builder\common;
 
 /**
  * Class BaseEnum

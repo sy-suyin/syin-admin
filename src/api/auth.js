@@ -6,7 +6,7 @@ const api = {
 			login,
 			password
 		}
-	
+
 		return request({
 			url: '/login',
 			method: 'post',
@@ -14,7 +14,7 @@ const api = {
 			data,
 		})
 	},
-	
+
 	updateProfile(args){
 		return request({
 			url: '/index/profile',
@@ -23,10 +23,10 @@ const api = {
 			data: args,
 		})
 	},
-	
+
 	/**
 	 * 使用 token 获取用户信息
-	 * @param {*} args 
+	 * @param {*} args
 	 */
 	tokenLogin(){
 		return request({

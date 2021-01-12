@@ -5,9 +5,11 @@
 			<el-col :span="8">
 				<el-card class="box-card">
 					<div slot="header" class="clearfix">
-						字典目录
+						数据表列表
+
+						<button class="btn">添加</button>
 					</div>
-					<el-table
+					<!-- <el-table
 						ref="table"
 						:data="page_default.results"
 						border
@@ -44,6 +46,12 @@
 						 	@handle="handle"
 						>
 						</table-page>
+					</div> -->
+
+					<div>
+						<div v-for="(table, key) in tables"	:key="key">
+							{{table}}
+						</div>
 					</div>
 				</el-card>
 			</el-col>
@@ -52,7 +60,7 @@
 					<div slot="header" class="clearfix">
 						字典数据
 					</div>
-					<el-table
+					<!-- <el-table
 						ref="table"
 						border
 						:data="page_data.results"
@@ -88,7 +96,7 @@
 						 	@handle="handle"
 						>
 						</table-page>
-					</div>
+					</div> -->
 				</el-card>
 			</el-col>
 		</el-row>
@@ -99,32 +107,32 @@ import pageMixin from "@/mixins/page";
 import tableMixin from "@/mixins/table";
 import commonMixin from "@/mixins/common";
 import tablePage from "@/components/table-page";
+import api from "@/api/develop";
+
 export default {
 	name: "system_adminlist",
 	mixins: [commonMixin, pageMixin, tableMixin],
 	components: { tablePage },
   	data() {
 		return {
-			page_data: null,
-			list_page: {
-				layout: 'total, prev, pager, next',
-				scene: 'default',
-			},
-			data_page: {
-				layout: 'total, sizes, prev, pager, next, jumper',
-				sizes: [5, 10, 20, 30, 50],
-				scene: 'data',
-			}
+			tables: [],
 		}
 	},
 	created(){
-		this.addScene('/dict/index');
-		this.addScene('/dict/dictdata', 'data');
+		this.init();
 	},
 	mounted(){
-		this.getRequestData();
 	},
 	methods: {
+		init(){
+			api.getTables().then(res => {
+				console.log(res);
+				this.tables = res.result;
+				console.log(this.tables);
+			}).catch(e => {
+				console.log(e);
+			})
+		},
 		show(row){
 			let args = {id: row.id};
 			this.getRequestData({

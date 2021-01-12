@@ -61,9 +61,10 @@ class Master {
      */
     public function loadMysql(){
         $sql = new MySql($this->config);
-
-        list($config, $item_configs) = $sql->parse();
-        $this->item_configs += $item_configs;
+        $prefix = isset($this->config['prefix']) ? $this->config['prefix'] : null;
+        $config = $sql->parse($this->config['table'], $prefix);
+        $this->item_configs += $config['items'];
+        unset($config['items']);
         $this->config = $config;
     }
 
