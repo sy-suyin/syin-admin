@@ -2,6 +2,10 @@
 
 return [
 
+	'master'    => [
+		'table' => '',
+	],
+
 	'items'     => [],
 
 	// 构建者

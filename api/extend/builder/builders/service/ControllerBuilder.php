@@ -5,7 +5,7 @@
 
 namespace builder\builders\service;
 
-use builder\builders\BaseBuilder;
+use builder\common\BaseBuilder;
 
 class ControllerBuilder extends BaseBuilder{
 
@@ -27,6 +27,7 @@ class ControllerBuilder extends BaseBuilder{
      * 构建, 输出结构
      */
     public function build($element){
+        $this->element = $element;
         $html = $this->fetch('service/controller.tpl', []);
 
         $class_name = ucfirst($this->camelize($element->table));

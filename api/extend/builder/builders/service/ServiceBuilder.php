@@ -5,8 +5,9 @@
 
 namespace builder\builders\service;
 
-use builder\builders\BaseBuilder;
+use builder\common\BaseBuilder;
 use builder\dataset\DataType;
+use builder\enums\DataTypeEnum;
 
 class ServiceBuilder extends BaseBuilder {
 
@@ -27,31 +28,31 @@ class ServiceBuilder extends BaseBuilder {
         $field = $item->field;
         $option = false;
         switch($item->data_type){
-            case DataType::$STRING:{
+            case DataTypeEnum::STRING:{
                 $option = ['type' => 'string', 'name' => $field];
                 break;
             }
-            case DataType::$INT:{
+            case DataTypeEnum::INT:{
                 $option = ['type' => 'int', 'name' => $field];
                 break;
             }
-            case DataType::$FLOAT:{
+            case DataTypeEnum::FLOAT:{
                 $option = ['type' => 'float', 'name' => $field];
                 break;
             }
-            case DataType::$ARRAY:{
+            case DataTypeEnum::ARRAY:{
                 $option = ['type' => 'array', 'name' => $field];
                 break;
             }
-            case DataType::$BOOL:{
+            case DataTypeEnum::BOOL:{
                 $option = ['type' => 'bool', 'name' => $field];
                 break;
             }
-            case DataType::$DATE:{
+            case DataTypeEnum::DATE:{
                 $option = ['type' => 'string', 'name' => $field, 'filter' => 'time'];
                 break;
             }
-            case DataType::$TIME:{
+            case DataTypeEnum::TIME:{
                 $option = ['type' => 'string', 'name' => $field, 'filter' => 'time'];
                 break;
             }
@@ -65,6 +66,8 @@ class ServiceBuilder extends BaseBuilder {
      * 构建, 输出结构
      */
     public function build($element){
+        $this->element = $element;
+
         $html = $this->fetch('service/service.tpl', [
             'fields'     => $this->fields,
             'rules'      => $this->rules,

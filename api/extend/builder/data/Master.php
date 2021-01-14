@@ -10,70 +10,31 @@ use builder\elements\Item;
  */
 class Master {
 
-    // 主键
-    protected $pk = '';
-
-    // 数据表(去除前缀后的)
-    protected $table = '';
-
-    // 数据表名称
-    protected $table_name = '';
-
-    // 是否软删除
-    protected $is_sort_deleted = false;
-
-    // 是否有关联
-    protected $has_relation = false;
-
-    // 关联数据
-    protected $relations = [];
-
-    // 保留字段
-    protected $reserved_fields = [
-        'id', 'add_time', 'update_time', 'delete_time'
-    ];
-
-    // 
-    private $config;
-
-    private $item_configs;
-
-    // 元素集
-    protected $items = [];
-
-    public function __construct($config){
-        $this->config = $config;
+    public function __construct(){
     }
 
     public function parse($config){
-        $this->config = [];
-        $this->item_configs = isset($config['items']) ? $config['items'] : [];
+        $config = $this->loadMysql($config);
 
-        $this->loadMysql();
-
-        foreach($this->item_configs as $conf){
-            $this->items[] = new Item($conf);
-        }
+        return $config;
+    }
+    
+    /**
+     * 加载json配置解析
+     */
+    public function loadJson($config){
     }
 
     /**
      * 加载mysql解析
      */
-    public function loadMysql(){
-        $sql = new MySql($this->config);
-        $prefix = isset($this->config['prefix']) ? $this->config['prefix'] : null;
-        $config = $sql->parse($this->config['table'], $prefix);
-        $this->item_configs += $config['items'];
-        unset($config['items']);
-        $this->config = $config;
-    }
-
-    /**
-     * 渲染数据
-     */
-    public function rendering($builder){
-        foreach($this->items as $item){
-            $builder->rendering($item);
-        }
+    public function loadMysql($config){
+        $sql = new MySql($config);
+        $master = $config['master'];
+        $prefix = isset($master['prefix']) ? $master['prefix'] : null;
+        $result = $sql->parse($master['table'], $prefix);
+        $config['master'] = $result['master'];
+        $config['items'] = array_merge($config['items'], $result['items']);
+        return $config;
     }
 }

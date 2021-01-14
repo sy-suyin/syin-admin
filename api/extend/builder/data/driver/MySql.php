@@ -154,14 +154,16 @@ class MySql {
         $table_title = $table_info['Comment'];
         $table_title = explode(';', $table_title)[0];
         $table_title = explode(':', $table_title)[0];
-        $config = [
+        // 主配置
+        $master = [
             'pk'    => '',
             'table' => $table,
             'title' => $table_title,
             'table_full' => $table_full,
             'is_sort_deleted' => false, // 是否为软删除
-            'items' => [],
         ];
+        // 控件配置数据 
+        $items = [];
 
         /**
          * 获取数据表数据
@@ -184,13 +186,13 @@ class MySql {
             ];
 
             // 设置主键
-            if($options['COLUMN_KEY'] == 'PRI' && $config['pk'] == ''){
-                $config['pk'] = $item['name'];
+            if($options['COLUMN_KEY'] == 'PRI' && $master['pk'] == ''){
+                $master['pk'] = $item['name'];
             }
 
             // 判断删除
             if($item['name'] == $this->deleteTimeField){
-                $config['is_sort_deleted'] = true;
+                $master['is_sort_deleted'] = true;
             }
 
             // if(in_array($field, $this->reserved_fields)){
@@ -205,12 +207,14 @@ class MySql {
             }
 
             // 计算数据类型
-            $config['items'][] = $this->getItemType($options, $item);
+            $items[] = $this->getItemType($options, $item);
         }
 
-        $this->config = $config;
-        p($config);
-        return $config;
+        $this->config = [
+            'master' => $master,
+            'items'  => $items,
+        ];
+        return $this->config;
     }
 
     /**

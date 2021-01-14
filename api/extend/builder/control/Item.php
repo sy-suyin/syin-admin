@@ -1,6 +1,6 @@
 <?php
 
-namespace builder\elements;
+namespace builder\control;
 
 class Item {
 

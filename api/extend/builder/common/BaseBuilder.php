@@ -3,14 +3,14 @@
  * 构建者基类
  */
 
-namespace builder\builders;
+namespace builder\common;
 
 class BaseBuilder{
 
     protected $tpl_path = '';
 
     public function __construct(){
-        $this->tpl_path = env('ROOT_PATH') . 'extend/syin/builder/template/';
+        $this->tpl_path = env('ROOT_PATH') . 'extend/builder/builders/template/';
     }
 
 	/**

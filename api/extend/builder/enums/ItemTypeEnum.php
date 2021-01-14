@@ -31,7 +31,7 @@ class ItemTypeEnum extends BaseEnum {
 	const SELECTPAGE = 'selectpage';
 	const SELECTPAGES = 'selectpages';
 	const CUSTOM = 'cutsom';
-	
+
 	public static function getMap(): array
 	{
 		return [
